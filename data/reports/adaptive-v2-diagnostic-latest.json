@@ -1,0 +1,79 @@
+{
+  "status": "retrospective_exploratory_only",
+  "strategy_variant": "adaptive_v2",
+  "research_only": true,
+  "period": {
+    "start": "2023-01-03",
+    "end": "2026-06-30"
+  },
+  "source": "cached:fallback",
+  "degraded_sources": [],
+  "bars": 6485,
+  "config": {
+    "lookbacks": [
+      20,
+      60,
+      120
+    ],
+    "top_k": 3,
+    "defensive_symbol": "sh511010",
+    "momentum_weights": [
+      0.5,
+      0.3,
+      0.2
+    ],
+    "volatility_lookback": 60,
+    "trend_lookback": 120,
+    "covariance_lookback": 60,
+    "covariance_shrinkage": 0.5,
+    "correlation_penalty": 0.35,
+    "maximum_satellite_weight": 0.6,
+    "rank_buffer": 1,
+    "target_volatility": 0.12,
+    "breadth_risk_off": 0.25,
+    "breadth_risk_on": 0.75,
+    "regime_short_volatility_lookback": 20,
+    "regime_long_volatility_lookback": 120,
+    "volatility_stress_warning": 1.25,
+    "volatility_stress_stop": 2.0,
+    "drawdown_lookback": 60,
+    "drawdown_warning": -0.05,
+    "drawdown_stop": -0.15,
+    "minimum_core_weight": 0.35,
+    "maximum_core_weight": 0.75,
+    "rebalance_tolerance_weight": 0.02,
+    "strategy_variant": "adaptive_v2"
+  },
+  "metrics": {
+    "strategy": {
+      "total_return": 0.44657123096500095,
+      "annualized_return": 0.1166852142893613,
+      "annualized_volatility": 0.07427319865528573,
+      "sharpe": 1.52517151427254,
+      "max_drawdown": -0.054058531179288494,
+      "turnover_count": 116.0
+    },
+    "equal_weight_buy_hold": {
+      "total_return": 0.5450679805,
+      "annualized_return": 0.13889203148691087,
+      "annualized_volatility": 0.10133920530410927,
+      "sharpe": 1.3360530918893292,
+      "max_drawdown": -0.092858761043079,
+      "turnover_count": 6.0
+    },
+    "two_x_cost": {
+      "total_return": 0.43092612026000054,
+      "annualized_return": 0.1130611488129154,
+      "annualized_volatility": 0.07425630894103362,
+      "sharpe": 1.4816543325884262,
+      "max_drawdown": -0.05310954946398949,
+      "turnover_count": 116.0
+    }
+  },
+  "relative_to_equal_weight": {
+    "total_return_delta": -0.0984967495349991,
+    "sharpe_delta": 0.18911842238321075,
+    "max_drawdown_delta": 0.0388002298637905
+  },
+  "claim_boundary": "This run reuses historically researched data and cannot establish strategy alpha or admission. Adaptive variants remain prospective-only challengers."
+}

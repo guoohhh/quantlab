@@ -1,0 +1,4321 @@
+{
+  "method": "anonymized, non-overlapping, point-in-time historical blind replay",
+  "requested_range": {
+    "start": "2026-02-02",
+    "end": "2026-05-29"
+  },
+  "horizon_days": 20,
+  "requested_episodes": 4,
+  "completed_episodes": 4,
+  "selection_rule": "eligible common trading dates with >=200 prior observations; non-overlapping episodes selected evenly across the requested range without using outcomes",
+  "source": "cached:fallback",
+  "degraded_sources": [],
+  "blinding": {
+    "actual_symbol_supplied_to_llm": false,
+    "actual_date_supplied_to_llm": false,
+    "price_normalized_to": 100.0,
+    "normalized_price_path_120_supplied": true,
+    "normalized_price_path_contains_absolute_prices": false,
+    "actual_identity_stored_only_outside_llm_context": true
+  },
+  "statistical_model_contract": "each episode refits using samples whose as_of and evaluated_at are before the signal date",
+  "execution_contract": "T close signal, T+1 open buy, horizon-day close sell, ETF costs, whole lots, and path-dependent capital per comparison arm",
+  "episodes": [
+    {
+      "episode": 1,
+      "actual_as_of": "2026-02-02",
+      "blind_symbol": "ETF_CANDIDATE_01",
+      "blind_date": "2000-02-03",
+      "actual_symbol": "sh518880",
+      "entry_date": "2026-02-03",
+      "outcome_date": "2026-03-10",
+      "strategy_signal": {
+        "strategy": "etf_rotation",
+        "symbol": "sh518880",
+        "as_of": "2026-02-02",
+        "score": 0.6090168732749468,
+        "target_weight": 0.5,
+        "confidence": 0.7329428457695233,
+        "reasons": [
+          "multi-period momentum=16.73%",
+          "annualized volatility=34.50%"
+        ],
+        "evidence": [],
+        "valid_until": null
+      },
+      "market_regime": "high_volatility",
+      "decision": {
+        "symbol": "ETF_CANDIDATE_01",
+        "as_of": "2000-02-03",
+        "action": "watch",
+        "confidence": 0.45,
+        "target_weight": 0.0,
+        "entry_price": null,
+        "stop_loss": null,
+        "target_1": null,
+        "target_2": null,
+        "reasons": [
+          "composite_score=0.147",
+          "strategy_signal_score=0.609",
+          "council_score=-0.163",
+          "forecast_score=-0.070",
+          "evidence_coverage=0.90",
+          "conflict=1.000",
+          "abs_composite=0.147",
+          "high_conflict_review_triggered=False",
+          "momentum_technical_sync=True",
+          "buy_requires_composite>0.35",
+          "review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12"
+        ],
+        "risks": [
+          "quant: High annualized volatility=34.50% (from strategy signal) and 29.3% (from price history)",
+          "quant: Recent price decline: latest close=100 vs recent high=120.15",
+          "quant: Price below 5-day and 20-day moving averages",
+          "technical: Price is above 60-day and 120-day moving averages, indicating longer-term uptrend may still be intact.",
+          "momentum: High volatility regime (annualized vol 34.5%) increases risk of whipsaw",
+          "value_veto: High volatility, negative return skewness, and the recent sharp reversal imply material mark-to-market and drawdown risk.",
+          "risk: Left-tail and gap-like drawdown risk are elevated, as indicated by strongly negative return skewness and the supplied -16.767% maximum drawdown.",
+          "macro: High volatility could also lead to sharp reversals upward; momentum signals are positive."
+        ],
+        "degraded_sources": [],
+        "requires_human_review": false
+      },
+      "decision_trace": {
+        "formula": "sum(component_weight * component_value)",
+        "weights": {
+          "strategy_signal_score": 0.3,
+          "council_score": 0.3,
+          "forecast_score": 0.15,
+          "analyst_score": 0.1,
+          "debate_score": 0.15
+        },
+        "components": {
+          "strategy_signal_score": 0.6090168732749468,
+          "council_score": -0.16269230769230764,
+          "forecast_score": -0.07004641343570195,
+          "analyst_score": 0.2333333333333333,
+          "debate_score": 0.0
+        },
+        "composite_score": 0.1467237409927698,
+        "council_diagnostics": {
+          "momentum_technical_sync": true,
+          "veto_triggered": false,
+          "veto_roles": [],
+          "market_regime": "high_volatility"
+        },
+        "conflict": 1.0,
+        "high_conflict_review_triggered": false,
+        "confidence_formula": "evidence_coverage * (1 - 0.5 * conflict)",
+        "confidence": 0.45,
+        "evidence_coverage": {
+          "asset_type": "etf",
+          "weights": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.2,
+            "price_history": 0.15,
+            "market_regime": 0.2,
+            "news": 0.1
+          },
+          "availability": {
+            "strategy_signal": true,
+            "quant_factors": true,
+            "price_history": true,
+            "market_regime": true,
+            "news": false
+          },
+          "contributions": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.2,
+            "price_history": 0.15,
+            "market_regime": 0.2,
+            "news": 0.0
+          },
+          "raw": 0.9,
+          "data_quality": 1.0,
+          "adjusted": 0.9
+        }
+      },
+      "reviewer": {
+        "approved": true,
+        "status": "approved",
+        "issues": [],
+        "summary": "Decision is consistent with policy: composite score 0.147 is below buy threshold 0.35, so watch action with zero target weight is correct. High conflict (1.0) does not trigger review because abs(composite) 0.147 exceeds 0.12 band. All required evidence present, no invented data, no contradictory probabilities, no silent degraded data, and confidence 0.45 is above minimum 0.25. Price is non-executable index, entry_price correctly null. Approved."
+      },
+      "council": {
+        "tactical_score": -0.29999999999999993,
+        "strategic_score": 0.0923076923076923,
+        "combined_score": -0.16269230769230764,
+        "veto_triggered": false,
+        "veto_roles": [],
+        "momentum_tech_sync": true,
+        "market_regime": "high_volatility",
+        "opinions": [
+          {
+            "role": "technical",
+            "perspective": "price structure and multi-timeframe trend",
+            "stance": "bearish",
+            "score": -0.3,
+            "confidence": 0.6,
+            "weight": 1.3,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Price is below both 5-day and 20-day moving averages, indicating short-term bearish momentum.",
+              "Recent sharp decline from 120.145 to 100.0 suggests a potential trend reversal or high volatility breakdown.",
+              "Volume asymmetry and return skewness factors are negative, supporting bearish short-term signals."
+            ],
+            "evidence": [
+              "Latest normalized close 100.0 is below MA_5 (111.092) and MA_20 (103.349) per supplied moving averages.",
+              "Price dropped from 120.145 (high) to 100.0 in the last few observations of the normalized price path.",
+              "Volume asymmetry 20-day score -0.314 (short direction) and return skewness 60-day score -0.807 (short direction) from quant factors.",
+              "Multi-timeframe consensus is weak_uptrend (monthly uptrend but daily and weekly neutral), not strong enough to override short-term weakness."
+            ],
+            "risks": [
+              "Price is above 60-day and 120-day moving averages, indicating longer-term uptrend may still be intact.",
+              "Strategy signal is bullish with score 0.609 and confidence 0.733, suggesting potential for reversal.",
+              "High volatility regime (annualized 34.5%) could lead to sharp reversals."
+            ],
+            "missing_data": [
+              "No volume or depth data to assess execution risk.",
+              "No news or fundamental data to confirm catalyst for decline.",
+              "Price is normalized and not executable; actual price levels unknown."
+            ]
+          },
+          {
+            "role": "momentum",
+            "perspective": "momentum quality and continuation",
+            "stance": "bearish",
+            "score": -0.3,
+            "confidence": 0.6,
+            "weight": 1.5,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Momentum acceleration is near zero, indicating no recent speed-up",
+              "Volume asymmetry is negative, suggesting selling pressure on up days",
+              "Return skewness is strongly negative, implying tail risk of sharp drops",
+              "Price has pulled back sharply from recent highs, breaking below short-term moving averages"
+            ],
+            "evidence": [
+              "momentum_acceleration score 0.0167 (near neutral)",
+              "volume_asymmetry_20 value -0.325, score -0.314 (short direction)",
+              "return_skewness_60 value -2.238, score -0.807 (short direction)",
+              "price_position_60 score -0.277 (short direction)",
+              "Latest close 100.0 is below MA_5 (111.09) and MA_20 (103.35), above MA_60 and MA_120",
+              "Pullback reversal not triggered; consecutive_pullback false, rsi_oversold false, volume_contraction false",
+              "Recent normalized closes show drop from 120.145 to 100.0 in last few observations"
+            ],
+            "risks": [
+              "High volatility regime (annualized vol 34.5%) increases risk of whipsaw",
+              "Cross-section momentum ranks are high (1.0 for 20d and 60d), suggesting strong relative strength that could resume",
+              "No spread, depth, or market impact data; execution risk unassessed"
+            ],
+            "missing_data": [
+              "Spread, depth, order size, market impact data",
+              "Fundamentals and news are empty",
+              "No explicit price limit or liquidity data"
+            ]
+          },
+          {
+            "role": "value_veto",
+            "perspective": "ETF structure, valuation extension and permanent-loss scenarios",
+            "stance": "neutral",
+            "score": 0.0,
+            "confidence": 0.34,
+            "weight": 0.6,
+            "mode": "strategic",
+            "veto": false,
+            "thesis": [
+              "No concrete ETF structural defect, valuation extension, or permanent-loss mechanism is established by the supplied evidence; therefore no veto is warranted.",
+              "A valuation-based directional opinion is not supportable because holdings, look-through fundamentals, and valuation multiples are absent. Missing data lowers confidence but is not evidence of permanent loss.",
+              "The supplied maximum_final_weight is 0.15; this is the relevant portfolio cap, while the strategy target weight of 0.50 is advisory.",
+              "Because this is a historical_blind_replay and execution_evidence_required is false, the blinded identity and normalized, non-executable price are not execution failures."
+            ],
+            "evidence": [
+              "The deterministic comparison fields state that the latest normalized close is below the 5-day and 20-day moving averages, but above the 60-day and 120-day moving averages.",
+              "Supplied adjusted returns are positive over 20 trading days at 4.349658% and 60 trading days at 13.169617%.",
+              "Risk evidence is elevated: annualized volatility over the available 120-return window is 29.296021%, maximum drawdown is -16.767473%, and the market regime is labeled high_volatility.",
+              "The supplied 60-day return skewness is -2.238424, with a short-direction factor score of -0.807295. This indicates adverse tail behavior in the observed path, but does not by itself establish permanent loss.",
+              "The normalized series declined from 120.145337 to 111.112233 and then 100.0 in its final observations, showing acute short-term path risk rather than a demonstrated ETF structural impairment."
+            ],
+            "risks": [
+              "High volatility, negative return skewness, and the recent sharp reversal imply material mark-to-market and drawdown risk.",
+              "ETF concentration, embedded leverage or derivatives exposure, tracking quality, closure risk, and premium/discount behavior are unassessed rather than absent.",
+              "Spread, market depth, order size, market impact, and price-limit evidence are missing. Execution risk is therefore unassessed, although live execution assessment is explicitly outside this replay.",
+              "Without look-through valuation, it is not possible to determine whether positive momentum reflects justified appreciation or valuation extension."
+            ],
+            "missing_data": [
+              "ETF identity, sponsor, mandate, index methodology, domicile, and legal structure",
+              "Holdings, sector and issuer concentration, overlap, and concentration limits",
+              "Gross and net leverage, derivatives usage, counterparty exposure, and rebalance mechanics",
+              "Assets under management, flows, closure or liquidation provisions, and fund age",
+              "NAV, intraday indicative value, market premium or discount, creation-redemption activity, and authorized-participant coverage",
+              "Tracking difference, tracking error, expense ratio, securities-lending policy, and tax drag",
+              "Bid-ask spread, depth, executable quotes, order size, market impact, and price-limit information",
+              "Look-through earnings, cash flows, book values, yields, valuation multiples, and historical or peer valuation comparisons"
+            ]
+          },
+          {
+            "role": "risk",
+            "perspective": "ETF market risk, drawdown and portfolio fit",
+            "stance": "bullish",
+            "score": 0.12,
+            "confidence": 0.68,
+            "weight": 1.0,
+            "mode": "strategic",
+            "veto": false,
+            "thesis": [
+              "Mild positive vote: supplied 20-day and 60-day returns are positive, cross-sectional momentum ranks are strong, and the latest normalized close is explicitly above the 60-day and 120-day moving averages.",
+              "Risk materially limits position size. The regime is classified as high volatility, supplied annualized volatility measures are 29.296% over the price history and 34.50% in the strategy signal, and the supplied 120-price maximum drawdown is -16.767%.",
+              "Short-term trend damage is significant: the latest normalized close is explicitly below the 5-day and 20-day moving averages, while remaining above the 60-day and 120-day averages. This supports only a weak, potentially unstable uptrend rather than a full-risk allocation.",
+              "A 10% strategic weight is appropriate for the risk vote and remains below the supplied 15% maximum final weight. The raw 50% strategy target is unsuitable given the volatility, drawdown, negative skew, and unresolved portfolio-overlap risk.",
+              "No veto is warranted from the supplied evidence. Identity and executable prices are deliberately hidden in a historical blind replay, and execution evidence is not required; missing live microstructure data therefore lowers implementation confidence rather than invalidating the research signal."
+            ],
+            "evidence": [
+              "Market regime is supplied as high_volatility with regime confidence 1.0.",
+              "Adjusted returns are 4.349658% over 20 trading days and 13.169617% over 60 trading days.",
+              "Cross-sectional momentum ranks are 1.0 over 20 days, 1.0 over 60 days, and 0.833333 over 120 days; the cross-sectional volatility rank is also 1.0.",
+              "The supplied multi-timeframe verdict is weak_uptrend, with monthly positive but daily and weekly readings at zero.",
+              "Latest close versus moving averages is explicitly: 9.984555% below MA5, 3.240298% below MA20, 4.00189% above MA60, and 12.083773% above MA120.",
+              "Annualized volatility over the supplied 119 daily returns is 29.296021%, while the strategy signal separately reports 34.50% annualized volatility.",
+              "Maximum drawdown over the supplied 120 normalized prices is -16.767473%.",
+              "The 60-day return-skewness factor is -2.238424 with a -0.807295 score, indicating materially adverse left-tail behavior in the supplied sample.",
+              "Volume asymmetry is negative, with factor value -0.325044 and score -0.314060.",
+              "The pullback-reversal signal was not triggered, so the recent weakness lacks confirmation from that supplied setup."
+            ],
+            "risks": [
+              "Left-tail and gap-like drawdown risk are elevated, as indicated by strongly negative return skewness and the supplied -16.767% maximum drawdown.",
+              "Whipsaw risk is high because short-term moving-average relationships are bearish while medium- and long-horizon relationships remain bullish.",
+              "The candidate ranks at the top of the supplied cross-section for both momentum and volatility; leadership can support returns but also creates disproportionate reversal risk.",
+              "ETF holdings, sector and geographic concentration, leverage, derivatives usage, and index construction are undisclosed, so underlying concentration and structural risks are unassessed.",
+              "Portfolio fit is unassessed without correlations, factor exposures, existing holdings, and contribution-to-risk data. A nominal 15% allocation could create more than 15% of portfolio risk.",
+              "Spread, depth, trading volume, order size, market impact, premium/discount, creation-redemption conditions, and price-limit information are missing. Live execution risk is therefore unassessed, not absent.",
+              "The 120-observation history may not capture full-cycle drawdowns or behavior across lower-volatility, recessionary, liquidity-stress, or correlation-spike regimes."
+            ],
+            "missing_data": [
+              "ETF identity, benchmark, holdings, concentration limits, sector and geographic exposure, leverage, derivatives usage, currency exposure, and replication method.",
+              "Expense ratio, tracking difference, tracking error, securities-lending policy, issuer risk, fund assets, and closure or liquidation risk.",
+              "Bid-ask spread, quoted depth, trading volume, intended order size, market impact, premium/discount history, creation-redemption liquidity, and price-limit rules.",
+              "Current portfolio holdings, correlations, beta, factor overlap, marginal contribution to risk, and portfolio-level drawdown impact.",
+              "Longer drawdown history, downside deviation, expected shortfall, stress tests, and regime-transition behavior.",
+              "Reconciliation of the separately supplied 29.296021% and 34.50% annualized-volatility measures."
+            ]
+          },
+          {
+            "role": "macro",
+            "perspective": "market regime and liquidity",
+            "stance": "bearish",
+            "score": -0.3,
+            "confidence": 0.6,
+            "weight": 0.7,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "High volatility regime increases execution risk and potential for adverse price moves.",
+              "Recent sharp reversal from 120.145 to 100.0 suggests fragility and possible trend exhaustion.",
+              "Price below 5-day and 20-day moving averages indicates short-term weakness."
+            ],
+            "evidence": [
+              "Market regime is 'high_volatility' with regime_confidence 1.0.",
+              "Annualized volatility 34.50% (strategy signal) and 29.30% (price history) both elevated.",
+              "Latest normalized close 100.0 is below MA_5 (111.09) and MA_20 (103.35), above MA_60 (96.15) and MA_120 (89.22).",
+              "Recent price path shows a sharp peak at 120.145 then decline to 100.0 over last few observations.",
+              "Return skewness_60 is -2.24 (negative, short direction), volume asymmetry_20 is -0.325 (negative, short direction).",
+              "Maximum drawdown over 120 periods is -16.77%."
+            ],
+            "risks": [
+              "High volatility could also lead to sharp reversals upward; momentum signals are positive.",
+              "Cross-section momentum ranks are high (1.0 for 20 and 60 days), indicating relative strength.",
+              "Missing data on spread, depth, and order size means execution risk is unassessed."
+            ],
+            "missing_data": [
+              "Bid-ask spread, market depth, order size, and market impact data are not provided.",
+              "No news or fundamental data to assess catalyst risk.",
+              "Price is not executable (price_is_executable false) and decision mode is historical blind replay."
+            ]
+          }
+        ],
+        "summary": "tactical=-0.300; strategic=0.0923076923076923; veto=none"
+      },
+      "forecast": {
+        "symbol": "ETF_CANDIDATE_01",
+        "as_of": "2000-02-03",
+        "horizon_days": 20,
+        "up_probability": 0.4099714727286827,
+        "flat_probability": 0.12699769369037425,
+        "down_probability": 0.46303083358094316,
+        "expected_return_pct": -3.0,
+        "lower_return_pct": -15.0,
+        "upper_return_pct": 10.0,
+        "confidence": 0.65,
+        "drivers": [
+          "Sharp reversal from 120.145 to 100.0 suggests trend exhaustion",
+          "Price below 5-day and 20-day moving averages indicates short-term bearish momentum",
+          "Negative volume asymmetry (-0.314) and negative return skewness (-0.807) signal selling pressure and left-tail risk",
+          "High volatility regime (annualized ~34.5%) increases risk of further downside",
+          "online statistical model blended at weight=0.500"
+        ],
+        "counter_evidence": [
+          "Price above 60-day and 120-day moving averages, longer-term uptrend intact",
+          "Cross-section momentum ranks are 1.0 for 20-day and 60-day horizons, strong relative strength",
+          "Strategy signal bullish with score 0.609 and confidence 0.733",
+          "Multi-period momentum positive (20-day +4.35%, 60-day +13.17%)"
+        ],
+        "invalidation_conditions": [
+          "Price closes above 20-day moving average (currently ~103.35) within 5 days",
+          "Volume asymmetry turns positive",
+          "New bullish catalyst from news or fundamentals"
+        ],
+        "evidence_ids": [
+          "normalized_adjusted_close_path_120",
+          "recent_normalized_closes_30",
+          "returns_adjusted_pct",
+          "risk_adjusted_pct",
+          "moving_averages_normalized",
+          "latest_normalized_close_vs_moving_averages",
+          "analysts"
+        ],
+        "model": "deepseek-chat+online-v0",
+        "model_provider": "deepseek",
+        "statistical_model_id": "pit-etf-20-2026-02-02",
+        "statistical_model_version": 0,
+        "statistical_weight": 0.5,
+        "statistical_up_probability": 0.46994294545736537,
+        "statistical_flat_probability": 0.10399538738074851,
+        "statistical_down_probability": 0.4260616671618863,
+        "raw_llm_up_probability": 0.35,
+        "raw_llm_flat_probability": 0.15,
+        "raw_llm_down_probability": 0.5
+      },
+      "realized_return_pct": 10.577311263625354,
+      "outcome": "up",
+      "strategy_weight": 0.15,
+      "full_system_weight": 0.0,
+      "strategy_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 1400,
+        "entry_price": 10.3601775,
+        "exit_price": 10.950522,
+        "entry_date": "2026-02-03",
+        "exit_date": "2026-03-10",
+        "fees": 10.0,
+        "slippage": 14.917700000000522,
+        "net_pnl": 816.4822999999978,
+        "net_return": 0.008164822999999979,
+        "capital_before": 100000.0,
+        "capital_after": 100816.4823
+      },
+      "full_system_trade": {
+        "traded": false,
+        "weight": 0.0,
+        "quantity": 0,
+        "net_pnl": 0.0,
+        "net_return": 0.0,
+        "capital_before": 100000.0,
+        "capital_after": 100000.0
+      },
+      "benchmark_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 3200,
+        "entry_price": 4.64232,
+        "exit_price": 4.6806585,
+        "entry_date": "2026-02-03",
+        "exit_date": "2026-03-10",
+        "fees": 10.0,
+        "slippage": 14.916800000000308,
+        "net_pnl": 112.68319999999949,
+        "net_return": 0.001126831999999995,
+        "capital_before": 100000.0,
+        "capital_after": 100112.6832
+      },
+      "gate_effect": "missed_gain",
+      "gate_counterfactuals": {
+        "current_strict": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "production_action=watch",
+            "zero_decision_target_weight"
+          ],
+          "reasons": [
+            "production action and target weight preserved exactly"
+          ],
+          "diagnostics": {
+            "composite_score": 0.1467237409927698,
+            "strategy_signal_score": 0.6090168732749468,
+            "decision_confidence": 0.45,
+            "forecast_up_probability": 0.4099714727286827,
+            "forecast_down_probability": 0.46303083358094316,
+            "forecast_edge": -0.053059360852260484,
+            "forecast_expected_return_pct": -3.0,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-02-02",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.043881278295479054
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "missed_gain"
+        },
+        "etf_score_tiered_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "score_tier_conditions_not_met"
+          ],
+          "reasons": [],
+          "diagnostics": {
+            "composite_score": 0.1467237409927698,
+            "strategy_signal_score": 0.6090168732749468,
+            "decision_confidence": 0.45,
+            "forecast_up_probability": 0.4099714727286827,
+            "forecast_down_probability": 0.46303083358094316,
+            "forecast_edge": -0.053059360852260484,
+            "forecast_expected_return_pct": -3.0,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-02-02",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.043881278295479054
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "missed_gain"
+        },
+        "etf_forecast_confirmed_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "up_probability_below_0.50",
+            "forecast_edge_below_0.20",
+            "non_positive_expected_return"
+          ],
+          "reasons": [],
+          "diagnostics": {
+            "composite_score": 0.1467237409927698,
+            "strategy_signal_score": 0.6090168732749468,
+            "decision_confidence": 0.45,
+            "forecast_up_probability": 0.4099714727286827,
+            "forecast_down_probability": 0.46303083358094316,
+            "forecast_edge": -0.053059360852260484,
+            "forecast_expected_return_pct": -3.0,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-02-02",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.043881278295479054
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "missed_gain"
+        },
+        "strategy_unless_bearish_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "negative_expected_return"
+          ],
+          "reasons": [],
+          "diagnostics": {
+            "composite_score": 0.1467237409927698,
+            "strategy_signal_score": 0.6090168732749468,
+            "decision_confidence": 0.45,
+            "forecast_up_probability": 0.4099714727286827,
+            "forecast_down_probability": 0.46303083358094316,
+            "forecast_edge": -0.053059360852260484,
+            "forecast_expected_return_pct": -3.0,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-02-02",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.043881278295479054
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "missed_gain"
+        },
+        "calibrated_strategy_primary_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": true,
+          "tier": "strategy_primary",
+          "target_weight": 0.15,
+          "blockers": [],
+          "reasons": [
+            "validated statistical model does not justify a risk reduction"
+          ],
+          "diagnostics": {
+            "composite_score": 0.1467237409927698,
+            "strategy_signal_score": 0.6090168732749468,
+            "decision_confidence": 0.45,
+            "forecast_up_probability": 0.4099714727286827,
+            "forecast_down_probability": 0.46303083358094316,
+            "forecast_edge": -0.053059360852260484,
+            "forecast_expected_return_pct": -3.0,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-02-02",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.043881278295479054
+          },
+          "trade": {
+            "traded": true,
+            "weight": 0.15,
+            "quantity": 1400,
+            "entry_price": 10.3601775,
+            "exit_price": 10.950522,
+            "entry_date": "2026-02-03",
+            "exit_date": "2026-03-10",
+            "fees": 10.0,
+            "slippage": 14.917700000000522,
+            "net_pnl": 816.4822999999978,
+            "net_return": 0.008164822999999979,
+            "capital_before": 100000.0,
+            "capital_after": 100816.4823
+          },
+          "effect": "participated_gain"
+        }
+      },
+      "point_in_time_model": {
+        "cutoff": "2026-02-02",
+        "asset_scope": "etf",
+        "horizons": {
+          "5": {
+            "status": "admitted",
+            "samples": 1540,
+            "validation_samples": 1540,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-06-21",
+              "inner_training_samples": 2822,
+              "calibration_samples": 541,
+              "baseline_brier": 0.21392352008558935,
+              "baseline_log_loss": 1.060904298299381,
+              "prior_blend": 0.2,
+              "brier_score": 0.1908069069354695,
+              "log_loss": 0.9655483799068638,
+              "normalized_score": 1.8020580899507335
+            },
+            "brier_score": 0.18987533537066026,
+            "log_loss": 0.9646533173500784,
+            "accuracy": 0.5253246753246753,
+            "baseline_brier": 0.21255492237705373,
+            "baseline_log_loss": 1.0572191760229084
+          },
+          "20": {
+            "status": "admitted",
+            "samples": 1530,
+            "validation_samples": 1530,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-06-05",
+              "inner_training_samples": 2782,
+              "calibration_samples": 539,
+              "baseline_brier": 0.21631538860522215,
+              "baseline_log_loss": 1.072985812717228,
+              "prior_blend": 0.2,
+              "brier_score": 0.19630871492440202,
+              "log_loss": 0.9784882168648503,
+              "normalized_score": 1.8194418027836128
+            },
+            "brier_score": 0.19005016834201832,
+            "log_loss": 0.9534457574670229,
+            "accuracy": 0.5169934640522876,
+            "baseline_brier": 0.22089363291643413,
+            "baseline_log_loss": 1.0927956984487908
+          }
+        },
+        "contract": "as_of < cutoff and evaluated_at < cutoff"
+      },
+      "llm_audit": {
+        "health": {
+          "provider": "router",
+          "model": "resilient-router",
+          "endpoints": [
+            {
+              "endpoint_id": "deepseek-1",
+              "provider": "deepseek",
+              "model": "deepseek-chat",
+              "failures": 0,
+              "status": "ready",
+              "cooldown_remaining_seconds": 0.0
+            },
+            {
+              "endpoint_id": "openai-1",
+              "provider": "openai",
+              "model": "gpt-5.6-terra",
+              "failures": 2,
+              "status": "cooldown",
+              "cooldown_remaining_seconds": 105.23399999999674
+            }
+          ],
+          "recent_calls": 13,
+          "recent_successes": 11,
+          "recent_total_tokens": 53562
+        },
+        "calls": [
+          {
+            "timestamp": "2026-07-14T05:01:31.899461+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "AnalystReport",
+            "routing_key": "quant",
+            "status": "ok",
+            "latency_ms": 3918.88,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3607,
+              "output_tokens": 277,
+              "total_tokens": 3884
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:01:36.198005+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "momentum",
+            "status": "ok",
+            "latency_ms": 4295.82,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3922,
+              "output_tokens": 436,
+              "total_tokens": 4358
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:01:36.316326+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "macro",
+            "status": "ok",
+            "latency_ms": 4358.96,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3920,
+              "output_tokens": 449,
+              "total_tokens": 4369
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:01:36.801136+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "technical",
+            "status": "ok",
+            "latency_ms": 4902.63,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3921,
+              "output_tokens": 412,
+              "total_tokens": 4333
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:01:54.544136+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "value_veto",
+            "status": "ok",
+            "latency_ms": 22648.44,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4078,
+              "output_tokens": 1170,
+              "total_tokens": 5248,
+              "reasoning_tokens": 516
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:13.924962+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "risk",
+            "status": "ok",
+            "latency_ms": 41965.17,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4081,
+              "output_tokens": 2238,
+              "total_tokens": 6319,
+              "reasoning_tokens": 1217
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:14.206238+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "status": "error",
+            "latency_ms": 278.91,
+            "error_type": "InternalServerError",
+            "usage": {}
+          },
+          {
+            "timestamp": "2026-07-14T05:02:14.512073+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "error",
+            "latency_ms": 587.88,
+            "error_type": "InternalServerError",
+            "usage": {}
+          },
+          {
+            "timestamp": "2026-07-14T05:02:17.531402+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "status": "ok",
+            "latency_ms": 3324.43,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3127,
+              "output_tokens": 308,
+              "total_tokens": 3435
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:18.827316+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "ok",
+            "latency_ms": 4314.22,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3127,
+              "output_tokens": 369,
+              "total_tokens": 3496
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:21.981938+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 3150.65,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4520,
+              "output_tokens": 455,
+              "total_tokens": 4975
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:24.530965+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 5699.42,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4520,
+              "output_tokens": 538,
+              "total_tokens": 5058
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:29.289918+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ReviewReport",
+            "routing_key": "review",
+            "status": "ok",
+            "latency_ms": 2239.56,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 7957,
+              "output_tokens": 130,
+              "total_tokens": 8087
+            }
+          }
+        ],
+        "summary": {
+          "calls": 13,
+          "successes": 11,
+          "errors": 2,
+          "total_tokens": 53562,
+          "total_latency_ms": 101684.97
+        },
+        "secrets_exposed": false,
+        "prompts_persisted": false
+      },
+      "llm_validation": {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "momentum": 1,
+          "macro": 1,
+          "technical": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 13,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "error_type": "InternalServerError"
+          },
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "error_type": "InternalServerError"
+          }
+        ],
+        "complete": true
+      }
+    },
+    {
+      "episode": 2,
+      "actual_as_of": "2026-03-12",
+      "blind_symbol": "ETF_CANDIDATE_02",
+      "blind_date": "2000-03-05",
+      "actual_symbol": "sh518880",
+      "entry_date": "2026-03-13",
+      "outcome_date": "2026-04-10",
+      "strategy_signal": {
+        "strategy": "etf_rotation",
+        "symbol": "sh518880",
+        "as_of": "2026-03-12",
+        "score": 0.7273656902041798,
+        "target_weight": 0.5,
+        "confidence": 0.8192442863767873,
+        "reasons": [
+          "multi-period momentum=20.47%",
+          "annualized volatility=39.41%"
+        ],
+        "evidence": [],
+        "valid_until": null
+      },
+      "market_regime": "bull",
+      "decision": {
+        "symbol": "ETF_CANDIDATE_02",
+        "as_of": "2000-03-05",
+        "action": "review_required",
+        "confidence": 0.4724999999999999,
+        "target_weight": 0.0,
+        "entry_price": null,
+        "stop_loss": null,
+        "target_1": null,
+        "target_2": null,
+        "reasons": [
+          "composite_score=0.358",
+          "strategy_signal_score=0.727",
+          "council_score=0.335",
+          "forecast_score=0.035",
+          "evidence_coverage=0.90",
+          "conflict=0.950",
+          "abs_composite=0.358",
+          "high_conflict_review_triggered=False",
+          "momentum_technical_sync=True",
+          "buy_requires_composite>0.35",
+          "review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12"
+        ],
+        "risks": [
+          "quant: High annualized volatility (39.41% per strategy, 32.79% per price history)",
+          "quant: Momentum acceleration negative (-0.59 score) suggesting slowing momentum",
+          "quant: Return skewness negative (-0.58 score) indicating downside tail risk",
+          "technical: Momentum acceleration negative (-0.0027) and volume asymmetry negative (-0.2098) suggest short-term weakening.",
+          "momentum: Momentum acceleration negative (-0.0027, score -0.5919) suggests recent deceleration.",
+          "value_veto: Unknown holdings concentration or thematic exposure could create substantial look-through concentration risk.",
+          "risk: High volatility and a demonstrated double-digit drawdown create meaningful mark-to-market and timing risk even at the capped weight.",
+          "macro: Recent price spike to 108.83 then drop to 90.58 suggests volatility; pullback risk exists.",
+          "The decision_calculation shows conflict=0.950, which exceeds the high_conflict_threshold of 0.8. According to the decision_policy, when conflict > 0.8 and abs(composite) < 0.12, review is required. However, abs(composite)=0.358 > 0.12, so the high_conflict_review_triggered is false. But the policy also states 'council_veto_forces_review_required' is true, and no veto was triggered. The decision reasons incorrectly state 'high_conflict_review_triggered=False' and 'review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12'. This is correct per policy, but the high conflict combined with the composite being above the buy threshold (0.35) and the confidence (0.4725) being above the minimum (0.25) leads to a buy action. However, the decision_policy also says 'only_buy_action_may_have_nonzero_target_weight' and 'maximum_buy_target_weight': 0.15. The target_weight is 0.0895, which is within limits. But the price_is_executable is false, so entry_price must be null (it is null). The decision is provisional and the review is to check for material issues. The composite score is 0.358, which is above the buy threshold of 0.35. However, the evidence_coverage is 0.9, confidence is 0.4725, and conflict is 0.95. The high conflict is a red flag. The decision_policy does not explicitly require review for high conflict when composite is above the band, but the high conflict indicates disagreement among signals. The decision reasons mention 'high_conflict_review_triggered=False' and 'review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12'. Since abs(composite)=0.358 > 0.12, the condition is not met, so no review is forced. However, the high conflict (0.95) is very high and the composite is only slightly above the buy threshold (0.358 > 0.35). This is a borderline case. The decision to buy with such high conflict may be questionable, but the policy does not explicitly forbid it. The main issue is that the decision_calculation shows 'confidence_formula': 'evidence_coverage * (1 - 0.5 * conflict)' which gives 0.9 * (1 - 0.5*0.95) = 0.9 * (1 - 0.475) = 0.9 * 0.525 = 0.4725. This is correct. The confidence is above the minimum 0.25. So the decision is consistent with the policy. However, the decision reasons list 'high_conflict_review_triggered=False' and 'review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12'. This is correct. But the high conflict is a risk that should be highlighted. The decision is provisional and the review is to check for material issues. The main material issue is that the price_is_executable is false, so the entry_price is null, which is correct. The decision is a buy with target_weight 0.0895. The maximum_final_weight is 0.15, so it's within limits. The strategy_signal_target_weight_is_advisory is true, so the final weight is determined by the composite. The decision seems consistent with the policy. However, the high conflict (0.95) is very high and the composite is only slightly above the buy threshold. This could be considered a material risk. But the policy does not require rejection solely due to high conflict. The decision_policy says 'high_conflict_review_triggered' is false because abs(composite) > 0.12. So the decision is technically correct. But as a reviewer, I should consider if the high conflict makes the decision unsafe. The decision is provisional and the review is to ensure no material safety or consistency failures. The high conflict is a consistency issue. The decision reasons do not adequately address the high conflict. The decision states 'high_conflict_review_triggered=False' but does not discuss the implications. The risks list includes many risks, but the high conflict is not explicitly mentioned. This could be a material omission. Also, the decision_calculation shows 'conflict': 0.9500000000000001, which is extremely high. The decision to buy with such high conflict may be imprudent. The policy does not explicitly forbid it, but the high conflict suggests that the signals are in strong disagreement. The composite is 0.358, which is above the buy threshold, but the high conflict reduces confidence. The confidence is 0.4725, which is above the minimum. However, the high conflict is a red flag. I think this warrants rejection because the high conflict is a material risk that is not adequately addressed in the decision reasons. The decision reasons list 'high_conflict_review_triggered=False' but do not explain why it is safe to proceed despite the high conflict. The risks list includes many risks but not the high conflict itself. Therefore, I reject the decision and require human review."
+        ],
+        "degraded_sources": [],
+        "requires_human_review": true
+      },
+      "decision_trace": {
+        "formula": "sum(component_weight * component_value)",
+        "weights": {
+          "strategy_signal_score": 0.3,
+          "council_score": 0.3,
+          "forecast_score": 0.15,
+          "analyst_score": 0.1,
+          "debate_score": 0.15
+        },
+        "components": {
+          "strategy_signal_score": 0.7273656902041798,
+          "council_score": 0.3346449275362319,
+          "forecast_score": 0.034510278579142684,
+          "analyst_score": 0.26666666666666666,
+          "debate_score": 0.04999999999999993
+        },
+        "composite_score": 0.35794639377566156,
+        "council_diagnostics": {
+          "momentum_technical_sync": true,
+          "veto_triggered": false,
+          "veto_roles": [],
+          "market_regime": "bull"
+        },
+        "conflict": 0.9500000000000001,
+        "high_conflict_review_triggered": false,
+        "confidence_formula": "evidence_coverage * (1 - 0.5 * conflict)",
+        "confidence": 0.4724999999999999,
+        "evidence_coverage": {
+          "asset_type": "etf",
+          "weights": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.2,
+            "price_history": 0.15,
+            "market_regime": 0.2,
+            "news": 0.1
+          },
+          "availability": {
+            "strategy_signal": true,
+            "quant_factors": true,
+            "price_history": true,
+            "market_regime": true,
+            "news": false
+          },
+          "contributions": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.2,
+            "price_history": 0.15,
+            "market_regime": 0.2,
+            "news": 0.0
+          },
+          "raw": 0.9,
+          "data_quality": 1.0,
+          "adjusted": 0.9
+        }
+      },
+      "reviewer": {
+        "approved": false,
+        "status": "rejected",
+        "issues": [
+          "The decision_calculation shows conflict=0.950, which exceeds the high_conflict_threshold of 0.8. According to the decision_policy, when conflict > 0.8 and abs(composite) < 0.12, review is required. However, abs(composite)=0.358 > 0.12, so the high_conflict_review_triggered is false. But the policy also states 'council_veto_forces_review_required' is true, and no veto was triggered. The decision reasons incorrectly state 'high_conflict_review_triggered=False' and 'review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12'. This is correct per policy, but the high conflict combined with the composite being above the buy threshold (0.35) and the confidence (0.4725) being above the minimum (0.25) leads to a buy action. However, the decision_policy also says 'only_buy_action_may_have_nonzero_target_weight' and 'maximum_buy_target_weight': 0.15. The target_weight is 0.0895, which is within limits. But the price_is_executable is false, so entry_price must be null (it is null). The decision is provisional and the review is to check for material issues. The composite score is 0.358, which is above the buy threshold of 0.35. However, the evidence_coverage is 0.9, confidence is 0.4725, and conflict is 0.95. The high conflict is a red flag. The decision_policy does not explicitly require review for high conflict when composite is above the band, but the high conflict indicates disagreement among signals. The decision reasons mention 'high_conflict_review_triggered=False' and 'review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12'. Since abs(composite)=0.358 > 0.12, the condition is not met, so no review is forced. However, the high conflict (0.95) is very high and the composite is only slightly above the buy threshold (0.358 > 0.35). This is a borderline case. The decision to buy with such high conflict may be questionable, but the policy does not explicitly forbid it. The main issue is that the decision_calculation shows 'confidence_formula': 'evidence_coverage * (1 - 0.5 * conflict)' which gives 0.9 * (1 - 0.5*0.95) = 0.9 * (1 - 0.475) = 0.9 * 0.525 = 0.4725. This is correct. The confidence is above the minimum 0.25. So the decision is consistent with the policy. However, the decision reasons list 'high_conflict_review_triggered=False' and 'review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12'. This is correct. But the high conflict is a risk that should be highlighted. The decision is provisional and the review is to check for material issues. The main material issue is that the price_is_executable is false, so the entry_price is null, which is correct. The decision is a buy with target_weight 0.0895. The maximum_final_weight is 0.15, so it's within limits. The strategy_signal_target_weight_is_advisory is true, so the final weight is determined by the composite. The decision seems consistent with the policy. However, the high conflict (0.95) is very high and the composite is only slightly above the buy threshold. This could be considered a material risk. But the policy does not require rejection solely due to high conflict. The decision_policy says 'high_conflict_review_triggered' is false because abs(composite) > 0.12. So the decision is technically correct. But as a reviewer, I should consider if the high conflict makes the decision unsafe. The decision is provisional and the review is to ensure no material safety or consistency failures. The high conflict is a consistency issue. The decision reasons do not adequately address the high conflict. The decision states 'high_conflict_review_triggered=False' but does not discuss the implications. The risks list includes many risks, but the high conflict is not explicitly mentioned. This could be a material omission. Also, the decision_calculation shows 'conflict': 0.9500000000000001, which is extremely high. The decision to buy with such high conflict may be imprudent. The policy does not explicitly forbid it, but the high conflict suggests that the signals are in strong disagreement. The composite is 0.358, which is above the buy threshold, but the high conflict reduces confidence. The confidence is 0.4725, which is above the minimum. However, the high conflict is a red flag. I think this warrants rejection because the high conflict is a material risk that is not adequately addressed in the decision reasons. The decision reasons list 'high_conflict_review_triggered=False' but do not explain why it is safe to proceed despite the high conflict. The risks list includes many risks but not the high conflict itself. Therefore, I reject the decision and require human review."
+        ],
+        "summary": "Rejected due to high conflict (0.95) not adequately addressed in decision reasons; composite score only slightly above buy threshold, and high conflict indicates significant disagreement among signals, posing material risk."
+      },
+      "council": {
+        "tactical_score": 0.44304347826086954,
+        "strategic_score": 0.13333333333333333,
+        "combined_score": 0.3346449275362319,
+        "veto_triggered": false,
+        "veto_roles": [],
+        "momentum_tech_sync": true,
+        "market_regime": "bull",
+        "opinions": [
+          {
+            "role": "technical",
+            "perspective": "price structure and multi-timeframe trend",
+            "stance": "bullish",
+            "score": 0.5,
+            "confidence": 0.7,
+            "weight": 1.3,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Multi-timeframe consensus is uptrend (daily neutral, weekly and monthly bullish).",
+              "Price is above all supplied moving averages (5, 20, 60, 120).",
+              "60-day momentum is strongly positive (20.07%) and cross-section rank is 1.0.",
+              "Strategy signal is bullish with high score (0.727) and confidence (0.819)."
+            ],
+            "evidence": [
+              "multi_timeframe consensus: uptrend (daily 0, weekly 1, monthly 1).",
+              "latest normalized close 100.0 above ma_5 (99.85), ma_20 (99.33), ma_60 (93.27), ma_120 (86.43).",
+              "momentum_60 value 0.2007, score 0.538, direction long.",
+              "cross_section_momentum_60_rank 1.0.",
+              "strategy signal score 0.727, confidence 0.819.",
+              "price_position_60 value 0.662, score 0.324, direction long."
+            ],
+            "risks": [
+              "Momentum acceleration negative (-0.0027) and volume asymmetry negative (-0.2098) suggest short-term weakening.",
+              "Return skewness negative (-1.33) indicates downside tail risk.",
+              "Recent price spike to 108.83 then drop to 90.58 shows high volatility."
+            ],
+            "missing_data": [
+              "Spread, depth, order size, market impact, and price-limit data not provided; execution risk unassessed.",
+              "No volume or liquidity data beyond volume asymmetry factor.",
+              "Fundamentals and news absent."
+            ]
+          },
+          {
+            "role": "momentum",
+            "perspective": "momentum quality and continuation",
+            "stance": "bullish",
+            "score": 0.3,
+            "confidence": 0.6,
+            "weight": 1.5,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Strong medium-term momentum (60-day return 20.07%) with high cross-sectional rank (1.0) supports continuation.",
+              "Price above all supplied moving averages (5, 20, 60, 120) indicates sustained uptrend.",
+              "Multi-timeframe consensus 'uptrend' and bull regime reinforce positive outlook."
+            ],
+            "evidence": [
+              "momentum_60 value 0.2006586, score 0.5385, direction long.",
+              "price_position_60 value 0.6620, score 0.3240, direction long.",
+              "ma_spread_5_20 value 0.0052, score 0.0624, direction long.",
+              "rsi_14 value 56.16, score 0.2053, direction long.",
+              "cross_section_momentum_60_rank 1.0, cross_section_momentum_120_rank 1.0.",
+              "latest close above ma_5 (0.15%), ma_20 (0.67%), ma_60 (7.21%), ma_120 (15.70%).",
+              "multi_timeframe verdict 'uptrend'."
+            ],
+            "risks": [
+              "Momentum acceleration negative (-0.0027, score -0.5919) suggests recent deceleration.",
+              "Volume asymmetry negative (-0.2098, score -0.2068) indicates higher volume on down days.",
+              "Return skewness negative (-1.33, score -0.5816) implies left-tail risk.",
+              "Recent price path shows a sharp spike to 108.83 then drop to 90.58, indicating high volatility and potential instability.",
+              "Annualized volatility 39.41% is high, increasing execution risk."
+            ],
+            "missing_data": [
+              "Spread, depth, order size, market impact, and price-limit data not supplied; execution risk unassessed.",
+              "Fundamentals and news absent; no fundamental support or catalyst."
+            ]
+          },
+          {
+            "role": "value_veto",
+            "perspective": "ETF structure, valuation extension and permanent-loss scenarios",
+            "stance": "neutral",
+            "score": 0.0,
+            "confidence": 0.42,
+            "weight": 0.6,
+            "mode": "strategic",
+            "veto": false,
+            "thesis": [
+              "No concrete permanent-loss mechanism is established by the supplied evidence, so no veto is warranted.",
+              "Look-through valuation and ETF structural risks cannot be assessed because holdings, concentration, leverage, tracking, closure, and premium/discount data are absent. This lowers confidence but is not evidence of permanent loss.",
+              "The price signal is extended over longer horizons but not materially extended versus short-term averages: the normalized close is 15.697875% above MA120 and 7.212521% above MA60, but only 0.669566% above MA20 and 0.148328% above MA5.",
+              "The supplied maximum_final_weight of 0.15 is materially below the advisory raw target_weight of 0.5 and is the relevant portfolio constraint. A 15% ceiling is reasonable given the unassessed ETF structure and valuation.",
+              "Because this is a historical_blind_replay with execution_evidence_required=false, blinded identity and normalized, non-executable prices are not execution failures."
+            ],
+            "evidence": [
+              "Fact: 60-trading-day adjusted return is 20.065862%, while the 20-trading-day return is 0.653354%, indicating strong medium-term appreciation followed by flatter recent performance.",
+              "Fact: latest_normalized_close_vs_moving_averages explicitly reports the close above MA5, MA20, MA60, and MA120 by 0.148328%, 0.669566%, 7.212521%, and 15.697875%, respectively.",
+              "Fact: annualized volatility over the supplied 119 daily returns is 32.794534%, and maximum drawdown over the 120-price window is -16.767473%.",
+              "Fact: momentum acceleration, volume asymmetry, and return skewness factors are negative; 60-day return skewness is -1.3298189266668707.",
+              "Inference: strong 60-day momentum combined with negative skew and a prior double-digit drawdown indicates meaningful mark-to-market risk, but does not by itself demonstrate permanent capital impairment.",
+              "Fact: maximum_final_weight is 0.15; the strategy target_weight is advisory at 0.5."
+            ],
+            "risks": [
+              "Unknown holdings concentration or thematic exposure could create substantial look-through concentration risk.",
+              "Unknown use of derivatives, leverage, or inverse exposure leaves path-dependent decay and loss amplification unassessed.",
+              "Tracking difference, index methodology, rebalancing effects, securities-lending exposure, and counterparty risk are unassessed.",
+              "Fund closure, liquidation costs, assets under management, issuer quality, and operational continuity are unassessed.",
+              "Premium or discount to NAV and creation/redemption functioning are unassessed.",
+              "No look-through earnings, cash-flow, balance-sheet, or valuation multiples are supplied, so valuation extension cannot be distinguished from justified appreciation.",
+              "Negative return skewness and the supplied -16.767473% maximum drawdown indicate downside-tail sensitivity, although neither establishes permanent loss.",
+              "Spread, market depth, order size, market impact, and price-limit data are absent; execution risk is unassessed rather than absent, though execution evidence is deliberately not required for this replay."
+            ],
+            "missing_data": [
+              "ETF identity, issuer, mandate, benchmark, and index methodology",
+              "Top holdings, sector and geographic concentration, and concentration metrics",
+              "Look-through valuation multiples and constituent fundamentals",
+              "Leverage, derivatives, inverse exposure, counterparty exposure, and collateral terms",
+              "NAV, intraday indicative value, historical premium/discount, and creation/redemption data",
+              "Tracking error, tracking difference, expense ratio, tax structure, and securities-lending policy",
+              "Assets under management, fund flows, trading volume, closure history, and liquidation provisions",
+              "Bid-ask spread, order-book depth, intended order size, market impact, and price-limit information"
+            ]
+          },
+          {
+            "role": "risk",
+            "perspective": "ETF market risk, drawdown and portfolio fit",
+            "stance": "bullish",
+            "score": 0.18,
+            "confidence": 0.72,
+            "weight": 1.0,
+            "mode": "strategic",
+            "veto": false,
+            "thesis": [
+              "A cautious positive vote is supported by the supplied bull regime, 20.065862% adjusted return over 60 trading days, and an uptrend verdict with weekly and monthly confirmation.",
+              "Risk is material: supplied annualized volatility is 32.794534%, maximum drawdown over the 120-price window is -16.767473%, and cross-sectional volatility rank is 1.0, indicating the highest volatility in the supplied comparison set.",
+              "The latest normalized close is explicitly above the supplied 5-, 20-, 60-, and 120-day moving averages, but only 0.148328% above the 5-day average and 0.669566% above the 20-day average, so near-term trend support is thin.",
+              "Negative momentum acceleration, negative volume asymmetry, and -1.329819 return skewness indicate reversal and downside-tail sensitivity despite the medium-term trend.",
+              "The advisory 50% strategy target is unsuitable for this risk profile. Assessment is limited to the supplied maximum final weight of 15%, which materially constrains portfolio-level loss exposure."
+            ],
+            "evidence": [
+              "Historical-blind-replay mode intentionally withholds identity and executable absolute prices; because execution evidence is not required, this is not treated as an execution failure.",
+              "Supplied adjusted returns: 0.653354% over 20 trading days and 20.065862% over 60 trading days.",
+              "Supplied risk statistics: 32.794534% annualized volatility from 119 daily-return observations and -16.767473% maximum drawdown across the last 120 prices.",
+              "Cross-sectional ranks are 0.833333 for 20-day momentum, 1.0 for 60-day momentum, 1.0 for 120-day momentum, and 1.0 for 20-day volatility.",
+              "Multi-timeframe evidence reports daily 0, weekly 1, monthly 1, consensus 2, and verdict 'uptrend'.",
+              "The composite factor score is only 0.014694, while momentum acceleration scores -0.591881, volume asymmetry scores -0.206796, and return skewness scores -0.581621.",
+              "The latest normalized close is 8.115% below the supplied 120-observation high of 108.831596, showing that the prior peak has not been recovered."
+            ],
+            "risks": [
+              "High volatility and a demonstrated double-digit drawdown create meaningful mark-to-market and timing risk even at the capped weight.",
+              "Negative return skewness indicates asymmetric downside-tail behavior; losses may arrive more abruptly than gains.",
+              "Momentum acceleration is negative and daily timeframe confirmation is absent, raising the risk that medium-term momentum is decelerating.",
+              "The identity and holdings are blinded, so issuer concentration, sector concentration, leverage, derivatives use, structural decay, tracking error, and closure risk cannot be assessed.",
+              "Portfolio fit is unresolved because no existing holdings, correlations, factor exposures, risk budget, or overlapping ETF constituents are supplied.",
+              "Spread, depth, order size, market impact, creation/redemption conditions, premiums or discounts, and price-limit behavior are not supplied. Execution risk is therefore unassessed rather than absent."
+            ],
+            "missing_data": [
+              "ETF identity, benchmark, holdings, sector and geographic exposures, concentration metrics, leverage or inverse structure, derivatives exposure, expense ratio, assets under management, and tracking history.",
+              "Portfolio holdings, correlations, marginal volatility contribution, overlap, factor exposures, and drawdown budget needed to establish diversification benefit.",
+              "Longer drawdown history, recovery duration, downside deviation, tail-loss measures, and performance across bear or stress regimes.",
+              "Live executable price, bid-ask spread, quoted depth, order size, expected market impact, premium or discount to NAV, and creation/redemption liquidity."
+            ]
+          },
+          {
+            "role": "macro",
+            "perspective": "market regime and liquidity",
+            "stance": "bullish",
+            "score": 0.6,
+            "confidence": 0.7,
+            "weight": 0.7,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Market regime is bull with high confidence, supporting long positions.",
+              "Multi-timeframe consensus is uptrend, and price is above all supplied moving averages (5, 20, 60, 120).",
+              "Strategy signal is strong (score 0.73, confidence 0.82) with multi-period momentum of 20.47%."
+            ],
+            "evidence": [
+              "Market regime: bull, regime_confidence: 1.0.",
+              "Multi-timeframe consensus: uptrend (daily 0, weekly 1, monthly 1, verdict 'uptrend').",
+              "Price vs MAs: above MA5 (0.15%), MA20 (0.67%), MA60 (7.21%), MA120 (15.70%).",
+              "Strategy signal: score 0.727, target_weight 0.5, confidence 0.819.",
+              "60-day momentum: 20.07% (long direction).",
+              "Cross-section momentum ranks: 20-day 0.833, 60-day 1.0, 120-day 1.0."
+            ],
+            "risks": [
+              "Recent price spike to 108.83 then drop to 90.58 suggests volatility; pullback risk exists.",
+              "Momentum acceleration negative (-0.0027) and volume asymmetry negative (-0.21) indicate short-term weakness.",
+              "Return skewness negative (-1.33) implies left-tail risk."
+            ],
+            "missing_data": [
+              "Spread, depth, order size, market impact, and price-limit data not provided; execution risk unassessed.",
+              "Fundamentals and news absent; no fundamental support or catalyst.",
+              "No liquidity metrics (e.g., volume, bid-ask spread) available."
+            ]
+          }
+        ],
+        "summary": "tactical=0.443; strategic=0.13333333333333333; veto=none"
+      },
+      "forecast": {
+        "symbol": "ETF_CANDIDATE_02",
+        "as_of": "2000-03-05",
+        "horizon_days": 20,
+        "up_probability": 0.4748221167528628,
+        "flat_probability": 0.13614236243029282,
+        "down_probability": 0.3890355208168445,
+        "expected_return_pct": 0.5,
+        "lower_return_pct": -8.0,
+        "upper_return_pct": 10.0,
+        "confidence": 0.65,
+        "drivers": [
+          "Strong medium-term momentum (60-day return 20.07%) and price above all moving averages",
+          "Bull market regime with high confidence",
+          "Multi-timeframe consensus uptrend (weekly and monthly bullish)",
+          "online statistical model blended at weight=0.500"
+        ],
+        "counter_evidence": [
+          "Negative momentum acceleration (-0.59 score) suggests slowing trend",
+          "Negative volume asymmetry (-0.21 score) indicates higher volume on down days",
+          "Negative return skewness (-0.58 score) implies downside tail risk",
+          "Recent sharp spike to 108.83 then drop to 90.58 shows high volatility"
+        ],
+        "invalidation_conditions": [
+          "Price closes below 90-day moving average (approx 93.27)",
+          "Sustained break below 95 level",
+          "Negative 5-day return with increasing volume"
+        ],
+        "evidence_ids": [
+          "price_history",
+          "analysts.council",
+          "bull",
+          "bear"
+        ],
+        "model": "deepseek-chat+online-v0",
+        "model_provider": "deepseek",
+        "statistical_model_id": "pit-etf-20-2026-03-12",
+        "statistical_model_version": 0,
+        "statistical_weight": 0.5,
+        "statistical_up_probability": 0.4996442335057255,
+        "statistical_flat_probability": 0.12228472486058561,
+        "statistical_down_probability": 0.378071041633689,
+        "raw_llm_up_probability": 0.45,
+        "raw_llm_flat_probability": 0.15,
+        "raw_llm_down_probability": 0.4
+      },
+      "realized_return_pct": -8.831596269884813,
+      "outcome": "down",
+      "strategy_weight": 0.15,
+      "full_system_weight": 0.0,
+      "strategy_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 1300,
+        "entry_price": 10.857426,
+        "exit_price": 9.967014,
+        "entry_date": "2026-03-13",
+        "exit_date": "2026-04-10",
+        "fees": 10.0,
+        "slippage": 13.535599999998382,
+        "net_pnl": -1167.5355999999992,
+        "net_return": -0.011580800811178463,
+        "capital_before": 100816.4823,
+        "capital_after": 99648.9467
+      },
+      "full_system_trade": {
+        "traded": false,
+        "weight": 0.0,
+        "quantity": 0,
+        "net_pnl": 0.0,
+        "net_return": 0.0,
+        "capital_before": 100000.0,
+        "capital_after": 100000.0
+      },
+      "benchmark_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 3200,
+        "entry_price": 4.674335999999999,
+        "exit_price": 4.639679000000001,
+        "entry_date": "2026-03-13",
+        "exit_date": "2026-04-10",
+        "fees": 10.0,
+        "slippage": 14.902399999996874,
+        "net_pnl": -120.9023999999954,
+        "net_return": -0.0012076631664987218,
+        "capital_before": 100112.6832,
+        "capital_after": 99991.78080000001
+      },
+      "gate_effect": "avoided_loss",
+      "gate_counterfactuals": {
+        "current_strict": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "production_action=review_required",
+            "human_review_required",
+            "reviewer_not_approved",
+            "zero_decision_target_weight"
+          ],
+          "reasons": [
+            "production action and target weight preserved exactly"
+          ],
+          "diagnostics": {
+            "composite_score": 0.35794639377566156,
+            "strategy_signal_score": 0.7273656902041798,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.4748221167528628,
+            "forecast_down_probability": 0.3890355208168445,
+            "forecast_edge": 0.08578659593601828,
+            "forecast_expected_return_pct": 0.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-03-12",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.12157319187203652
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "avoided_loss"
+        },
+        "etf_score_tiered_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "reviewer_not_approved"
+          ],
+          "reasons": [],
+          "diagnostics": {
+            "composite_score": 0.35794639377566156,
+            "strategy_signal_score": 0.7273656902041798,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.4748221167528628,
+            "forecast_down_probability": 0.3890355208168445,
+            "forecast_edge": 0.08578659593601828,
+            "forecast_expected_return_pct": 0.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-03-12",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.12157319187203652
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "avoided_loss"
+        },
+        "etf_forecast_confirmed_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "reviewer_not_approved"
+          ],
+          "reasons": [],
+          "diagnostics": {
+            "composite_score": 0.35794639377566156,
+            "strategy_signal_score": 0.7273656902041798,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.4748221167528628,
+            "forecast_down_probability": 0.3890355208168445,
+            "forecast_edge": 0.08578659593601828,
+            "forecast_expected_return_pct": 0.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-03-12",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.12157319187203652
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "avoided_loss"
+        },
+        "strategy_unless_bearish_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "reviewer_not_approved"
+          ],
+          "reasons": [],
+          "diagnostics": {
+            "composite_score": 0.35794639377566156,
+            "strategy_signal_score": 0.7273656902041798,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.4748221167528628,
+            "forecast_down_probability": 0.3890355208168445,
+            "forecast_edge": 0.08578659593601828,
+            "forecast_expected_return_pct": 0.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-03-12",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.12157319187203652
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "avoided_loss"
+        },
+        "calibrated_strategy_primary_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": true,
+          "tier": "strategy_primary",
+          "target_weight": 0.15,
+          "blockers": [],
+          "reasons": [
+            "validated statistical model does not justify a risk reduction"
+          ],
+          "diagnostics": {
+            "composite_score": 0.35794639377566156,
+            "strategy_signal_score": 0.7273656902041798,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.4748221167528628,
+            "forecast_down_probability": 0.3890355208168445,
+            "forecast_edge": 0.08578659593601828,
+            "forecast_expected_return_pct": 0.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-03-12",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.12157319187203652
+          },
+          "trade": {
+            "traded": true,
+            "weight": 0.15,
+            "quantity": 1300,
+            "entry_price": 10.857426,
+            "exit_price": 9.967014,
+            "entry_date": "2026-03-13",
+            "exit_date": "2026-04-10",
+            "fees": 10.0,
+            "slippage": 13.535599999998382,
+            "net_pnl": -1167.5355999999992,
+            "net_return": -0.011580800811178463,
+            "capital_before": 100816.4823,
+            "capital_after": 99648.9467
+          },
+          "effect": "participated_loss"
+        }
+      },
+      "point_in_time_model": {
+        "cutoff": "2026-03-12",
+        "asset_scope": "etf",
+        "horizons": {
+          "5": {
+            "status": "admitted",
+            "samples": 1563,
+            "validation_samples": 1563,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-07-19",
+              "inner_training_samples": 2850,
+              "calibration_samples": 548,
+              "baseline_brier": 0.21354560100660203,
+              "baseline_log_loss": 1.059464862827874,
+              "prior_blend": 0.2,
+              "brier_score": 0.19069001807153385,
+              "log_loss": 0.9651328136744246,
+              "normalized_score": 1.8039334999660408
+            },
+            "brier_score": 0.18983082754849345,
+            "log_loss": 0.9639204096971156,
+            "accuracy": 0.5220729366602687,
+            "baseline_brier": 0.21273773551860906,
+            "baseline_log_loss": 1.0580780233317495
+          },
+          "20": {
+            "status": "admitted",
+            "samples": 1553,
+            "validation_samples": 1553,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-07-04",
+              "inner_training_samples": 2810,
+              "calibration_samples": 546,
+              "baseline_brier": 0.21621202083756658,
+              "baseline_log_loss": 1.0724994695663959,
+              "prior_blend": 0.30000000000000004,
+              "brier_score": 0.19881804596464628,
+              "log_loss": 0.9909587373513397,
+              "normalized_score": 1.8435226128683377
+            },
+            "brier_score": 0.19047949126690028,
+            "log_loss": 0.9559139951226775,
+            "accuracy": 0.5144880875724404,
+            "baseline_brier": 0.22107436459881066,
+            "baseline_log_loss": 1.0935587106865783
+          }
+        },
+        "contract": "as_of < cutoff and evaluated_at < cutoff"
+      },
+      "llm_audit": {
+        "health": {
+          "provider": "router",
+          "model": "resilient-router",
+          "endpoints": [
+            {
+              "endpoint_id": "deepseek-1",
+              "provider": "deepseek",
+              "model": "deepseek-chat",
+              "failures": 0,
+              "status": "ready",
+              "cooldown_remaining_seconds": 0.0
+            },
+            {
+              "endpoint_id": "openai-1",
+              "provider": "openai",
+              "model": "gpt-5.6-terra",
+              "failures": 2,
+              "status": "cooldown",
+              "cooldown_remaining_seconds": 94.29700000002049
+            }
+          ],
+          "recent_calls": 13,
+          "recent_successes": 11,
+          "recent_total_tokens": 53177
+        },
+        "calls": [
+          {
+            "timestamp": "2026-07-14T05:02:33.110392+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "AnalystReport",
+            "routing_key": "quant",
+            "status": "ok",
+            "latency_ms": 3745.73,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3609,
+              "output_tokens": 326,
+              "total_tokens": 3935
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:36.710243+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "technical",
+            "status": "ok",
+            "latency_ms": 3600.79,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3923,
+              "output_tokens": 450,
+              "total_tokens": 4373
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:37.312887+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "momentum",
+            "status": "ok",
+            "latency_ms": 4200.02,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3924,
+              "output_tokens": 509,
+              "total_tokens": 4433
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:37.312887+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "macro",
+            "status": "ok",
+            "latency_ms": 4197.36,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3922,
+              "output_tokens": 455,
+              "total_tokens": 4377
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:02:56.843900+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "risk",
+            "status": "ok",
+            "latency_ms": 23729.04,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4086,
+              "output_tokens": 1183,
+              "total_tokens": 5269,
+              "reasoning_tokens": 353
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:03:13.205918+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "value_veto",
+            "status": "ok",
+            "latency_ms": 40092.69,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4083,
+              "output_tokens": 1313,
+              "total_tokens": 5396,
+              "cached_tokens": 3840,
+              "reasoning_tokens": 494
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:03:13.506091+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "status": "error",
+            "latency_ms": 298.73,
+            "error_type": "InternalServerError",
+            "usage": {}
+          },
+          {
+            "timestamp": "2026-07-14T05:03:13.570882+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "error",
+            "latency_ms": 362.53,
+            "error_type": "InternalServerError",
+            "usage": {}
+          },
+          {
+            "timestamp": "2026-07-14T05:03:15.845330+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "status": "ok",
+            "latency_ms": 2338.33,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3161,
+              "output_tokens": 230,
+              "total_tokens": 3391
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:03:18.254573+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "ok",
+            "latency_ms": 4682.72,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3161,
+              "output_tokens": 319,
+              "total_tokens": 3480
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:03:21.622799+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 3367.3,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4401,
+              "output_tokens": 388,
+              "total_tokens": 4789
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:03:24.270390+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 6011.38,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4401,
+              "output_tokens": 439,
+              "total_tokens": 4840
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:03:39.272016+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ReviewReport",
+            "routing_key": "review",
+            "status": "ok",
+            "latency_ms": 12453.23,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 7694,
+              "output_tokens": 1200,
+              "total_tokens": 8894
+            }
+          }
+        ],
+        "summary": {
+          "calls": 13,
+          "successes": 11,
+          "errors": 2,
+          "total_tokens": 53177,
+          "total_latency_ms": 109079.85
+        },
+        "secrets_exposed": false,
+        "prompts_persisted": false
+      },
+      "llm_validation": {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "macro": 1,
+          "risk": 1,
+          "value_veto": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 13,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "error_type": "InternalServerError"
+          },
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "error_type": "InternalServerError"
+          }
+        ],
+        "complete": true
+      }
+    },
+    {
+      "episode": 3,
+      "actual_as_of": "2026-04-14",
+      "blind_symbol": "ETF_CANDIDATE_03",
+      "blind_date": "2000-04-05",
+      "actual_symbol": "sz159915",
+      "entry_date": "2026-04-15",
+      "outcome_date": "2026-05-15",
+      "strategy_signal": {
+        "strategy": "etf_rotation",
+        "symbol": "sz159915",
+        "as_of": "2026-04-14",
+        "score": 0.41814651087951543,
+        "target_weight": 0.5,
+        "confidence": 0.6281774689641284,
+        "reasons": [
+          "multi-period momentum=10.45%",
+          "annualized volatility=27.30%"
+        ],
+        "evidence": [],
+        "valid_until": null
+      },
+      "market_regime": "high_volatility",
+      "decision": {
+        "symbol": "ETF_CANDIDATE_03",
+        "as_of": "2000-04-05",
+        "action": "watch",
+        "confidence": 0.4724999999999999,
+        "target_weight": 0.0,
+        "entry_price": null,
+        "stop_loss": null,
+        "target_1": null,
+        "target_2": null,
+        "reasons": [
+          "composite_score=0.282",
+          "strategy_signal_score=0.418",
+          "council_score=0.370",
+          "forecast_score=0.097",
+          "evidence_coverage=0.90",
+          "conflict=0.950",
+          "abs_composite=0.282",
+          "high_conflict_review_triggered=False",
+          "momentum_technical_sync=True",
+          "buy_requires_composite>0.35",
+          "review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12"
+        ],
+        "risks": [
+          "quant: High annualized volatility (27.3%) indicates elevated risk",
+          "quant: Price near top of 120-day range (100 vs low 81.8), potential overextension",
+          "quant: RSI at 68.3, approaching overbought territory",
+          "technical: High volatility regime (annualized vol 27.3%) increases execution risk",
+          "momentum: High volatility regime (annualized vol 27.3%) increases drawdown risk",
+          "value_veto: Holdings concentration, sector or issuer concentration, and constituent overlap are unassessed.",
+          "risk: High realized volatility increases position-level drawdown and portfolio risk-budget consumption.",
+          "macro: High volatility regime increases execution risk; spread, depth, order size not provided."
+        ],
+        "degraded_sources": [],
+        "requires_human_review": false
+      },
+      "decision_trace": {
+        "formula": "sum(component_weight * component_value)",
+        "weights": {
+          "strategy_signal_score": 0.3,
+          "council_score": 0.3,
+          "forecast_score": 0.15,
+          "analyst_score": 0.1,
+          "debate_score": 0.15
+        },
+        "components": {
+          "strategy_signal_score": 0.41814651087951543,
+          "council_score": 0.37004901960784314,
+          "forecast_score": 0.09724199899840208,
+          "analyst_score": 0.2333333333333333,
+          "debate_score": 0.04999999999999993
+        },
+        "composite_score": 0.2818782923293012,
+        "council_diagnostics": {
+          "momentum_technical_sync": true,
+          "veto_triggered": false,
+          "veto_roles": [],
+          "market_regime": "high_volatility"
+        },
+        "conflict": 0.9500000000000001,
+        "high_conflict_review_triggered": false,
+        "confidence_formula": "evidence_coverage * (1 - 0.5 * conflict)",
+        "confidence": 0.4724999999999999,
+        "evidence_coverage": {
+          "asset_type": "etf",
+          "weights": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.2,
+            "price_history": 0.15,
+            "market_regime": 0.2,
+            "news": 0.1
+          },
+          "availability": {
+            "strategy_signal": true,
+            "quant_factors": true,
+            "price_history": true,
+            "market_regime": true,
+            "news": false
+          },
+          "contributions": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.2,
+            "price_history": 0.15,
+            "market_regime": 0.2,
+            "news": 0.0
+          },
+          "raw": 0.9,
+          "data_quality": 1.0,
+          "adjusted": 0.9
+        }
+      },
+      "reviewer": {
+        "approved": true,
+        "status": "approved",
+        "issues": [],
+        "summary": "Decision is consistent with policy: composite score 0.282 is below buy threshold 0.35, so watch action with zero target weight is correct. High conflict (0.95) does not trigger review because abs(composite) > 0.12. All required evidence present, no contradictions, no degraded data, confidence 0.472 above minimum 0.25. Entry price correctly null as price is not executable."
+      },
+      "council": {
+        "tactical_score": 0.47058823529411764,
+        "strategic_score": 0.18333333333333332,
+        "combined_score": 0.37004901960784314,
+        "veto_triggered": false,
+        "veto_roles": [],
+        "momentum_tech_sync": true,
+        "market_regime": "high_volatility",
+        "opinions": [
+          {
+            "role": "technical",
+            "perspective": "price structure and multi-timeframe trend",
+            "stance": "bullish",
+            "score": 0.4,
+            "confidence": 0.7,
+            "weight": 1.3,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Strong multi-timeframe uptrend with daily, weekly, and monthly all bullish",
+              "Price at 100 is above all supplied moving averages (5,20,60,120) with positive distance",
+              "Momentum factors positive across 20, 60, and acceleration horizons",
+              "Volume asymmetry positive, indicating buying pressure",
+              "Cross-section momentum ranks at 1.0 for 20,60,120 days"
+            ],
+            "evidence": [
+              "multi_timeframe consensus: 3 (strong_uptrend) with daily=1, weekly=1, monthly=1",
+              "latest normalized close 100.0 above ma_5 (96.45), ma_20 (92.73), ma_60 (92.76), ma_120 (90.43)",
+              "momentum_20: 6.00%, momentum_60: 7.12%, momentum_acceleration: 0.18%",
+              "volume_asymmetry_20: 0.110 (positive)",
+              "cross_section_momentum_20_rank: 1.0, cross_section_momentum_60_rank: 1.0",
+              "price_position_60: 1.0 (at top of 60-day range)"
+            ],
+            "risks": [
+              "High volatility regime (annualized vol 27.3%) increases execution risk",
+              "Recent pullback from 94.34 to 88.48 before recovery to 100 may indicate instability",
+              "RSI_14 at 68.3, approaching overbought territory"
+            ],
+            "missing_data": [
+              "Spread, depth, order size, market impact data not supplied",
+              "No volume or liquidity data beyond volume asymmetry",
+              "No news or fundamental data to confirm trend sustainability"
+            ]
+          },
+          {
+            "role": "momentum",
+            "perspective": "momentum quality and continuation",
+            "stance": "bullish",
+            "score": 0.6,
+            "confidence": 0.7,
+            "weight": 1.5,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Momentum acceleration positive, indicating recent speed increase",
+              "Path quality positive, suggesting smooth uptrend",
+              "Volume asymmetry positive, confirming buying pressure",
+              "Price at 60-day high, strong uptrend confirmed by multi-timeframe consensus",
+              "Cross-section ranks at top, showing relative strength"
+            ],
+            "evidence": [
+              "momentum_acceleration=0.001767762 (positive, score 0.415)",
+              "path_quality_60=0.086416 (positive, score 0.086)",
+              "volume_asymmetry_20=0.110349 (positive, score 0.110)",
+              "price_position_60=1.0 (at high of 60-day range)",
+              "multi_timeframe verdict: strong_uptrend",
+              "cross_section_momentum_20_rank=1.0, cross_section_momentum_60_rank=1.0",
+              "ma_spread_5_20=0.04014 (positive, score 0.448)",
+              "rsi_14=68.3 (not overbought, score 0.610)"
+            ],
+            "risks": [
+              "High volatility regime (annualized vol 27.3%) increases drawdown risk",
+              "Pullback reversal not triggered, but strength only 0.25, indicating limited reversal evidence",
+              "Recent price path shows some noise in last 30 observations (e.g., drop to 88.48 before recovery)"
+            ],
+            "missing_data": [
+              "Spread, depth, order size, market impact data not supplied; execution risk unassessed",
+              "Fundamentals and news not provided; no fundamental or sentiment context"
+            ]
+          },
+          {
+            "role": "value_veto",
+            "perspective": "ETF structure, valuation extension and permanent-loss scenarios",
+            "stance": "neutral",
+            "score": 0.0,
+            "confidence": 0.34,
+            "weight": 0.6,
+            "mode": "strategic",
+            "veto": false,
+            "thesis": [
+              "No execution veto is warranted because the supplied evidence identifies no concrete ETF structural defect or permanent-loss mechanism.",
+              "The raw strategy target weight of 0.50 is advisory; the supplied maximum_final_weight of 0.15 is the relevant portfolio constraint and materially limits exposure.",
+              "Price is technically extended within the supplied normalized history, but no holdings-level valuation data are provided, so fundamental valuation extension cannot be assessed.",
+              "High volatility and a strong recent uptrend indicate meaningful mark-to-market and reversal risk, not by themselves permanent loss."
+            ],
+            "evidence": [
+              "The supplied maximum_final_weight is 0.15.",
+              "The latest normalized close is 100.0 and equals the supplied 120-observation range high of 100.0.",
+              "The deterministic comparison fields state that the latest normalized close is above MA5 by 3.679907%, above MA20 by 7.842095%, above MA60 by 7.804979%, and above MA120 by 10.576685%.",
+              "Supplied adjusted returns are 6.001792% over 20 trading days and 7.121303% over 60 trading days; multi-timeframe verdict is \"strong_uptrend.\"",
+              "Supplied annualized volatility is 27.057215%, maximum drawdown over the 120-price history is -11.999999%, and the stated regime is high volatility.",
+              "RSI14 is 68.304094 and price_position_60 is 1.0, supporting an inference of elevated short-term entry sensitivity, but not a conclusion about intrinsic valuation.",
+              "The normalized index and blinded ETF identity are deliberate features of historical_blind_replay; execution evidence is explicitly not required."
+            ],
+            "risks": [
+              "Holdings concentration, sector or issuer concentration, and constituent overlap are unassessed.",
+              "ETF leverage, derivatives exposure, path dependency, and rebalance mechanics are unassessed.",
+              "Tracking difference, tracking error, index methodology, securities-lending exposure, and counterparty risk are unassessed.",
+              "Fund size, closure or liquidation risk, creation-redemption resilience, and tax consequences are unassessed.",
+              "NAV, premium or discount, bid-ask spread, market depth, order size, market impact, and price-limit data are absent; live execution risk is therefore unassessed rather than absent.",
+              "The latest observation is at the supplied normalized range high and materially above each supplied moving average, creating reversal risk in a high-volatility regime.",
+              "No look-through valuation is supplied, so price momentum cannot establish either undervaluation or a valuation-driven permanent-loss scenario."
+            ],
+            "missing_data": [
+              "ETF identity, benchmark, prospectus, and index methodology",
+              "Current holdings and concentration metrics",
+              "Leverage, derivatives, swap, counterparty, and rebalance details",
+              "Look-through earnings, cash flow, book value, and valuation multiples",
+              "Assets under management, fund flows, closure policy, and liquidation history",
+              "NAV and historical premium-discount data",
+              "Tracking difference and tracking error",
+              "Bid-ask spread, depth, executable price, order size, and market-impact evidence",
+              "Expense ratio, securities-lending policy, domicile, tax structure, and distribution policy"
+            ]
+          },
+          {
+            "role": "risk",
+            "perspective": "ETF market risk, drawdown and portfolio fit",
+            "stance": "bullish",
+            "score": 0.24,
+            "confidence": 0.66,
+            "weight": 1.0,
+            "mode": "strategic",
+            "veto": false,
+            "thesis": [
+              "Fact: The supplied signal is directionally positive: 20-day return is 6.001792%, 60-day return is 7.121303%, and multi-timeframe consensus is 3 with a “strong_uptrend” verdict.",
+              "Fact: Risk is elevated. Annualized volatility over the supplied 119 daily returns is 27.057215%, maximum drawdown over the 120-price window is -11.999999%, and the identified regime is “high_volatility” with confidence 1.0.",
+              "Inference: Positive momentum supports a bullish vote, but the high-volatility regime, weak path quality and elevated price position warrant materially less exposure than the strategy’s advisory 50% target.",
+              "Portfolio limit: Use the supplied maximum_final_weight of 15% as the allocation ceiling; the raw 50% target should not govern final sizing.",
+              "Inference: Entry timing risk is elevated because the latest normalized close is at the supplied 120-observation high, RSI is 68.3041, and the close is 7.8421% above the 20-day moving average. This is not a veto, but it argues against aggressive sizing."
+            ],
+            "evidence": [
+              "Latest normalized close is explicitly above each supplied moving average: 5-day by 3.679907%, 20-day by 7.842095%, 60-day by 7.804979%, and 120-day by 10.576685%.",
+              "Cross-sectional momentum ranks are 1.0 for the supplied 20-, 60- and 120-day horizons, indicating leadership within the supplied comparison set.",
+              "Price position within the 60-day range is 1.0, while the supplied 120-observation range is 81.802817 to 100.0 and the latest normalized observation is 100.0.",
+              "Momentum acceleration is positive at 0.0017677624, and volume asymmetry is positive at 0.1103491143.",
+              "Path quality over 60 days is only 0.0864164, indicating that the positive net move occurred along a relatively inefficient or choppy path.",
+              "The strategy confidence is 0.6281775 and its score is 0.4181465; the quantitative composite score is 0.3566019."
+            ],
+            "risks": [
+              "High realized volatility increases position-level drawdown and portfolio risk-budget consumption.",
+              "The observed -12% maximum drawdown demonstrates meaningful loss potential even during the supplied positive trend; future drawdowns are not bounded by this historical figure.",
+              "The latest observation is at the top of the supplied range and materially above medium- and long-horizon averages, creating pullback and momentum-reversal risk.",
+              "Cross-sectional volatility rank is 0.8333333, indicating relatively high volatility within the supplied comparison set.",
+              "ETF holdings, sector exposure, geographic exposure, leverage and issuer structure are not supplied, so underlying concentration and permanent-loss channels cannot be assessed.",
+              "Portfolio holdings and correlations are absent, so diversification benefit, factor overlap and aggregate concentration are unassessed.",
+              "Spread, depth, order size, market impact, premium/discount and price-limit evidence are absent. Execution risk is therefore unassessed, not absent; under historical_blind_replay with execution_evidence_required=false, this is not a veto."
+            ],
+            "missing_data": [
+              "ETF identity, benchmark, holdings, concentration, sector and geographic exposures",
+              "Leverage, derivatives usage, counterparty exposure and structural risks",
+              "Portfolio-level positions, correlations, factor exposures and risk budget",
+              "Bid-ask spread, quoted depth, expected order size, market impact and trading limits",
+              "AUM, average trading volume, creation/redemption activity and premium/discount history",
+              "Tracking difference, tracking error, fees, distributions and tax characteristics",
+              "Longer drawdown history, tail-loss statistics, downside volatility and stress-period behavior"
+            ]
+          },
+          {
+            "role": "macro",
+            "perspective": "market regime and liquidity",
+            "stance": "bullish",
+            "score": 0.3,
+            "confidence": 0.6,
+            "weight": 0.7,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "High volatility regime supports momentum strategies if trend is intact.",
+              "Price is above all supplied moving averages (5, 20, 60, 120), indicating strong uptrend.",
+              "Multi-timeframe consensus is strong_uptrend, pullback not triggered."
+            ],
+            "evidence": [
+              "Market regime is high_volatility with regime_confidence 1.0.",
+              "Latest normalized close 100.0 is above ma_5 (96.45), ma_20 (92.73), ma_60 (92.76), ma_120 (90.43).",
+              "Multi-timeframe verdict: strong_uptrend (daily, weekly, monthly all 1).",
+              "Strategy signal score 0.418, confidence 0.628, target weight 0.5 (advisory).",
+              "Cross-section momentum ranks are 1.0 for 20, 60, 120 days."
+            ],
+            "risks": [
+              "High volatility regime increases execution risk; spread, depth, order size not provided.",
+              "Price is at 60-day high (price_position_60=1.0), potential for mean reversion.",
+              "Maximum final weight capped at 0.15 limits upside."
+            ],
+            "missing_data": [
+              "Spread, depth, order size, market impact data not supplied.",
+              "No news or fundamental data to assess catalyst risk.",
+              "Execution evidence not required (historical blind replay)."
+            ]
+          }
+        ],
+        "summary": "tactical=0.471; strategic=0.18333333333333332; veto=none"
+      },
+      "forecast": {
+        "symbol": "ETF_CANDIDATE_03",
+        "as_of": "2000-04-05",
+        "horizon_days": 20,
+        "up_probability": 0.48989032798990795,
+        "flat_probability": 0.17340409028866427,
+        "down_probability": 0.33670558172142784,
+        "expected_return_pct": 3.5,
+        "lower_return_pct": -8.0,
+        "upper_return_pct": 12.0,
+        "confidence": 0.65,
+        "drivers": [
+          "Multi-timeframe consensus strong_uptrend",
+          "Price above all major moving averages",
+          "Cross-section momentum ranks at 1.0 across all horizons",
+          "Positive factor composite and strategy signal scores",
+          "online statistical model blended at weight=0.500"
+        ],
+        "counter_evidence": [
+          "High annualized volatility (27.3%) increases risk of sharp reversals",
+          "Price near top of 120-day range, potential overextension",
+          "RSI at 68.3 approaching overbought territory",
+          "Recent price path shows noise and pullback from 94.34 to 88.48"
+        ],
+        "invalidation_conditions": [
+          "Price closes below MA20 (92.73) on high volume",
+          "Break below recent low of 88.48",
+          "RSI drops below 50",
+          "Cross-section momentum rank falls below 0.5"
+        ],
+        "evidence_ids": [
+          "price_history",
+          "analysts.council"
+        ],
+        "model": "deepseek-chat+online-v0",
+        "model_provider": "deepseek",
+        "statistical_model_id": "pit-etf-20-2026-04-14",
+        "statistical_model_version": 0,
+        "statistical_weight": 0.5,
+        "statistical_up_probability": 0.4297806559798159,
+        "statistical_flat_probability": 0.19680818057732852,
+        "statistical_down_probability": 0.37341116344285563,
+        "raw_llm_up_probability": 0.55,
+        "raw_llm_flat_probability": 0.15,
+        "raw_llm_down_probability": 0.3
+      },
+      "realized_return_pct": 11.830985915492963,
+      "outcome": "up",
+      "strategy_weight": 0.15,
+      "full_system_weight": 0.0,
+      "strategy_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 4100,
+        "entry_price": 3.5907945,
+        "exit_price": 3.9680150000000003,
+        "entry_date": "2026-04-15",
+        "exit_date": "2026-05-15",
+        "fees": 10.0,
+        "slippage": 15.495949999999281,
+        "net_pnl": 1536.6040500000017,
+        "net_return": 0.015420173528035914,
+        "capital_before": 99648.9467,
+        "capital_after": 101185.55075
+      },
+      "full_system_trade": {
+        "traded": false,
+        "weight": 0.0,
+        "quantity": 0,
+        "net_pnl": 0.0,
+        "net_return": 0.0,
+        "capital_before": 100000.0,
+        "capital_after": 100000.0
+      },
+      "benchmark_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 3100,
+        "entry_price": 4.734366,
+        "exit_price": 4.875561,
+        "entry_date": "2026-04-15",
+        "exit_date": "2026-05-15",
+        "fees": 10.0,
+        "slippage": 14.895499999997774,
+        "net_pnl": 427.70450000000164,
+        "net_return": 0.004277396567778715,
+        "capital_before": 99991.78080000001,
+        "capital_after": 100419.48530000001
+      },
+      "gate_effect": "missed_gain",
+      "gate_counterfactuals": {
+        "current_strict": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "production_action=watch",
+            "zero_decision_target_weight"
+          ],
+          "reasons": [
+            "production action and target weight preserved exactly"
+          ],
+          "diagnostics": {
+            "composite_score": 0.2818782923293012,
+            "strategy_signal_score": 0.41814651087951543,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.48989032798990795,
+            "forecast_down_probability": 0.33670558172142784,
+            "forecast_edge": 0.1531847462684801,
+            "forecast_expected_return_pct": 3.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-04-14",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.056369492536960275
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "missed_gain"
+        },
+        "etf_score_tiered_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "score_tier_conditions_not_met"
+          ],
+          "reasons": [],
+          "diagnostics": {
+            "composite_score": 0.2818782923293012,
+            "strategy_signal_score": 0.41814651087951543,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.48989032798990795,
+            "forecast_down_probability": 0.33670558172142784,
+            "forecast_edge": 0.1531847462684801,
+            "forecast_expected_return_pct": 3.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-04-14",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.056369492536960275
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "missed_gain"
+        },
+        "etf_forecast_confirmed_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "up_probability_below_0.50",
+            "forecast_edge_below_0.20"
+          ],
+          "reasons": [],
+          "diagnostics": {
+            "composite_score": 0.2818782923293012,
+            "strategy_signal_score": 0.41814651087951543,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.48989032798990795,
+            "forecast_down_probability": 0.33670558172142784,
+            "forecast_edge": 0.1531847462684801,
+            "forecast_expected_return_pct": 3.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-04-14",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.056369492536960275
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "missed_gain"
+        },
+        "strategy_unless_bearish_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": true,
+          "tier": "full_strategy",
+          "target_weight": 0.15,
+          "blockers": [],
+          "reasons": [
+            "no reviewed materially bearish forecast"
+          ],
+          "diagnostics": {
+            "composite_score": 0.2818782923293012,
+            "strategy_signal_score": 0.41814651087951543,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.48989032798990795,
+            "forecast_down_probability": 0.33670558172142784,
+            "forecast_edge": 0.1531847462684801,
+            "forecast_expected_return_pct": 3.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-04-14",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.056369492536960275
+          },
+          "trade": {
+            "traded": true,
+            "weight": 0.15,
+            "quantity": 4100,
+            "entry_price": 3.5907945,
+            "exit_price": 3.9680150000000003,
+            "entry_date": "2026-04-15",
+            "exit_date": "2026-05-15",
+            "fees": 10.0,
+            "slippage": 15.495949999999281,
+            "net_pnl": 1536.6040500000017,
+            "net_return": 0.015366040500000018,
+            "capital_before": 100000.0,
+            "capital_after": 101536.60405
+          },
+          "effect": "reduced_gain"
+        },
+        "calibrated_strategy_primary_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": true,
+          "tier": "strategy_primary",
+          "target_weight": 0.15,
+          "blockers": [],
+          "reasons": [
+            "validated statistical model does not justify a risk reduction"
+          ],
+          "diagnostics": {
+            "composite_score": 0.2818782923293012,
+            "strategy_signal_score": 0.41814651087951543,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.48989032798990795,
+            "forecast_down_probability": 0.33670558172142784,
+            "forecast_edge": 0.1531847462684801,
+            "forecast_expected_return_pct": 3.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-04-14",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.056369492536960275
+          },
+          "trade": {
+            "traded": true,
+            "weight": 0.15,
+            "quantity": 4100,
+            "entry_price": 3.5907945,
+            "exit_price": 3.9680150000000003,
+            "entry_date": "2026-04-15",
+            "exit_date": "2026-05-15",
+            "fees": 10.0,
+            "slippage": 15.495949999999281,
+            "net_pnl": 1536.6040500000017,
+            "net_return": 0.015420173528035914,
+            "capital_before": 99648.9467,
+            "capital_after": 101185.55075
+          },
+          "effect": "participated_gain"
+        }
+      },
+      "point_in_time_model": {
+        "cutoff": "2026-04-14",
+        "asset_scope": "etf",
+        "horizons": {
+          "20": {
+            "status": "admitted",
+            "samples": 1563,
+            "validation_samples": 1563,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-07-26",
+              "inner_training_samples": 2836,
+              "calibration_samples": 548,
+              "baseline_brier": 0.21626285850004306,
+              "baseline_log_loss": 1.0726978831758216,
+              "prior_blend": 0.30000000000000004,
+              "brier_score": 0.20031992116033692,
+              "log_loss": 0.9977879256205572,
+              "normalized_score": 1.856446588174228
+            },
+            "brier_score": 0.19032966418121416,
+            "log_loss": 0.955747137770037,
+            "accuracy": 0.5150351887396033,
+            "baseline_brier": 0.22139317352595658,
+            "baseline_log_loss": 1.0949476706408354
+          },
+          "5": {
+            "status": "admitted",
+            "samples": 1586,
+            "validation_samples": 1586,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-08-09",
+              "inner_training_samples": 2871,
+              "calibration_samples": 555,
+              "baseline_brier": 0.21297430117824032,
+              "baseline_log_loss": 1.0568810209028163,
+              "prior_blend": 0.30000000000000004,
+              "brier_score": 0.19087084877923868,
+              "log_loss": 0.9652400007340856,
+              "normalized_score": 1.809506473384154
+            },
+            "brier_score": 0.19038996912311995,
+            "log_loss": 0.9669736192288207,
+            "accuracy": 0.5208070617906684,
+            "baseline_brier": 0.21283760840590865,
+            "baseline_log_loss": 1.058694065417368
+          }
+        },
+        "contract": "as_of < cutoff and evaluated_at < cutoff"
+      },
+      "llm_audit": {
+        "health": {
+          "provider": "router",
+          "model": "resilient-router",
+          "endpoints": [
+            {
+              "endpoint_id": "deepseek-1",
+              "provider": "deepseek",
+              "model": "deepseek-chat",
+              "failures": 0,
+              "status": "ready",
+              "cooldown_remaining_seconds": 0.0
+            },
+            {
+              "endpoint_id": "openai-1",
+              "provider": "openai",
+              "model": "gpt-5.6-terra",
+              "failures": 2,
+              "status": "cooldown",
+              "cooldown_remaining_seconds": 105.68799999999464
+            }
+          ],
+          "recent_calls": 13,
+          "recent_successes": 11,
+          "recent_total_tokens": 52105
+        },
+        "calls": [
+          {
+            "timestamp": "2026-07-14T05:03:43.487027+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "AnalystReport",
+            "routing_key": "quant",
+            "status": "ok",
+            "latency_ms": 4156.15,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3598,
+              "output_tokens": 370,
+              "total_tokens": 3968
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:03:47.667495+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "macro",
+            "status": "ok",
+            "latency_ms": 4170.35,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3911,
+              "output_tokens": 391,
+              "total_tokens": 4302
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:03:47.922617+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "technical",
+            "status": "ok",
+            "latency_ms": 4431.38,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3912,
+              "output_tokens": 469,
+              "total_tokens": 4381
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:03:48.475141+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "momentum",
+            "status": "ok",
+            "latency_ms": 4987.36,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3913,
+              "output_tokens": 448,
+              "total_tokens": 4361
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:05.602711+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "risk",
+            "status": "ok",
+            "latency_ms": 22111.98,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4072,
+              "output_tokens": 1145,
+              "total_tokens": 5217,
+              "reasoning_tokens": 298
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:10.494461+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "value_veto",
+            "status": "ok",
+            "latency_ms": 26999.82,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4069,
+              "output_tokens": 1385,
+              "total_tokens": 5454,
+              "reasoning_tokens": 696
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:10.746801+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "status": "error",
+            "latency_ms": 257.77,
+            "error_type": "InternalServerError",
+            "usage": {}
+          },
+          {
+            "timestamp": "2026-07-14T05:04:10.789161+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "error",
+            "latency_ms": 290.22,
+            "error_type": "InternalServerError",
+            "usage": {}
+          },
+          {
+            "timestamp": "2026-07-14T05:04:14.789732+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "status": "ok",
+            "latency_ms": 4036.75,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3095,
+              "output_tokens": 327,
+              "total_tokens": 3422
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:15.189912+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "ok",
+            "latency_ms": 4404.33,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3095,
+              "output_tokens": 325,
+              "total_tokens": 3420
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:18.232476+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 3042.33,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4391,
+              "output_tokens": 440,
+              "total_tokens": 4831
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:20.930311+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 5738.65,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4391,
+              "output_tokens": 497,
+              "total_tokens": 4888
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:25.099737+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ReviewReport",
+            "routing_key": "review",
+            "status": "ok",
+            "latency_ms": 1536.25,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 7748,
+              "output_tokens": 113,
+              "total_tokens": 7861
+            }
+          }
+        ],
+        "summary": {
+          "calls": 13,
+          "successes": 11,
+          "errors": 2,
+          "total_tokens": 52105,
+          "total_latency_ms": 86163.34
+        },
+        "secrets_exposed": false,
+        "prompts_persisted": false
+      },
+      "llm_validation": {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "macro": 1,
+          "technical": 1,
+          "momentum": 1,
+          "risk": 1,
+          "value_veto": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 13,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "error_type": "InternalServerError"
+          },
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "error_type": "InternalServerError"
+          }
+        ],
+        "complete": true
+      }
+    },
+    {
+      "episode": 4,
+      "actual_as_of": "2026-05-19",
+      "blind_symbol": "ETF_CANDIDATE_04",
+      "blind_date": "2000-05-06",
+      "actual_symbol": "sz159915",
+      "entry_date": "2026-05-20",
+      "outcome_date": "2026-06-16",
+      "strategy_signal": {
+        "strategy": "etf_rotation",
+        "symbol": "sz159915",
+        "as_of": "2026-05-19",
+        "score": 0.7493635426897057,
+        "target_weight": 0.5,
+        "confidence": 0.8386007597810051,
+        "reasons": [
+          "multi-period momentum=17.83%",
+          "annualized volatility=29.15%"
+        ],
+        "evidence": [],
+        "valid_until": null
+      },
+      "market_regime": "bull",
+      "decision": {
+        "symbol": "ETF_CANDIDATE_04",
+        "as_of": "2000-05-06",
+        "action": "buy",
+        "confidence": 0.4724999999999999,
+        "target_weight": 0.107403546090589,
+        "entry_price": null,
+        "stop_loss": null,
+        "target_1": null,
+        "target_2": null,
+        "reasons": [
+          "composite_score=0.430",
+          "strategy_signal_score=0.749",
+          "council_score=0.551",
+          "forecast_score=0.036",
+          "evidence_coverage=0.90",
+          "conflict=0.950",
+          "abs_composite=0.430",
+          "high_conflict_review_triggered=False",
+          "momentum_technical_sync=True",
+          "buy_requires_composite>0.35",
+          "review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12"
+        ],
+        "risks": [
+          "quant: Price is below 5-day moving average (100 vs 101.09), indicating short-term weakness",
+          "quant: Pullback reversal not triggered but strength is low (0.25)",
+          "quant: No fundamental data available to support valuation",
+          "technical: Price is below 5-day MA (by 1.08%), indicating short-term weakness.",
+          "momentum: Price is below ma_5 (distance -1.08%), indicating short-term weakness.",
+          "value_veto: Price below 5-day moving average (-1.08%) may indicate short-term weakness",
+          "risk: Volatility is material: the supplied annualized estimates of 26.270527% and 29.15% imply meaningful mark-to-market variability and support the 15% cap.",
+          "macro: Price below 5-day MA (100.0 vs 101.09) suggests short-term pullback."
+        ],
+        "degraded_sources": [],
+        "requires_human_review": false
+      },
+      "decision_trace": {
+        "formula": "sum(component_weight * component_value)",
+        "weights": {
+          "strategy_signal_score": 0.3,
+          "council_score": 0.3,
+          "forecast_score": 0.15,
+          "analyst_score": 0.1,
+          "debate_score": 0.15
+        },
+        "components": {
+          "strategy_signal_score": 0.7493635426897057,
+          "council_score": 0.5508793103448276,
+          "forecast_score": 0.03583107856886229,
+          "analyst_score": 0.26666666666666666,
+          "debate_score": 0.04999999999999993
+        },
+        "composite_score": 0.429614184362356,
+        "council_diagnostics": {
+          "momentum_technical_sync": true,
+          "veto_triggered": false,
+          "veto_roles": [],
+          "market_regime": "bull"
+        },
+        "conflict": 0.9500000000000001,
+        "high_conflict_review_triggered": false,
+        "confidence_formula": "evidence_coverage * (1 - 0.5 * conflict)",
+        "confidence": 0.4724999999999999,
+        "evidence_coverage": {
+          "asset_type": "etf",
+          "weights": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.2,
+            "price_history": 0.15,
+            "market_regime": 0.2,
+            "news": 0.1
+          },
+          "availability": {
+            "strategy_signal": true,
+            "quant_factors": true,
+            "price_history": true,
+            "market_regime": true,
+            "news": false
+          },
+          "contributions": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.2,
+            "price_history": 0.15,
+            "market_regime": 0.2,
+            "news": 0.0
+          },
+          "raw": 0.9,
+          "data_quality": 1.0,
+          "adjusted": 0.9
+        }
+      },
+      "reviewer": {
+        "approved": true,
+        "status": "approved",
+        "issues": [],
+        "summary": "All required evidence present; composite score 0.430 exceeds buy threshold 0.35; confidence 0.472 above minimum 0.25; high conflict (0.95) does not trigger review because abs(composite) > 0.12; no vetoes; target weight 0.107 within maximum 0.15; entry_price correctly null as price_is_executable is false."
+      },
+      "council": {
+        "tactical_score": 0.6,
+        "strategic_score": 0.45965517241379317,
+        "combined_score": 0.5508793103448276,
+        "veto_triggered": false,
+        "veto_roles": [],
+        "momentum_tech_sync": true,
+        "market_regime": "bull",
+        "opinions": [
+          {
+            "role": "technical",
+            "perspective": "price structure and multi-timeframe trend",
+            "stance": "bullish",
+            "score": 0.6,
+            "confidence": 0.7,
+            "weight": 1.3,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Multi-timeframe consensus is strong uptrend (daily, weekly, monthly all 1).",
+              "Price is above 20, 60, and 120-day moving averages, confirming medium- and long-term uptrend.",
+              "Momentum factors (20-day, 60-day) are positive and cross-section ranks are 1.0, indicating top relative strength.",
+              "Price position within 60-day range is high (0.86), showing bullish momentum.",
+              "Strategy signal score is high (0.75) with strong confidence (0.84)."
+            ],
+            "evidence": [
+              "multi_timeframe consensus: 3, verdict: strong_uptrend",
+              "latest normalized close vs MA: above MA_20 (3.25%), MA_60 (13.17%), MA_120 (17.78%)",
+              "momentum_20: 8.22%, momentum_60: 18.45%",
+              "price_position_60: 0.861",
+              "strategy score: 0.749, confidence: 0.839"
+            ],
+            "risks": [
+              "Price is below 5-day MA (by 1.08%), indicating short-term weakness.",
+              "Annualized volatility is high (26.27% from price history, 29.15% from strategy), increasing execution risk.",
+              "No volume or depth data provided; execution risk unassessed."
+            ],
+            "missing_data": [
+              "Spread, depth, order size, market impact data not supplied.",
+              "No volume or liquidity metrics beyond volume_asymmetry factor.",
+              "No news or fundamental data."
+            ]
+          },
+          {
+            "role": "momentum",
+            "perspective": "momentum quality and continuation",
+            "stance": "bullish",
+            "score": 0.6,
+            "confidence": 0.7,
+            "weight": 1.5,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Multi-period momentum is strong and accelerating, with positive path quality and volume asymmetry.",
+              "Price is above key moving averages (20, 60, 120) and near the top of the 60-day range, indicating trend continuation.",
+              "Pullback-reversal conditions are not triggered, but uptrend is confirmed and RSI is not overbought."
+            ],
+            "evidence": [
+              "multi-period momentum=17.83% (strategy signal)",
+              "momentum_60 value=0.1845, score=0.503 (quant factor)",
+              "momentum_acceleration value=0.00113, positive (quant factor)",
+              "path_quality_60 value=0.208, score=0.208 (quant factor)",
+              "volume_asymmetry_20 value=0.134, score=0.133 (quant factor)",
+              "price_position_60 value=0.861, score=0.722 (quant factor)",
+              "ma_spread_5_20 value=0.0438, score=0.482 (quant factor)",
+              "latest close above ma_20, ma_60, ma_120 (price history)",
+              "cross_section_momentum_20_rank=1.0, cross_section_momentum_60_rank=1.0 (cross section)"
+            ],
+            "risks": [
+              "Price is below ma_5 (distance -1.08%), indicating short-term weakness.",
+              "Pullback-reversal not triggered, but consecutive pullback false and volume contraction false, so no reversal signal.",
+              "Maximum drawdown last 120 prices is -6.82%, moderate risk."
+            ],
+            "missing_data": [
+              "Spread, depth, order size, market impact, price-limit data not supplied; execution risk unassessed.",
+              "Fundamentals and news not supplied; no fundamental or sentiment context.",
+              "Actual dates and absolute prices blinded; identity hidden per historical_blind_replay mode."
+            ]
+          },
+          {
+            "role": "value_veto",
+            "perspective": "ETF structure, valuation extension and permanent-loss scenarios",
+            "stance": "bullish",
+            "score": 0.6,
+            "confidence": 0.7,
+            "weight": 0.6,
+            "mode": "strategic",
+            "veto": false,
+            "thesis": [
+              "Strong multi-timeframe uptrend with bullish momentum and price above key moving averages",
+              "Positive momentum acceleration and favorable path quality support continued trend",
+              "Maximum final weight of 15% limits concentration risk"
+            ],
+            "evidence": [
+              "Multi-timeframe consensus: strong_uptrend (daily, weekly, monthly all bullish)",
+              "Price above 20, 60, and 120-day moving averages (distance: +3.25%, +13.17%, +17.78%)",
+              "20-day momentum +8.22%, 60-day momentum +18.45%",
+              "Cross-section momentum ranks at 1.0 for 20, 60, 120-day horizons",
+              "Maximum final weight capped at 0.15"
+            ],
+            "risks": [
+              "Price below 5-day moving average (-1.08%) may indicate short-term weakness",
+              "No fundamental data provided; look-through valuation not possible",
+              "Execution risk unassessed due to missing spread, depth, and order size data"
+            ],
+            "missing_data": [
+              "Holdings concentration data not supplied",
+              "Leverage, tracking error, closure risk, premium/discount not provided",
+              "Fundamental metrics (P/E, P/B, etc.) absent",
+              "Spread, depth, order size, market impact not available"
+            ]
+          },
+          {
+            "role": "risk",
+            "perspective": "ETF market risk, drawdown and portfolio fit",
+            "stance": "bullish",
+            "score": 0.38,
+            "confidence": 0.74,
+            "weight": 1.0,
+            "mode": "strategic",
+            "veto": false,
+            "thesis": [
+              "Fact: The supplied maximum final weight is 15%; the strategy's 50% raw target is advisory and exceeds that hard cap.",
+              "Fact: Momentum is positive over both supplied horizons, with adjusted returns of 8.222958% over 20 trading days and 18.453639% over 60 trading days.",
+              "Fact: The latest normalized close is below the 5-day moving average by 1.0795%, but above the 20-, 60-, and 120-day moving averages by 3.254001%, 13.170525%, and 17.783379%, respectively.",
+              "Inference: The evidence supports a positive strategic vote in the supplied bull regime, but the volatility profile and limited drawdown history justify strict sizing at no more than 15%.",
+              "Inference: This is better suited as a capped momentum allocation than as a concentrated portfolio position."
+            ],
+            "evidence": [
+              "The supplied multi-timeframe signal has daily, weekly, and monthly consensus of 3 with verdict \"strong_uptrend.\"",
+              "Annualized volatility over the last 120-return window is 26.270527%; the strategy signal separately reports 29.15%, with methodology or window differences unspecified.",
+              "Maximum drawdown over the supplied 120-price history is -6.822901%; this is a limited historical window rather than a full-cycle stress estimate.",
+              "The quant composite score is 0.3832567277587534, while the rotation strategy score is 0.7493635426897057 with confidence 0.8386007597810051.",
+              "RSI is 66.23036649214659, and the pullback-reversal setup is not triggered.",
+              "Cross-sectional momentum ranks for 20, 60, and 120 days are each supplied as 1.0; cross-sectional volatility rank is also 1.0.",
+              "The decision is a historical blind replay with execution evidence explicitly not required, so blinded identity and normalized prices are not treated as execution failures."
+            ],
+            "risks": [
+              "Volatility is material: the supplied annualized estimates of 26.270527% and 29.15% imply meaningful mark-to-market variability and support the 15% cap.",
+              "The observed -6.822901% drawdown covers only 120 normalized prices and may materially understate full-cycle, crash, or prolonged bear-market drawdown.",
+              "Short-term momentum has softened because the latest close is below the 5-day moving average, despite remaining above the longer supplied averages.",
+              "The favorable assessment is regime-dependent: the supplied regime is bull with confidence 1.0, but no bear, crisis, or sideways-regime performance is provided.",
+              "ETF holdings, sector exposures, issuer concentration, geographic concentration, leverage, derivatives use, and index methodology are unavailable, so structural concentration and permanent-loss channels cannot be assessed.",
+              "Portfolio fit is unassessed because existing holdings, factor exposures, correlations, beta, and marginal risk contribution are not supplied.",
+              "Spread, depth, order size, market impact, creation-redemption conditions, and price-limit data are absent; execution risk is therefore unassessed, not absent. This does not justify a veto in the specified blind-replay mode.",
+              "The current normalized level is not executable and cannot support a live-order implementation decision."
+            ],
+            "missing_data": [
+              "ETF identity, benchmark, holdings, sector and geographic exposures, concentration metrics, leverage, derivatives, and index construction rules",
+              "Full-history volatility, maximum drawdown, recovery duration, tail loss, downside deviation, and bear-regime behavior",
+              "Portfolio holdings, correlations, beta, factor overlap, marginal contribution to risk, and diversification benefit",
+              "Bid-ask spread, trading volume, market depth, intended order size, market impact, premiums or discounts to NAV, and creation-redemption liquidity",
+              "Tracking error, tracking difference, expense ratio, assets under management, securities-lending policy, and counterparty exposure",
+              "Explanation for the difference between the supplied 26.270527% and 29.15% annualized-volatility estimates"
+            ]
+          },
+          {
+            "role": "macro",
+            "perspective": "market regime and liquidity",
+            "stance": "bullish",
+            "score": 0.6,
+            "confidence": 0.7,
+            "weight": 0.7,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Market regime is bull with high confidence, supporting long positions.",
+              "Multi-period momentum and quant factors show strong uptrend.",
+              "Price is above 20, 60, and 120-day moving averages, confirming trend."
+            ],
+            "evidence": [
+              "market_regime: bull, regime_confidence: 1.0",
+              "multi_timeframe verdict: strong_uptrend",
+              "momentum_60: 18.45% over 60 days",
+              "price_position_60: 0.86 (near top of 60-day range)",
+              "cross_section momentum ranks: all 1.0"
+            ],
+            "risks": [
+              "Price below 5-day MA (100.0 vs 101.09) suggests short-term pullback.",
+              "No liquidity data (spread, depth, order size) provided; execution risk unassessed.",
+              "Maximum final weight capped at 0.15 limits exposure."
+            ],
+            "missing_data": [
+              "Bid-ask spread, market depth, order size, market impact, price limits.",
+              "Fundamentals and news are empty."
+            ]
+          }
+        ],
+        "summary": "tactical=0.600; strategic=0.45965517241379317; veto=none"
+      },
+      "forecast": {
+        "symbol": "ETF_CANDIDATE_04",
+        "as_of": "2000-05-06",
+        "horizon_days": 20,
+        "up_probability": 0.5007903362418205,
+        "flat_probability": 0.14249762264369853,
+        "down_probability": 0.35671204111448096,
+        "expected_return_pct": 2.5,
+        "lower_return_pct": -5.0,
+        "upper_return_pct": 10.0,
+        "confidence": 0.65,
+        "drivers": [
+          "Multi-period momentum strong (20d return 8.22%, 60d return 18.45%)",
+          "Price above 20, 60, 120-day moving averages",
+          "Market regime bull with high confidence",
+          "Cross-section momentum ranks at 1.0",
+          "online statistical model blended at weight=0.500"
+        ],
+        "counter_evidence": [
+          "Price below 5-day moving average (-1.08%) indicating short-term weakness",
+          "Price near top of 120-day range (high 103.21, current 100) suggesting resistance",
+          "High annualized volatility (26.27%) increases risk of sharp moves"
+        ],
+        "invalidation_conditions": [
+          "Price closes below 20-day moving average (96.85)",
+          "20-day return turns negative",
+          "Market regime shifts to bear"
+        ],
+        "evidence_ids": [],
+        "model": "deepseek-chat+online-v0",
+        "model_provider": "deepseek",
+        "statistical_model_id": "pit-etf-20-2026-05-19",
+        "statistical_model_version": 0,
+        "statistical_weight": 0.5,
+        "statistical_up_probability": 0.4515806724836409,
+        "statistical_flat_probability": 0.1349952452873971,
+        "statistical_down_probability": 0.413424082228962,
+        "raw_llm_up_probability": 0.55,
+        "raw_llm_flat_probability": 0.15,
+        "raw_llm_down_probability": 0.3
+      },
+      "realized_return_pct": 4.818969913309523,
+      "outcome": "up",
+      "strategy_weight": 0.15,
+      "full_system_weight": 0.107403546090589,
+      "strategy_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 3800,
+        "entry_price": 3.8969475,
+        "exit_price": 4.1089445,
+        "entry_date": "2026-05-20",
+        "exit_date": "2026-06-16",
+        "fees": 10.0,
+        "slippage": 15.21139999999992,
+        "net_pnl": 795.5885999999991,
+        "net_return": 0.007862670056178937,
+        "capital_before": 101185.55075,
+        "capital_after": 101981.13935
+      },
+      "full_system_trade": {
+        "traded": true,
+        "weight": 0.107403546090589,
+        "quantity": 2700,
+        "entry_price": 3.8969475,
+        "exit_price": 4.1089445,
+        "entry_date": "2026-05-20",
+        "exit_date": "2026-06-16",
+        "fees": 10.0,
+        "slippage": 10.808099999999943,
+        "net_pnl": 562.3918999999987,
+        "net_return": 0.005623918999999987,
+        "capital_before": 100000.0,
+        "capital_after": 100562.3919
+      },
+      "benchmark_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 3100,
+        "entry_price": 4.8474224999999995,
+        "exit_price": 4.907545000000001,
+        "entry_date": "2026-05-20",
+        "exit_date": "2026-06-16",
+        "fees": 10.0,
+        "slippage": 15.120249999997526,
+        "net_pnl": 176.3797500000037,
+        "net_return": 0.0017564295362904401,
+        "capital_before": 100419.48530000001,
+        "capital_after": 100595.86505000002
+      },
+      "gate_effect": "participated",
+      "gate_counterfactuals": {
+        "current_strict": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": true,
+          "tier": "approved_buy",
+          "target_weight": 0.107403546090589,
+          "blockers": [],
+          "reasons": [
+            "production action and target weight preserved exactly"
+          ],
+          "diagnostics": {
+            "composite_score": 0.429614184362356,
+            "strategy_signal_score": 0.7493635426897057,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.5007903362418205,
+            "forecast_down_probability": 0.35671204111448096,
+            "forecast_edge": 0.1440782951273395,
+            "forecast_expected_return_pct": 2.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-05-19",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.038156590254678935
+          },
+          "trade": {
+            "traded": true,
+            "weight": 0.107403546090589,
+            "quantity": 2700,
+            "entry_price": 3.8969475,
+            "exit_price": 4.1089445,
+            "entry_date": "2026-05-20",
+            "exit_date": "2026-06-16",
+            "fees": 10.0,
+            "slippage": 10.808099999999943,
+            "net_pnl": 562.3918999999987,
+            "net_return": 0.005623918999999987,
+            "capital_before": 100000.0,
+            "capital_after": 100562.3919
+          },
+          "effect": "reduced_gain"
+        },
+        "etf_score_tiered_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": true,
+          "tier": "confirmed",
+          "target_weight": 0.11249999999999999,
+          "blockers": [],
+          "reasons": [
+            "composite>=0.30 and forecast edge>=0.10"
+          ],
+          "diagnostics": {
+            "composite_score": 0.429614184362356,
+            "strategy_signal_score": 0.7493635426897057,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.5007903362418205,
+            "forecast_down_probability": 0.35671204111448096,
+            "forecast_edge": 0.1440782951273395,
+            "forecast_expected_return_pct": 2.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-05-19",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.038156590254678935
+          },
+          "trade": {
+            "traded": true,
+            "weight": 0.11249999999999999,
+            "quantity": 2800,
+            "entry_price": 3.8969475,
+            "exit_price": 4.1089445,
+            "entry_date": "2026-05-20",
+            "exit_date": "2026-06-16",
+            "fees": 10.0,
+            "slippage": 11.20839999999994,
+            "net_pnl": 583.5915999999997,
+            "net_return": 0.005835915999999997,
+            "capital_before": 100000.0,
+            "capital_after": 100583.5916
+          },
+          "effect": "reduced_gain"
+        },
+        "etf_forecast_confirmed_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": false,
+          "tier": "blocked",
+          "target_weight": 0.0,
+          "blockers": [
+            "forecast_edge_below_0.20"
+          ],
+          "reasons": [],
+          "diagnostics": {
+            "composite_score": 0.429614184362356,
+            "strategy_signal_score": 0.7493635426897057,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.5007903362418205,
+            "forecast_down_probability": 0.35671204111448096,
+            "forecast_edge": 0.1440782951273395,
+            "forecast_expected_return_pct": 2.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-05-19",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.038156590254678935
+          },
+          "trade": {
+            "traded": false,
+            "weight": 0.0,
+            "quantity": 0,
+            "net_pnl": 0.0,
+            "net_return": 0.0,
+            "capital_before": 100000.0,
+            "capital_after": 100000.0
+          },
+          "effect": "missed_gain"
+        },
+        "strategy_unless_bearish_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": true,
+          "tier": "full_strategy",
+          "target_weight": 0.15,
+          "blockers": [],
+          "reasons": [
+            "no reviewed materially bearish forecast"
+          ],
+          "diagnostics": {
+            "composite_score": 0.429614184362356,
+            "strategy_signal_score": 0.7493635426897057,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.5007903362418205,
+            "forecast_down_probability": 0.35671204111448096,
+            "forecast_edge": 0.1440782951273395,
+            "forecast_expected_return_pct": 2.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-05-19",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.038156590254678935
+          },
+          "trade": {
+            "traded": true,
+            "weight": 0.15,
+            "quantity": 3900,
+            "entry_price": 3.8969475,
+            "exit_price": 4.1089445,
+            "entry_date": "2026-05-20",
+            "exit_date": "2026-06-16",
+            "fees": 10.0,
+            "slippage": 15.611699999999917,
+            "net_pnl": 816.7882999999983,
+            "net_return": 0.008044274354475994,
+            "capital_before": 101536.60405,
+            "capital_after": 102353.39235
+          },
+          "effect": "participated_gain"
+        },
+        "calibrated_strategy_primary_v1": {
+          "policy_version": "2026-07-14.v2",
+          "eligible": true,
+          "tier": "strategy_primary",
+          "target_weight": 0.15,
+          "blockers": [],
+          "reasons": [
+            "validated statistical model does not justify a risk reduction"
+          ],
+          "diagnostics": {
+            "composite_score": 0.429614184362356,
+            "strategy_signal_score": 0.7493635426897057,
+            "decision_confidence": 0.4724999999999999,
+            "forecast_up_probability": 0.5007903362418205,
+            "forecast_down_probability": 0.35671204111448096,
+            "forecast_edge": 0.1440782951273395,
+            "forecast_expected_return_pct": 2.5,
+            "forecast_confidence": 0.65,
+            "statistical_model_id": "pit-etf-20-2026-05-19",
+            "statistical_weight": 0.5,
+            "statistical_edge": 0.038156590254678935
+          },
+          "trade": {
+            "traded": true,
+            "weight": 0.15,
+            "quantity": 3800,
+            "entry_price": 3.8969475,
+            "exit_price": 4.1089445,
+            "entry_date": "2026-05-20",
+            "exit_date": "2026-06-16",
+            "fees": 10.0,
+            "slippage": 15.21139999999992,
+            "net_pnl": 795.5885999999991,
+            "net_return": 0.007862670056178937,
+            "capital_before": 101185.55075,
+            "capital_after": 101981.13935
+          },
+          "effect": "participated_gain"
+        }
+      },
+      "point_in_time_model": {
+        "cutoff": "2026-05-19",
+        "asset_scope": "etf",
+        "horizons": {
+          "20": {
+            "status": "admitted",
+            "samples": 1586,
+            "validation_samples": 1586,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-08-22",
+              "inner_training_samples": 2859,
+              "calibration_samples": 558,
+              "baseline_brier": 0.2155465781134058,
+              "baseline_log_loss": 1.069562489966604,
+              "prior_blend": 0.30000000000000004,
+              "brier_score": 0.1992631439686707,
+              "log_loss": 0.9935883418175055,
+              "normalized_score": 1.8534222276427883
+            },
+            "brier_score": 0.19098018303188605,
+            "log_loss": 0.9592668830387522,
+            "accuracy": 0.512610340479193,
+            "baseline_brier": 0.22166978415358507,
+            "baseline_log_loss": 1.0961456744539186
+          },
+          "5": {
+            "status": "admitted",
+            "samples": 1599,
+            "validation_samples": 1599,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-09-06",
+              "inner_training_samples": 2899,
+              "calibration_samples": 560,
+              "baseline_brier": 0.21391850932548287,
+              "baseline_log_loss": 1.0603824065858505,
+              "prior_blend": 0.2,
+              "brier_score": 0.19113239992753941,
+              "log_loss": 0.9669199557614641,
+              "normalized_score": 1.805341965765526
+            },
+            "brier_score": 0.19021173555337306,
+            "log_loss": 0.9666263769525889,
+            "accuracy": 0.5209505941213258,
+            "baseline_brier": 0.21274546307395265,
+            "baseline_log_loss": 1.058226320969773
+          }
+        },
+        "contract": "as_of < cutoff and evaluated_at < cutoff"
+      },
+      "llm_audit": {
+        "health": {
+          "provider": "router",
+          "model": "resilient-router",
+          "endpoints": [
+            {
+              "endpoint_id": "deepseek-1",
+              "provider": "deepseek",
+              "model": "deepseek-chat",
+              "failures": 0,
+              "status": "ready",
+              "cooldown_remaining_seconds": 0.0
+            },
+            {
+              "endpoint_id": "openai-1",
+              "provider": "openai",
+              "model": "gpt-5.6-terra",
+              "failures": 1,
+              "status": "cooldown",
+              "cooldown_remaining_seconds": 102.92199999999139
+            }
+          ],
+          "recent_calls": 12,
+          "recent_successes": 11,
+          "recent_total_tokens": 50875
+        },
+        "calls": [
+          {
+            "timestamp": "2026-07-14T05:04:28.555739+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "AnalystReport",
+            "routing_key": "quant",
+            "status": "ok",
+            "latency_ms": 3389.77,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3601,
+              "output_tokens": 351,
+              "total_tokens": 3952
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:32.206971+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "macro",
+            "status": "ok",
+            "latency_ms": 3648.05,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3914,
+              "output_tokens": 319,
+              "total_tokens": 4233
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:32.752956+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "technical",
+            "status": "ok",
+            "latency_ms": 4204.29,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3915,
+              "output_tokens": 433,
+              "total_tokens": 4348
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:04:33.025498+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "momentum",
+            "status": "ok",
+            "latency_ms": 4467.42,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3916,
+              "output_tokens": 501,
+              "total_tokens": 4417
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:05:05.614532+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "risk",
+            "status": "ok",
+            "latency_ms": 37049.2,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4077,
+              "output_tokens": 1775,
+              "total_tokens": 5852,
+              "reasoning_tokens": 899
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:05:28.709437+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "value_veto",
+            "status": "error",
+            "latency_ms": 60147.08,
+            "error_type": "APITimeoutError",
+            "usage": {}
+          },
+          {
+            "timestamp": "2026-07-14T05:05:32.311961+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "value_veto",
+            "status": "ok",
+            "latency_ms": 3600.1,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3955,
+              "output_tokens": 370,
+              "total_tokens": 4325
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:05:34.660851+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "status": "ok",
+            "latency_ms": 2349.16,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3055,
+              "output_tokens": 204,
+              "total_tokens": 3259
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:05:35.958766+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "ok",
+            "latency_ms": 3648.14,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3055,
+              "output_tokens": 341,
+              "total_tokens": 3396
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:05:38.781457+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 2819.92,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4281,
+              "output_tokens": 415,
+              "total_tokens": 4696
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:05:41.397740+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 5434.69,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 4281,
+              "output_tokens": 421,
+              "total_tokens": 4702
+            }
+          },
+          {
+            "timestamp": "2026-07-14T05:05:45.792179+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ReviewReport",
+            "routing_key": "review",
+            "status": "ok",
+            "latency_ms": 1783.79,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 7587,
+              "output_tokens": 108,
+              "total_tokens": 7695
+            }
+          }
+        ],
+        "summary": {
+          "calls": 12,
+          "successes": 11,
+          "errors": 1,
+          "total_tokens": 50875,
+          "total_latency_ms": 132541.61
+        },
+        "secrets_exposed": false,
+        "prompts_persisted": false
+      },
+      "llm_validation": {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "macro": 1,
+          "technical": 1,
+          "momentum": 1,
+          "risk": 1,
+          "value_veto": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 12,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "ExpertOpinion",
+            "routing_key": "value_veto",
+            "error_type": "APITimeoutError"
+          }
+        ],
+        "complete": true
+      }
+    }
+  ],
+  "metrics": {
+    "strategy_only": {
+      "episodes": 4,
+      "trades": 4,
+      "participation_rate": 1.0,
+      "total_return": 0.01981139349999994,
+      "average_episode_return": 0.004966716443259092,
+      "trade_win_rate": 0.75,
+      "max_drawdown": -0.011580800811178515,
+      "final_equity": 101981.13935
+    },
+    "full_system": {
+      "episodes": 4,
+      "trades": 1,
+      "participation_rate": 0.25,
+      "total_return": 0.005623919000000033,
+      "average_episode_return": 0.0014059797499999967,
+      "trade_win_rate": 1.0,
+      "max_drawdown": 0.0,
+      "final_equity": 100562.3919
+    },
+    "hs300_same_risk_budget": {
+      "episodes": 4,
+      "trades": 4,
+      "participation_rate": 1.0,
+      "total_return": 0.005958650500000218,
+      "average_episode_return": 0.001488248734392607,
+      "trade_win_rate": 0.75,
+      "max_drawdown": -0.0012076631664986737,
+      "final_equity": 100595.86505000002
+    },
+    "full_minus_strategy_total_return": -0.014187474499999908,
+    "forecast_ablation": {
+      "final_ensemble": {
+        "samples": 4,
+        "invalid_samples": 0,
+        "brier_score": 0.16636157134723162,
+        "log_loss": 0.8102234540438957,
+        "accuracy": 0.5
+      },
+      "raw_llm": {
+        "samples": 4,
+        "invalid_samples": 0,
+        "brier_score": 0.15916666666666665,
+        "log_loss": 0.7904467144710186,
+        "accuracy": 0.5
+      },
+      "point_in_time_statistical": {
+        "samples": 4,
+        "invalid_samples": 0,
+        "brier_score": 0.17649366776560693,
+        "log_loss": 0.8418246731960357,
+        "accuracy": 0.75
+      }
+    },
+    "gate_effects": {
+      "avoided_loss": 1,
+      "missed_gain": 2,
+      "participated": 1
+    },
+    "decision_gate_counterfactuals": {
+      "current_strict": {
+        "episodes": 4,
+        "trades": 1,
+        "participation_rate": 0.25,
+        "total_return": 0.005623919000000033,
+        "average_episode_return": 0.0014059797499999967,
+        "trade_win_rate": 1.0,
+        "max_drawdown": 0.0,
+        "final_equity": 100562.3919,
+        "incremental_vs_current_total_return": 0.0,
+        "incremental_vs_strategy_total_return": -0.014187474499999908,
+        "effect_counts": {
+          "missed_gain": 2,
+          "avoided_loss": 1,
+          "reduced_gain": 1
+        },
+        "worst_episode_return": 0.0,
+        "best_episode_return": 0.005623918999999987,
+        "largest_positive_episode_share": 1.0,
+        "leave_one_out_min_total_return": 0.0,
+        "screen_checks": {
+          "minimum_12_episodes": false,
+          "positive_increment_vs_current": false,
+          "drawdown_not_worse_than_strategy": true,
+          "participation_at_least_20pct": true,
+          "largest_positive_episode_below_80pct": false,
+          "positive_leave_one_out_minimum": false
+        },
+        "screening_status": "insufficient_sample",
+        "promotion_status": "research_only_not_promoted"
+      },
+      "etf_score_tiered_v1": {
+        "episodes": 4,
+        "trades": 1,
+        "participation_rate": 0.25,
+        "total_return": 0.005835916000000108,
+        "average_episode_return": 0.0014589789999999994,
+        "trade_win_rate": 1.0,
+        "max_drawdown": 0.0,
+        "final_equity": 100583.5916,
+        "incremental_vs_current_total_return": 0.00021199700000007482,
+        "incremental_vs_strategy_total_return": -0.013975477499999833,
+        "effect_counts": {
+          "missed_gain": 2,
+          "avoided_loss": 1,
+          "reduced_gain": 1
+        },
+        "worst_episode_return": 0.0,
+        "best_episode_return": 0.005835915999999997,
+        "largest_positive_episode_share": 1.0,
+        "leave_one_out_min_total_return": 0.0,
+        "screen_checks": {
+          "minimum_12_episodes": false,
+          "positive_increment_vs_current": true,
+          "drawdown_not_worse_than_strategy": true,
+          "participation_at_least_20pct": true,
+          "largest_positive_episode_below_80pct": false,
+          "positive_leave_one_out_minimum": false
+        },
+        "screening_status": "insufficient_sample",
+        "promotion_status": "research_only_not_promoted"
+      },
+      "etf_forecast_confirmed_v1": {
+        "episodes": 4,
+        "trades": 0,
+        "participation_rate": 0.0,
+        "total_return": 0.0,
+        "average_episode_return": 0.0,
+        "trade_win_rate": null,
+        "max_drawdown": 0.0,
+        "final_equity": 100000.0,
+        "incremental_vs_current_total_return": -0.005623919000000033,
+        "incremental_vs_strategy_total_return": -0.01981139349999994,
+        "effect_counts": {
+          "missed_gain": 3,
+          "avoided_loss": 1
+        },
+        "worst_episode_return": 0.0,
+        "best_episode_return": 0.0,
+        "largest_positive_episode_share": null,
+        "leave_one_out_min_total_return": 0.0,
+        "screen_checks": {
+          "minimum_12_episodes": false,
+          "positive_increment_vs_current": false,
+          "drawdown_not_worse_than_strategy": true,
+          "participation_at_least_20pct": false,
+          "largest_positive_episode_below_80pct": false,
+          "positive_leave_one_out_minimum": false
+        },
+        "screening_status": "insufficient_sample",
+        "promotion_status": "research_only_not_promoted"
+      },
+      "strategy_unless_bearish_v1": {
+        "episodes": 4,
+        "trades": 2,
+        "participation_rate": 0.5,
+        "total_return": 0.023533923500000054,
+        "average_episode_return": 0.005852578713619003,
+        "trade_win_rate": 1.0,
+        "max_drawdown": 0.0,
+        "final_equity": 102353.39235,
+        "incremental_vs_current_total_return": 0.01791000450000002,
+        "incremental_vs_strategy_total_return": 0.0037225300000001127,
+        "effect_counts": {
+          "missed_gain": 1,
+          "avoided_loss": 1,
+          "reduced_gain": 1,
+          "participated_gain": 1
+        },
+        "worst_episode_return": 0.0,
+        "best_episode_return": 0.015366040500000018,
+        "largest_positive_episode_share": 0.6563790617733642,
+        "leave_one_out_min_total_return": 0.008044274354475967,
+        "screen_checks": {
+          "minimum_12_episodes": false,
+          "positive_increment_vs_current": true,
+          "drawdown_not_worse_than_strategy": true,
+          "participation_at_least_20pct": true,
+          "largest_positive_episode_below_80pct": true,
+          "positive_leave_one_out_minimum": true
+        },
+        "screening_status": "insufficient_sample",
+        "promotion_status": "research_only_not_promoted"
+      },
+      "calibrated_strategy_primary_v1": {
+        "episodes": 4,
+        "trades": 4,
+        "participation_rate": 1.0,
+        "total_return": 0.01981139349999994,
+        "average_episode_return": 0.004966716443259092,
+        "trade_win_rate": 0.75,
+        "max_drawdown": -0.011580800811178515,
+        "final_equity": 101981.13935,
+        "incremental_vs_current_total_return": 0.014187474499999908,
+        "incremental_vs_strategy_total_return": 0.0,
+        "effect_counts": {
+          "participated_gain": 3,
+          "participated_loss": 1
+        },
+        "worst_episode_return": -0.011580800811178463,
+        "best_episode_return": 0.015420173528035914,
+        "largest_positive_episode_share": 0.4903439651632556,
+        "leave_one_out_min_total_return": 0.004324534893478615,
+        "screen_checks": {
+          "minimum_12_episodes": false,
+          "positive_increment_vs_current": true,
+          "drawdown_not_worse_than_strategy": true,
+          "participation_at_least_20pct": true,
+          "largest_positive_episode_below_80pct": true,
+          "positive_leave_one_out_minimum": true
+        },
+        "screening_status": "insufficient_sample",
+        "promotion_status": "research_only_not_promoted"
+      }
+    }
+  },
+  "decision_gate_audit": {
+    "policy_version": "2026-07-14.v2",
+    "protocol": "DECISION_GATE_AUDIT_PROTOCOL.md",
+    "production_policy_changed": false,
+    "policies": {
+      "current_strict": {
+        "status": "incumbent",
+        "description": "Only an approved final buy/add may carry the decision-card weight."
+      },
+      "etf_score_tiered_v1": {
+        "status": "retrospective_candidate",
+        "description": "ETF-specific score tiers with forecast confirmation and partial sizing."
+      },
+      "etf_forecast_confirmed_v1": {
+        "status": "retrospective_candidate",
+        "description": "A small ETF position only when strategy, score and forecast agree."
+      },
+      "strategy_unless_bearish_v1": {
+        "status": "explanatory_ablation",
+        "description": "Use the strategy weight unless the reviewed forecast is materially bearish."
+      },
+      "calibrated_strategy_primary_v1": {
+        "status": "retrospective_candidate_v2",
+        "description": "Keep the quantitative ETF strategy in control; only a validated point-in-time statistical model may reduce risk."
+      }
+    },
+    "promotion_boundary": "counterfactual results may qualify a candidate only for a frozen prospective shadow account; they never replace the production gate automatically"
+  },
+  "llm_validation": {
+    "required_role_outputs": 44,
+    "required_role_outputs_per_episode": 11,
+    "successful_non_mock_role_outputs": 44,
+    "recorded_endpoint_attempts": 51,
+    "fallback_errors": [
+      {
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "schema": "DebateReport",
+        "routing_key": "bull",
+        "error_type": "InternalServerError"
+      },
+      {
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "schema": "DebateReport",
+        "routing_key": "bear",
+        "error_type": "InternalServerError"
+      },
+      {
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "schema": "DebateReport",
+        "routing_key": "bull",
+        "error_type": "InternalServerError"
+      },
+      {
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "schema": "DebateReport",
+        "routing_key": "bear",
+        "error_type": "InternalServerError"
+      },
+      {
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "schema": "DebateReport",
+        "routing_key": "bull",
+        "error_type": "InternalServerError"
+      },
+      {
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "schema": "DebateReport",
+        "routing_key": "bear",
+        "error_type": "InternalServerError"
+      },
+      {
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "schema": "ExpertOpinion",
+        "routing_key": "value_veto",
+        "error_type": "APITimeoutError"
+      }
+    ],
+    "episodes": [
+      {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "momentum": 1,
+          "macro": 1,
+          "technical": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 13,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "error_type": "InternalServerError"
+          },
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "error_type": "InternalServerError"
+          }
+        ],
+        "complete": true
+      },
+      {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "macro": 1,
+          "risk": 1,
+          "value_veto": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 13,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "error_type": "InternalServerError"
+          },
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "error_type": "InternalServerError"
+          }
+        ],
+        "complete": true
+      },
+      {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "macro": 1,
+          "technical": 1,
+          "momentum": 1,
+          "risk": 1,
+          "value_veto": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 13,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "error_type": "InternalServerError"
+          },
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "error_type": "InternalServerError"
+          }
+        ],
+        "complete": true
+      },
+      {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "macro": 1,
+          "technical": 1,
+          "momentum": 1,
+          "risk": 1,
+          "value_veto": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 12,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "ExpertOpinion",
+            "routing_key": "value_veto",
+            "error_type": "APITimeoutError"
+          }
+        ],
+        "complete": true
+      }
+    ],
+    "live_llm_complete": true
+  },
+  "evidence_status": "illustrative",
+  "evidence_qualification": {
+    "sample_size_status": "illustrative",
+    "live_llm_complete": true,
+    "clean_data_path": true,
+    "qualified": false,
+    "limitations": [
+      "fewer than 30 non-overlapping episodes"
+    ]
+  },
+  "claim_boundary": "a short replay is illustrative and cannot prove future profitability; expand the fixed window and prospective paper sample before making performance claims"
+}

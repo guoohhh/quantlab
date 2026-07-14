@@ -1,0 +1,1915 @@
+{
+  "protocol": {
+    "version": "a-share-defensive-reversal-v2",
+    "registered_at": "2026-07-14",
+    "development": [
+      "2018-01-01",
+      "2022-12-31"
+    ],
+    "validation": [
+      "2023-01-01",
+      "2025-12-31"
+    ],
+    "locked_holdout": [
+      "2026-01-01",
+      "2026-07-13"
+    ],
+    "source_sample_horizon_days": 5,
+    "holding_horizon_days": 20,
+    "signal_schedule": "eight deterministic dates per year inherited from the 5-day PIT sample protocol",
+    "selected_candidate_before_validation": "broad_contrarian_four",
+    "candidate_policies": {
+      "defensive_reversal_single": {
+        "kind": "static_cross_section_v2",
+        "name": "defensive_reversal_single",
+        "portfolio": {
+          "top_k": 1,
+          "total_exposure": 0.15,
+          "selection": "rank_top_k"
+        }
+      },
+      "broad_contrarian_four": {
+        "kind": "static_cross_section_v2",
+        "name": "broad_contrarian_four",
+        "portfolio": {
+          "top_k": 4,
+          "total_exposure": 0.4,
+          "selection": "rank_top_k"
+        }
+      },
+      "pure_low_vol_two": {
+        "kind": "static_cross_section_v2",
+        "name": "pure_low_vol_two",
+        "portfolio": {
+          "top_k": 2,
+          "total_exposure": 0.3,
+          "selection": "rank_top_k"
+        }
+      }
+    },
+    "execution": "T+1 executable open to 20th benchmark trading-day close with A-share costs and lots"
+  },
+  "protocol_hash": "7fa99f8a5ebed0d7",
+  "sample_audit": {
+    "selected_sample_protocol_hash": "6002d4c696b6c629",
+    "available_protocols": {
+      "6002d4c696b6c629": {
+        "samples": 2440,
+        "dates": 64
+      },
+      "eb023d9cc075485b": {
+        "samples": 1136,
+        "dates": 36
+      }
+    },
+    "selected_samples": 2440,
+    "selected_dates": 64,
+    "date_range": [
+      "2018-01-02",
+      "2025-12-25"
+    ]
+  },
+  "data_coverage": {
+    "requested_symbols": 442,
+    "available_symbols": 442,
+    "market_rows": 317433
+  },
+  "development_results": {
+    "defensive_reversal_single": {
+      "policy": {
+        "kind": "static_cross_section_v2",
+        "name": "defensive_reversal_single",
+        "portfolio": {
+          "top_k": 1,
+          "total_exposure": 0.15,
+          "selection": "rank_top_k"
+        }
+      },
+      "episodes": 40,
+      "top_k": 1,
+      "total_exposure": 0.15,
+      "total_return": -0.07521973076319988,
+      "benchmark_total_return": -0.00450838896766248,
+      "average_episode_return": -0.0017624944724220133,
+      "win_rate": 0.45,
+      "max_drawdown": -0.1280695121719,
+      "participation_rate": 1.0,
+      "leg_fill_rate": 1.0,
+      "mean_rank_ic": 0.16907839533834518,
+      "positive_year_fraction": 0.2,
+      "positive_excess_year_fraction": 0.4,
+      "annual": {
+        "2018": {
+          "strategy_return": -0.038928730487799657,
+          "benchmark_return": -0.015840222935854298,
+          "excess_return": -0.02308850755194536
+        },
+        "2019": {
+          "strategy_return": -0.047415303346055926,
+          "benchmark_return": 0.0001924976080986962,
+          "excess_return": -0.04760780095415462
+        },
+        "2020": {
+          "strategy_return": 0.035809310266433636,
+          "benchmark_return": 0.048168917060444905,
+          "excess_return": -0.012359606794011269
+        },
+        "2021": {
+          "strategy_return": -0.02155947448157225,
+          "benchmark_return": -0.023736438380476788,
+          "excess_return": 0.002176963898904538
+        },
+        "2022": {
+          "strategy_return": -0.0032984861344148575,
+          "benchmark_return": -0.011697158405709063,
+          "excess_return": 0.008398672271294205
+        }
+      },
+      "paired_comparison": {
+        "mean_excess_return": -0.0016936875439534198,
+        "median_excess_return": -0.0011476325278251477,
+        "positive_excess_rate": 0.425,
+        "probability_mean_excess_positive": 0.275,
+        "bootstrap_90pct_interval": [
+          -0.006285833172220939,
+          0.002631707235578069
+        ]
+      },
+      "episode_details": [
+        {
+          "signal_date": "2018-01-02",
+          "target_date": "2018-01-30",
+          "selected_symbols": [
+            "sz002426"
+          ],
+          "strategy_return": -0.00496294391999998,
+          "benchmark_return": 0.0060360604771890645,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.2875457875457875
+        },
+        {
+          "signal_date": "2018-02-27",
+          "target_date": "2018-03-27",
+          "selected_symbols": [
+            "sh600958"
+          ],
+          "strategy_return": -0.011731552278251489,
+          "benchmark_return": -0.0038658844834097705,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.15599694423223834
+        },
+        {
+          "signal_date": "2018-04-19",
+          "target_date": "2018-05-21",
+          "selected_symbols": [
+            "sz002069"
+          ],
+          "strategy_return": 0.002810900989086339,
+          "benchmark_return": 0.004736719152627067,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.020850202429149797
+        },
+        {
+          "signal_date": "2018-06-11",
+          "target_date": "2018-07-10",
+          "selected_symbols": [
+            "sz002400"
+          ],
+          "strategy_return": -0.007879877406980705,
+          "benchmark_return": -0.012516041377833752,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.033703561904142976
+        },
+        {
+          "signal_date": "2018-07-20",
+          "target_date": "2018-08-17",
+          "selected_symbols": [
+            "sh600958"
+          ],
+          "strategy_return": -0.011079646631801141,
+          "benchmark_return": -0.01046570205264908,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.4259542183301312
+        },
+        {
+          "signal_date": "2018-09-07",
+          "target_date": "2018-10-15",
+          "selected_symbols": [
+            "sh600110"
+          ],
+          "strategy_return": -0.017106712215177063,
+          "benchmark_return": -0.00664535864211474,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.044466403162055336
+        },
+        {
+          "signal_date": "2018-11-05",
+          "target_date": "2018-12-03",
+          "selected_symbols": [
+            "sh600110"
+          ],
+          "strategy_return": 0.010613618092230857,
+          "benchmark_return": 0.000275255401190233,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.031055900621118016
+        },
+        {
+          "signal_date": "2018-12-24",
+          "target_date": "2019-01-23",
+          "selected_symbols": [
+            "sh601918"
+          ],
+          "strategy_return": 1.2145666864833971e-05,
+          "benchmark_return": 0.006693404255177615,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.3665583914062461
+        },
+        {
+          "signal_date": "2019-01-02",
+          "target_date": "2019-01-30",
+          "selected_symbols": [
+            "sh600111"
+          ],
+          "strategy_return": -0.0014663483701008516,
+          "benchmark_return": 0.010401421793590182,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.4881422924901186
+        },
+        {
+          "signal_date": "2019-02-27",
+          "target_date": "2019-03-27",
+          "selected_symbols": [
+            "sh603013"
+          ],
+          "strategy_return": -0.0033903003491688928,
+          "benchmark_return": 0.0027803308823529434,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.2451417004048583
+        },
+        {
+          "signal_date": "2019-04-18",
+          "target_date": "2019-05-21",
+          "selected_symbols": [
+            "sz300429"
+          ],
+          "strategy_return": -0.08832834227332739,
+          "benchmark_return": -0.01506953005118619,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.2754423279891402
+        },
+        {
+          "signal_date": "2019-06-12",
+          "target_date": "2019-07-10",
+          "selected_symbols": [
+            "sh600686"
+          ],
+          "strategy_return": 0.019955349676831522,
+          "benchmark_return": 0.003949877262552426,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.41641571640740965
+        },
+        {
+          "signal_date": "2019-07-22",
+          "target_date": "2019-08-19",
+          "selected_symbols": [
+            "sz300252"
+          ],
+          "strategy_return": 0.03158824298559421,
+          "benchmark_return": 0.0002994417134636662,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.2159090909090909
+        },
+        {
+          "signal_date": "2019-09-09",
+          "target_date": "2019-10-15",
+          "selected_symbols": [
+            "sz000629"
+          ],
+          "strategy_return": -0.013584898377385565,
+          "benchmark_return": -0.0015321098079921769,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.07921122994652408
+        },
+        {
+          "signal_date": "2019-11-05",
+          "target_date": "2019-12-03",
+          "selected_symbols": [
+            "sh600338"
+          ],
+          "strategy_return": 0.002249591119853616,
+          "benchmark_return": -0.005812306384376525,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.6611721611721612
+        },
+        {
+          "signal_date": "2019-12-24",
+          "target_date": "2020-01-22",
+          "selected_symbols": [
+            "sz002007"
+          ],
+          "strategy_return": 0.009378818826435723,
+          "benchmark_return": 0.005388054174625678,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.05975073313782991
+        },
+        {
+          "signal_date": "2020-01-02",
+          "target_date": "2020-02-07",
+          "selected_symbols": [
+            "sz300197"
+          ],
+          "strategy_return": -0.02303921622177334,
+          "benchmark_return": -0.009420883500936488,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.3119658119658119
+        },
+        {
+          "signal_date": "2020-02-28",
+          "target_date": "2020-03-27",
+          "selected_symbols": [
+            "sh600886"
+          ],
+          "strategy_return": 0.0035092024028430652,
+          "benchmark_return": -0.009780526717736115,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.33039399624765486
+        },
+        {
+          "signal_date": "2020-04-20",
+          "target_date": "2020-05-21",
+          "selected_symbols": [
+            "sh600886"
+          ],
+          "strategy_return": -0.0006598695326947278,
+          "benchmark_return": 0.002953059317893125,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.21518661518661522
+        },
+        {
+          "signal_date": "2020-06-11",
+          "target_date": "2020-07-13",
+          "selected_symbols": [
+            "sh603885"
+          ],
+          "strategy_return": 0.01355067136248911,
+          "benchmark_return": 0.0351510353127395,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.052816364529257843
+        },
+        {
+          "signal_date": "2020-07-23",
+          "target_date": "2020-08-20",
+          "selected_symbols": [
+            "sz002462"
+          ],
+          "strategy_return": 0.012872630390428687,
+          "benchmark_return": 4.0745648139495215e-06,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.46965386439070644
+        },
+        {
+          "signal_date": "2020-09-10",
+          "target_date": "2020-10-16",
+          "selected_symbols": [
+            "sz002405"
+          ],
+          "strategy_return": -9.204641038421112e-05,
+          "benchmark_return": 0.007198374579627775,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.00375234521575985
+        },
+        {
+          "signal_date": "2020-11-06",
+          "target_date": "2020-12-04",
+          "selected_symbols": [
+            "sh600155"
+          ],
+          "strategy_return": 0.03627582252246723,
+          "benchmark_return": 0.004484434597449193,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.6501831501831502
+        },
+        {
+          "signal_date": "2020-12-25",
+          "target_date": "2021-01-25",
+          "selected_symbols": [
+            "sz300063"
+          ],
+          "strategy_return": -0.006123774438227601,
+          "benchmark_return": 0.01734046895471678,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.2964102564102564
+        },
+        {
+          "signal_date": "2021-01-04",
+          "target_date": "2021-02-01",
+          "selected_symbols": [
+            "sz002640"
+          ],
+          "strategy_return": -0.029964292290879074,
+          "benchmark_return": 0.004912837049503348,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.13937165775401072
+        },
+        {
+          "signal_date": "2021-03-01",
+          "target_date": "2021-03-29",
+          "selected_symbols": [
+            "sz000652"
+          ],
+          "strategy_return": 0.0005652209171933506,
+          "benchmark_return": -0.011178787346275913,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.2756598240469208
+        },
+        {
+          "signal_date": "2021-04-20",
+          "target_date": "2021-05-21",
+          "selected_symbols": [
+            "sh600547"
+          ],
+          "strategy_return": 0.0047667157124738685,
+          "benchmark_return": 0.002341387445161336,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.022727272727272728
+        },
+        {
+          "signal_date": "2021-06-11",
+          "target_date": "2021-07-12",
+          "selected_symbols": [
+            "sh600977"
+          ],
+          "strategy_return": 0.012237114031043338,
+          "benchmark_return": -0.0024678049413125957,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.11326979472140761
+        },
+        {
+          "signal_date": "2021-07-22",
+          "target_date": "2021-08-19",
+          "selected_symbols": [
+            "sh600547"
+          ],
+          "strategy_return": 2.8572979489906613e-05,
+          "benchmark_return": -0.008258532988141632,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.03958944281524926
+        },
+        {
+          "signal_date": "2021-09-09",
+          "target_date": "2021-10-18",
+          "selected_symbols": [
+            "sz002151"
+          ],
+          "strategy_return": -0.0038744131236312417,
+          "benchmark_return": -0.0028140414288241712,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.33282996073693744
+        },
+        {
+          "signal_date": "2021-11-08",
+          "target_date": "2021-12-06",
+          "selected_symbols": [
+            "sz000703"
+          ],
+          "strategy_return": -0.0003400083398374014,
+          "benchmark_return": 0.0010611346363739059,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.11088709677419356
+        },
+        {
+          "signal_date": "2021-12-27",
+          "target_date": "2022-01-25",
+          "selected_symbols": [
+            "sz000703"
+          ],
+          "strategy_return": -0.004651891730147414,
+          "benchmark_return": -0.007471241548287838,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.38949343339587245
+        },
+        {
+          "signal_date": "2022-01-04",
+          "target_date": "2022-02-08",
+          "selected_symbols": [
+            "sh688135"
+          ],
+          "strategy_return": -0.013132857919542081,
+          "benchmark_return": -0.009143208445703243,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.30976231457414016
+        },
+        {
+          "signal_date": "2022-03-01",
+          "target_date": "2022-03-29",
+          "selected_symbols": [
+            "sh600906"
+          ],
+          "strategy_return": -0.006234038601953712,
+          "benchmark_return": -0.015015385228221816,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.42181387374081636
+        },
+        {
+          "signal_date": "2022-04-21",
+          "target_date": "2022-05-24",
+          "selected_symbols": [
+            "sh688658"
+          ],
+          "strategy_return": -0.0015391695539159309,
+          "benchmark_return": -0.0003042761930727056,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.15882352941176472
+        },
+        {
+          "signal_date": "2022-06-15",
+          "target_date": "2022-07-13",
+          "selected_symbols": [
+            "sz301055"
+          ],
+          "strategy_return": -0.004758229899707917,
+          "benchmark_return": 0.0013794338908961201,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.1488205365402405
+        },
+        {
+          "signal_date": "2022-07-25",
+          "target_date": "2022-08-22",
+          "selected_symbols": [
+            "sh600906"
+          ],
+          "strategy_return": 6.056448938122881e-05,
+          "benchmark_return": -0.0013753707828724371,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": -0.02673671375895038
+        },
+        {
+          "signal_date": "2022-09-13",
+          "target_date": "2022-10-18",
+          "selected_symbols": [
+            "sh603919"
+          ],
+          "strategy_return": -0.014109473736118044,
+          "benchmark_return": -0.008123768295174506,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.266023823028928
+        },
+        {
+          "signal_date": "2022-11-08",
+          "target_date": "2022-12-06",
+          "selected_symbols": [
+            "sh601229"
+          ],
+          "strategy_return": 0.008017386848806719,
+          "benchmark_return": 0.008694818608630984,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.19786096256684488
+        },
+        {
+          "signal_date": "2022-12-27",
+          "target_date": "2023-02-01",
+          "selected_symbols": [
+            "sh603529"
+          ],
+          "strategy_return": 0.029057555710611645,
+          "benchmark_return": 0.01242685900680306,
+          "traded_legs": 1,
+          "requested_legs": 1,
+          "rank_ic": 0.5010997067448679
+        }
+      ],
+      "development_admission": {
+        "passed": false,
+        "checks": {
+          "positive_total_return": false,
+          "positive_mean_excess": false,
+          "mean_rank_ic_at_least_5pct": true,
+          "maximum_drawdown_within_15pct": true,
+          "positive_year_fraction_at_least_60pct": false,
+          "leg_fill_rate_at_least_85pct": true
+        }
+      }
+    },
+    "broad_contrarian_four": {
+      "policy": {
+        "kind": "static_cross_section_v2",
+        "name": "broad_contrarian_four",
+        "portfolio": {
+          "top_k": 4,
+          "total_exposure": 0.4,
+          "selection": "rank_top_k"
+        }
+      },
+      "episodes": 40,
+      "top_k": 4,
+      "total_exposure": 0.4,
+      "total_return": -0.053191047933898616,
+      "benchmark_total_return": -0.0195749770132585,
+      "average_episode_return": -0.0009742769099265958,
+      "win_rate": 0.425,
+      "max_drawdown": -0.17662874682079932,
+      "participation_rate": 1.0,
+      "leg_fill_rate": 0.95625,
+      "mean_rank_ic": 0.15803860539120548,
+      "positive_year_fraction": 0.4,
+      "positive_excess_year_fraction": 0.6,
+      "annual": {
+        "2018": {
+          "strategy_return": -0.08117652263699948,
+          "benchmark_return": -0.04261343882447555,
+          "excess_return": -0.038563083812523935
+        },
+        "2019": {
+          "strategy_return": 0.011099334363951385,
+          "benchmark_return": -0.00044160775222157334,
+          "excess_return": 0.011540942116172959
+        },
+        "2020": {
+          "strategy_return": -0.004566355758131135,
+          "benchmark_return": 0.12940247803285332,
+          "excess_return": -0.13396883379098445
+        },
+        "2021": {
+          "strategy_return": -0.0024901240830954574,
+          "benchmark_return": -0.06267569406875173,
+          "excess_return": 0.06018556998565627
+        },
+        "2022": {
+          "strategy_return": 0.02637703956787285,
+          "benchmark_return": -0.03221190604092583,
+          "excess_return": 0.05858894560879868
+        }
+      },
+      "paired_comparison": {
+        "mean_excess_return": -0.0007907917673436789,
+        "median_excess_return": 0.0036364952345762478,
+        "positive_excess_rate": 0.55,
+        "probability_mean_excess_positive": 0.4075,
+        "bootstrap_90pct_interval": [
+          -0.006046421927381355,
+          0.004224214449028117
+        ]
+      },
+      "episode_details": [
+        {
+          "signal_date": "2018-01-02",
+          "target_date": "2018-01-30",
+          "selected_symbols": [
+            "sh600110",
+            "sz002426",
+            "sh600958",
+            "sz002400"
+          ],
+          "strategy_return": -0.0026494533926999793,
+          "benchmark_return": 0.016096161272504173,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.19783239430612184
+        },
+        {
+          "signal_date": "2018-02-27",
+          "target_date": "2018-03-27",
+          "selected_symbols": [
+            "sh600958",
+            "sh600312",
+            "sh603589",
+            "sz002069"
+          ],
+          "strategy_return": -0.0037559103735819105,
+          "benchmark_return": -0.010309025289092721,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.10864084377340376
+        },
+        {
+          "signal_date": "2018-04-19",
+          "target_date": "2018-05-21",
+          "selected_symbols": [
+            "sz002069",
+            "sz002400",
+            "sh601988",
+            "sh600110"
+          ],
+          "strategy_return": -0.007575177029652859,
+          "benchmark_return": 0.01263125107367218,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.10080971659919029
+        },
+        {
+          "signal_date": "2018-06-11",
+          "target_date": "2018-07-10",
+          "selected_symbols": [
+            "sz002400",
+            "sh600512",
+            "sh600958",
+            "sh600875"
+          ],
+          "strategy_return": -0.04657923987388764,
+          "benchmark_return": -0.03337611034089001,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.0467228361965204
+        },
+        {
+          "signal_date": "2018-07-20",
+          "target_date": "2018-08-17",
+          "selected_symbols": [
+            "sh600958",
+            "sh600875",
+            "sh600110",
+            "sh600354"
+          ],
+          "strategy_return": -0.01216524841192537,
+          "benchmark_return": -0.02790853880706421,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.3266178266178266
+        },
+        {
+          "signal_date": "2018-09-07",
+          "target_date": "2018-10-15",
+          "selected_symbols": [
+            "sh600110",
+            "sz002271",
+            "sz002511",
+            "sz002915"
+          ],
+          "strategy_return": -0.02859482612461549,
+          "benchmark_return": -0.01772095637897264,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.042490118577075096
+        },
+        {
+          "signal_date": "2018-11-05",
+          "target_date": "2018-12-03",
+          "selected_symbols": [
+            "sh600110",
+            "sh603589",
+            "sh601918",
+            "sz002279"
+          ],
+          "strategy_return": 0.005956330536472619,
+          "benchmark_return": 0.0007340144031739548,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.1552795031055901
+        },
+        {
+          "signal_date": "2018-12-24",
+          "target_date": "2019-01-23",
+          "selected_symbols": [
+            "sh600958",
+            "sh601918",
+            "sh601818",
+            "sz300015"
+          ],
+          "strategy_return": 0.012447313411483819,
+          "benchmark_return": 0.017849078013806977,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.3081395529040505
+        },
+        {
+          "signal_date": "2019-01-02",
+          "target_date": "2019-01-30",
+          "selected_symbols": [
+            "sh600111",
+            "sh600754",
+            "sh600667",
+            "sz300482"
+          ],
+          "strategy_return": 0.012530042224042578,
+          "benchmark_return": 0.027737124782907154,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.5187747035573123
+        },
+        {
+          "signal_date": "2019-02-27",
+          "target_date": "2019-03-27",
+          "selected_symbols": [
+            "sh603013",
+            "sz000629",
+            "sz002007",
+            "sz300644"
+          ],
+          "strategy_return": 0.004412574572130347,
+          "benchmark_return": 0.007414215686274516,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.2910931174089069
+        },
+        {
+          "signal_date": "2019-04-18",
+          "target_date": "2019-05-21",
+          "selected_symbols": [
+            "sz300429",
+            "sz002647",
+            "sz002230",
+            "sz300111"
+          ],
+          "strategy_return": -0.07046585717805694,
+          "benchmark_return": -0.04018541346982985,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.24832579185520362
+        },
+        {
+          "signal_date": "2019-06-12",
+          "target_date": "2019-07-10",
+          "selected_symbols": [
+            "sz300429",
+            "sz000402",
+            "sh600686",
+            "sh601003"
+          ],
+          "strategy_return": 0.038484043186353116,
+          "benchmark_return": 0.010533006033473135,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.47776455050981315
+        },
+        {
+          "signal_date": "2019-07-22",
+          "target_date": "2019-08-19",
+          "selected_symbols": [
+            "sz300177",
+            "sz300252",
+            "sz002278",
+            "sh600123"
+          ],
+          "strategy_return": 0.019371542983744224,
+          "benchmark_return": 0.0007985112359031099,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.2650401069518717
+        },
+        {
+          "signal_date": "2019-09-09",
+          "target_date": "2019-10-15",
+          "selected_symbols": [
+            "sz000629",
+            "sh600111",
+            "sh600123",
+            "sz002007"
+          ],
+          "strategy_return": -0.015616674300187833,
+          "benchmark_return": -0.004085626154645805,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.08656417112299465
+        },
+        {
+          "signal_date": "2019-11-05",
+          "target_date": "2019-12-03",
+          "selected_symbols": [
+            "sh600338",
+            "sh600111",
+            "sz300252",
+            "sz000629"
+          ],
+          "strategy_return": -0.006924228650893033,
+          "benchmark_return": -0.015499483691670734,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.6343101343101343
+        },
+        {
+          "signal_date": "2019-12-24",
+          "target_date": "2020-01-22",
+          "selected_symbols": [
+            "sz002007",
+            "sz300252",
+            "sz000629",
+            "sz300177"
+          ],
+          "strategy_return": 0.03354514380075295,
+          "benchmark_return": 0.014368144465668477,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.02272935579154797
+        },
+        {
+          "signal_date": "2020-01-02",
+          "target_date": "2020-02-07",
+          "selected_symbols": [
+            "sz300197",
+            "sh600968",
+            "sh600522",
+            "sz300538"
+          ],
+          "strategy_return": -0.05341774614360948,
+          "benchmark_return": -0.025122356002497303,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.25702075702075705
+        },
+        {
+          "signal_date": "2020-02-28",
+          "target_date": "2020-03-27",
+          "selected_symbols": [
+            "sh600886",
+            "sh600377",
+            "sh600968",
+            "sh603885"
+          ],
+          "strategy_return": -0.017769211993637048,
+          "benchmark_return": -0.026081404580629648,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.31726078799249535
+        },
+        {
+          "signal_date": "2020-04-20",
+          "target_date": "2020-05-21",
+          "selected_symbols": [
+            "sh600886",
+            "sh603885",
+            "sz002176",
+            "sh600155"
+          ],
+          "strategy_return": -0.046769585282713445,
+          "benchmark_return": 0.007874824847715001,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.26151866151866154
+        },
+        {
+          "signal_date": "2020-06-11",
+          "target_date": "2020-07-13",
+          "selected_symbols": [
+            "sh600108",
+            "sh601966",
+            "sh600155",
+            "sz300383"
+          ],
+          "strategy_return": 0.08123399129923577,
+          "benchmark_return": 0.09373609416730531,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.028083028083028084
+        },
+        {
+          "signal_date": "2020-07-23",
+          "target_date": "2020-08-20",
+          "selected_symbols": [
+            "sh600377",
+            "sz002462",
+            "sz002859",
+            "sh603885"
+          ],
+          "strategy_return": 0.015299543926231441,
+          "benchmark_return": 1.0865506170532058e-05,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.39094357515410144
+        },
+        {
+          "signal_date": "2020-09-10",
+          "target_date": "2020-10-16",
+          "selected_symbols": [
+            "sz002405",
+            "sh600377",
+            "sh603722",
+            "sz002696"
+          ],
+          "strategy_return": -0.004273879839116267,
+          "benchmark_return": 0.01919566554567407,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.035459662288930584
+        },
+        {
+          "signal_date": "2020-11-06",
+          "target_date": "2020-12-04",
+          "selected_symbols": [
+            "sh600155",
+            "sz300383",
+            "sz002859",
+            "sz002437"
+          ],
+          "strategy_return": 0.02948685328943771,
+          "benchmark_return": 0.011958492259864518,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.6275946275946276
+        },
+        {
+          "signal_date": "2020-12-25",
+          "target_date": "2021-01-25",
+          "selected_symbols": [
+            "sz300063",
+            "sz300383",
+            "sz300832",
+            "sh605168"
+          ],
+          "strategy_return": -0.0019140621425541415,
+          "benchmark_return": 0.04624125054591141,
+          "traded_legs": 2,
+          "requested_legs": 4,
+          "rank_ic": 0.2834188034188034
+        },
+        {
+          "signal_date": "2021-01-04",
+          "target_date": "2021-02-01",
+          "selected_symbols": [
+            "sz002640",
+            "sh600729",
+            "sz300033",
+            "sz002254"
+          ],
+          "strategy_return": -0.007556734177855679,
+          "benchmark_return": 0.0131008987986756,
+          "traded_legs": 3,
+          "requested_legs": 4,
+          "rank_ic": 0.14872994652406418
+        },
+        {
+          "signal_date": "2021-03-01",
+          "target_date": "2021-03-29",
+          "selected_symbols": [
+            "sz000652",
+            "sh600536",
+            "sh600100",
+            "sz002151"
+          ],
+          "strategy_return": -0.01312801074542784,
+          "benchmark_return": -0.029810099590069108,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.24230205278592373
+        },
+        {
+          "signal_date": "2021-04-20",
+          "target_date": "2021-05-21",
+          "selected_symbols": [
+            "sh600547",
+            "sz000652",
+            "sh600318",
+            "sh600536"
+          ],
+          "strategy_return": 0.008294374189617395,
+          "benchmark_return": 0.0062436998537635634,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.019219520414725636
+        },
+        {
+          "signal_date": "2021-06-11",
+          "target_date": "2021-07-12",
+          "selected_symbols": [
+            "sh600977",
+            "sz000881",
+            "sh600547",
+            "sz300033"
+          ],
+          "strategy_return": 0.004599944402576042,
+          "benchmark_return": -0.006580813176833589,
+          "traded_legs": 3,
+          "requested_legs": 4,
+          "rank_ic": -0.19961506820157848
+        },
+        {
+          "signal_date": "2021-07-22",
+          "target_date": "2021-08-19",
+          "selected_symbols": [
+            "sh600547",
+            "sz002681",
+            "sz000881",
+            "sz300033"
+          ],
+          "strategy_return": -0.007545541588464205,
+          "benchmark_return": -0.022022754635044352,
+          "traded_legs": 3,
+          "requested_legs": 4,
+          "rank_ic": -0.0742370088352978
+        },
+        {
+          "signal_date": "2021-09-09",
+          "target_date": "2021-10-18",
+          "selected_symbols": [
+            "sz002151",
+            "sz002653",
+            "sh600536",
+            "sz000963"
+          ],
+          "strategy_return": -0.006878225949403651,
+          "benchmark_return": -0.007504110476864457,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.3588039867109635
+        },
+        {
+          "signal_date": "2021-11-08",
+          "target_date": "2021-12-06",
+          "selected_symbols": [
+            "sz000703",
+            "sz000050",
+            "sz002254",
+            "sh600868"
+          ],
+          "strategy_return": 0.020583549319512222,
+          "benchmark_return": 0.00282969236366375,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.1536290322580645
+        },
+        {
+          "signal_date": "2021-12-27",
+          "target_date": "2022-01-25",
+          "selected_symbols": [
+            "sz002151",
+            "sz000703",
+            "sz002254",
+            "sh600547"
+          ],
+          "strategy_return": -0.0004407463135584992,
+          "benchmark_return": -0.019923310795434235,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.37560975609756103
+        },
+        {
+          "signal_date": "2022-01-04",
+          "target_date": "2022-02-08",
+          "selected_symbols": [
+            "sh688135",
+            "sh605499",
+            "sh601229",
+            "sh605196"
+          ],
+          "strategy_return": -0.00797315396046827,
+          "benchmark_return": -0.024381889188541984,
+          "traded_legs": 3,
+          "requested_legs": 4,
+          "rank_ic": 0.2640033197690816
+        },
+        {
+          "signal_date": "2022-03-01",
+          "target_date": "2022-03-29",
+          "selected_symbols": [
+            "sh600906",
+            "sh601229",
+            "sh688135",
+            "sz000921"
+          ],
+          "strategy_return": -0.04379919569387761,
+          "benchmark_return": -0.040041027275258184,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.4189189189189189
+        },
+        {
+          "signal_date": "2022-04-21",
+          "target_date": "2022-05-24",
+          "selected_symbols": [
+            "sh688658",
+            "sz300376",
+            "sz000591",
+            "sh688778"
+          ],
+          "strategy_return": 0.02313313596732924,
+          "benchmark_return": -0.000811403181527215,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.13641456582633055
+        },
+        {
+          "signal_date": "2022-06-15",
+          "target_date": "2022-07-13",
+          "selected_symbols": [
+            "sh603887",
+            "sh688658",
+            "sz300122",
+            "sz301055"
+          ],
+          "strategy_return": -0.011137248165544823,
+          "benchmark_return": 0.0036784903757229874,
+          "traded_legs": 3,
+          "requested_legs": 4,
+          "rank_ic": 0.1788326444041791
+        },
+        {
+          "signal_date": "2022-07-25",
+          "target_date": "2022-08-22",
+          "selected_symbols": [
+            "sh600906",
+            "sz002916",
+            "sh601229",
+            "sh600976"
+          ],
+          "strategy_return": 0.0023499577120619664,
+          "benchmark_return": -0.0036676554209931654,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": -0.02870678740434672
+        },
+        {
+          "signal_date": "2022-09-13",
+          "target_date": "2022-10-18",
+          "selected_symbols": [
+            "sz002916",
+            "sh603919",
+            "sh600566",
+            "sh600854"
+          ],
+          "strategy_return": -0.002601046057867589,
+          "benchmark_return": -0.02166338212046535,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.21028321398079586
+        },
+        {
+          "signal_date": "2022-11-08",
+          "target_date": "2022-12-06",
+          "selected_symbols": [
+            "sh601229",
+            "sh603919",
+            "sz002916",
+            "sz000591"
+          ],
+          "strategy_return": 0.01778004009226052,
+          "benchmark_return": 0.023186182956349288,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.17463712757830405
+        },
+        {
+          "signal_date": "2022-12-27",
+          "target_date": "2023-02-01",
+          "selected_symbols": [
+            "sh603529",
+            "sh600758",
+            "sz000676",
+            "sz002916"
+          ],
+          "strategy_return": 0.051051546079293804,
+          "benchmark_return": 0.03313829068480816,
+          "traded_legs": 4,
+          "requested_legs": 4,
+          "rank_ic": 0.47713317036612385
+        }
+      ],
+      "development_admission": {
+        "passed": false,
+        "checks": {
+          "positive_total_return": false,
+          "positive_mean_excess": false,
+          "mean_rank_ic_at_least_5pct": true,
+          "maximum_drawdown_within_15pct": false,
+          "positive_year_fraction_at_least_60pct": false,
+          "leg_fill_rate_at_least_85pct": true
+        }
+      }
+    },
+    "pure_low_vol_two": {
+      "policy": {
+        "kind": "static_cross_section_v2",
+        "name": "pure_low_vol_two",
+        "portfolio": {
+          "top_k": 2,
+          "total_exposure": 0.3,
+          "selection": "rank_top_k"
+        }
+      },
+      "episodes": 40,
+      "top_k": 2,
+      "total_exposure": 0.3,
+      "total_return": 0.00904264864760096,
+      "benchmark_total_return": -0.012446462666073188,
+      "average_episode_return": 0.0003384202314848475,
+      "win_rate": 0.4,
+      "max_drawdown": -0.08218952161926252,
+      "participation_rate": 1.0,
+      "leg_fill_rate": 1.0,
+      "mean_rank_ic": 0.1756965763529612,
+      "positive_year_fraction": 0.4,
+      "positive_excess_year_fraction": 0.6,
+      "annual": {
+        "2018": {
+          "strategy_return": -0.004457943614500026,
+          "benchmark_return": -0.031850626239733115,
+          "excess_return": 0.02739268262523309
+        },
+        "2019": {
+          "strategy_return": -0.038380112948944056,
+          "benchmark_return": -4.3652012825967645e-05,
+          "excess_return": -0.03833646093611809
+        },
+        "2020": {
+          "strategy_return": 0.04911738919272857,
+          "benchmark_return": 0.09677874427405397,
+          "excess_return": -0.04766135508132541
+        },
+        "2021": {
+          "strategy_return": -0.02266733311730118,
+          "benchmark_return": -0.047193809245721585,
+          "excess_return": 0.024526476128420405
+        },
+        "2022": {
+          "strategy_return": 0.02796889663395241,
+          "benchmark_return": -0.023856553600825725,
+          "excess_return": 0.051825450234778137
+        }
+      },
+      "paired_comparison": {
+        "mean_excess_return": 0.00047603408842203463,
+        "median_excess_return": -0.002335504605341343,
+        "positive_excess_rate": 0.475,
+        "probability_mean_excess_positive": 0.5675,
+        "bootstrap_90pct_interval": [
+          -0.004069072937069046,
+          0.004795677113360249
+        ]
+      },
+      "episode_details": [
+        {
+          "signal_date": "2018-01-02",
+          "target_date": "2018-01-30",
+          "selected_symbols": [
+            "sh601988",
+            "sz002426"
+          ],
+          "strategy_return": 0.013408482648700065,
+          "benchmark_return": 0.012072120954378129,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.2796092796092796
+        },
+        {
+          "signal_date": "2018-02-27",
+          "target_date": "2018-03-27",
+          "selected_symbols": [
+            "sh600958",
+            "sh603589"
+          ],
+          "strategy_return": -0.011290969635159924,
+          "benchmark_return": -0.007731768966819541,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": -0.147135217723453
+        },
+        {
+          "signal_date": "2018-04-19",
+          "target_date": "2018-05-21",
+          "selected_symbols": [
+            "sh601818",
+            "sh601988"
+          ],
+          "strategy_return": 0.007798051406568969,
+          "benchmark_return": 0.009473438305254133,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.23016194331983805
+        },
+        {
+          "signal_date": "2018-06-11",
+          "target_date": "2018-07-10",
+          "selected_symbols": [
+            "sh601818",
+            "sh601988"
+          ],
+          "strategy_return": -0.009431968762751848,
+          "benchmark_return": -0.025032082755667505,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": -0.2318634423897582
+        },
+        {
+          "signal_date": "2018-07-20",
+          "target_date": "2018-08-17",
+          "selected_symbols": [
+            "sh601818",
+            "sh600875"
+          ],
+          "strategy_return": -0.01316234062117917,
+          "benchmark_return": -0.020931404105298156,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.44993894993894995
+        },
+        {
+          "signal_date": "2018-09-07",
+          "target_date": "2018-10-15",
+          "selected_symbols": [
+            "sh601988",
+            "sh601818"
+          ],
+          "strategy_return": 0.0026033996873742423,
+          "benchmark_return": -0.01329071728422948,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.1590909090909091
+        },
+        {
+          "signal_date": "2018-11-05",
+          "target_date": "2018-12-03",
+          "selected_symbols": [
+            "sh601988",
+            "sh601818"
+          ],
+          "strategy_return": -0.004401309565896059,
+          "benchmark_return": 0.0005505108023804661,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": -0.3540372670807454
+        },
+        {
+          "signal_date": "2018-12-24",
+          "target_date": "2019-01-23",
+          "selected_symbols": [
+            "sh601988",
+            "sh601818"
+          ],
+          "strategy_return": 0.010391186198357709,
+          "benchmark_return": 0.01338680851035523,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.3524786324786324
+        },
+        {
+          "signal_date": "2019-01-02",
+          "target_date": "2019-01-30",
+          "selected_symbols": [
+            "sh600111",
+            "sz002230"
+          ],
+          "strategy_return": 0.005206713937952274,
+          "benchmark_return": 0.02080284358718036,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.39328063241106714
+        },
+        {
+          "signal_date": "2019-02-27",
+          "target_date": "2019-03-27",
+          "selected_symbols": [
+            "sz000598",
+            "sh600039"
+          ],
+          "strategy_return": -0.0009553583910386865,
+          "benchmark_return": 0.005560661764705887,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.1827935222672065
+        },
+        {
+          "signal_date": "2019-04-18",
+          "target_date": "2019-05-21",
+          "selected_symbols": [
+            "sz002647",
+            "sh600039"
+          ],
+          "strategy_return": -0.023515246063334758,
+          "benchmark_return": -0.030139060102372384,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.3402714932126697
+        },
+        {
+          "signal_date": "2019-06-12",
+          "target_date": "2019-07-10",
+          "selected_symbols": [
+            "sh600039",
+            "sh600123"
+          ],
+          "strategy_return": -0.012404713254950902,
+          "benchmark_return": 0.007899754525104852,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.2619047619047619
+        },
+        {
+          "signal_date": "2019-07-22",
+          "target_date": "2019-08-19",
+          "selected_symbols": [
+            "sz000598",
+            "sz000402"
+          ],
+          "strategy_return": 0.002633309512133241,
+          "benchmark_return": 0.0005988834269273325,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.1229946524064171
+        },
+        {
+          "signal_date": "2019-09-09",
+          "target_date": "2019-10-15",
+          "selected_symbols": [
+            "sz000629",
+            "sz000402"
+          ],
+          "strategy_return": -0.009606629891125363,
+          "benchmark_return": -0.0030642196159843533,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.18983957219251338
+        },
+        {
+          "signal_date": "2019-11-05",
+          "target_date": "2019-12-03",
+          "selected_symbols": [
+            "sz000728",
+            "sz000402"
+          ],
+          "strategy_return": -0.007294777307139857,
+          "benchmark_return": -0.011624612768753052,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.6446886446886446
+        },
+        {
+          "signal_date": "2019-12-24",
+          "target_date": "2020-01-22",
+          "selected_symbols": [
+            "sz000402",
+            "sz002230"
+          ],
+          "strategy_return": 0.007276090817422409,
+          "benchmark_return": 0.010776108349251357,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.09494134897360704
+        },
+        {
+          "signal_date": "2020-01-02",
+          "target_date": "2020-02-07",
+          "selected_symbols": [
+            "sh600377",
+            "sh600522"
+          ],
+          "strategy_return": -0.023159872093687865,
+          "benchmark_return": -0.018841767001872976,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": -0.1746031746031746
+        },
+        {
+          "signal_date": "2020-02-28",
+          "target_date": "2020-03-27",
+          "selected_symbols": [
+            "sh600886",
+            "sh600377"
+          ],
+          "strategy_return": 0.0007403575075050304,
+          "benchmark_return": -0.01956105343547223,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.4407129455909944
+        },
+        {
+          "signal_date": "2020-04-20",
+          "target_date": "2020-05-21",
+          "selected_symbols": [
+            "sh600886",
+            "sh601668"
+          ],
+          "strategy_return": -0.006129973759998994,
+          "benchmark_return": 0.00590611863578625,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.02496782496782497
+        },
+        {
+          "signal_date": "2020-06-11",
+          "target_date": "2020-07-13",
+          "selected_symbols": [
+            "sh600968",
+            "sh600886"
+          ],
+          "strategy_return": 0.04025628361616463,
+          "benchmark_return": 0.070302070625479,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.031135531135531136
+        },
+        {
+          "signal_date": "2020-07-23",
+          "target_date": "2020-08-20",
+          "selected_symbols": [
+            "sh600377",
+            "sz002462"
+          ],
+          "strategy_return": 0.013989781982708525,
+          "benchmark_return": 8.149129627899043e-06,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.6254148885727833
+        },
+        {
+          "signal_date": "2020-09-10",
+          "target_date": "2020-10-16",
+          "selected_symbols": [
+            "sh600377",
+            "sh600968"
+          ],
+          "strategy_return": -0.00445115182889499,
+          "benchmark_return": 0.01439674915925555,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": -0.1407129455909944
+        },
+        {
+          "signal_date": "2020-11-06",
+          "target_date": "2020-12-04",
+          "selected_symbols": [
+            "sh600886",
+            "sh600155"
+          ],
+          "strategy_return": 0.03377600400797902,
+          "benchmark_return": 0.008968869194898386,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.5238095238095237
+        },
+        {
+          "signal_date": "2020-12-25",
+          "target_date": "2021-01-25",
+          "selected_symbols": [
+            "sh600968",
+            "sh600522"
+          ],
+          "strategy_return": -0.005312549509688076,
+          "benchmark_return": 0.034680937909433565,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.4646153846153846
+        },
+        {
+          "signal_date": "2021-01-04",
+          "target_date": "2021-02-01",
+          "selected_symbols": [
+            "sh600100",
+            "sh600547"
+          ],
+          "strategy_return": -0.029116257417481573,
+          "benchmark_return": 0.009825674099006698,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.18315508021390375
+        },
+        {
+          "signal_date": "2021-03-01",
+          "target_date": "2021-03-29",
+          "selected_symbols": [
+            "sh600125",
+            "sh600729"
+          ],
+          "strategy_return": 0.018293618391642404,
+          "benchmark_return": -0.02235757469255183,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.4816715542521994
+        },
+        {
+          "signal_date": "2021-04-20",
+          "target_date": "2021-05-21",
+          "selected_symbols": [
+            "sz000050",
+            "sh600547"
+          ],
+          "strategy_return": -0.002328505319839963,
+          "benchmark_return": 0.004682774890322671,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": -0.019050802139037436
+        },
+        {
+          "signal_date": "2021-06-11",
+          "target_date": "2021-07-12",
+          "selected_symbols": [
+            "sz000050",
+            "sh600977"
+          ],
+          "strategy_return": 0.0287435285402259,
+          "benchmark_return": -0.004935609882625191,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.09860703812316715
+        },
+        {
+          "signal_date": "2021-07-22",
+          "target_date": "2021-08-19",
+          "selected_symbols": [
+            "sh600100",
+            "sh600977"
+          ],
+          "strategy_return": -0.00792781627310179,
+          "benchmark_return": -0.01651706597628326,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": -0.02456011730205278
+        },
+        {
+          "signal_date": "2021-09-09",
+          "target_date": "2021-10-18",
+          "selected_symbols": [
+            "sh600977",
+            "sz000652"
+          ],
+          "strategy_return": -0.017182906228348897,
+          "benchmark_return": -0.0056280828576483425,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.13923286016309272
+        },
+        {
+          "signal_date": "2021-11-08",
+          "target_date": "2021-12-06",
+          "selected_symbols": [
+            "sz000703",
+            "sh600100"
+          ],
+          "strategy_return": -0.0010643261164805904,
+          "benchmark_return": 0.0021222692727478117,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": -0.056854838709677426
+        },
+        {
+          "signal_date": "2021-12-27",
+          "target_date": "2022-01-25",
+          "selected_symbols": [
+            "sz002151",
+            "sz000703"
+          ],
+          "strategy_return": -0.011096333728069688,
+          "benchmark_return": -0.014942483096575676,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.27917448405253287
+        },
+        {
+          "signal_date": "2022-01-04",
+          "target_date": "2022-02-08",
+          "selected_symbols": [
+            "sh601229",
+            "sh603012"
+          ],
+          "strategy_return": -0.007035117232824257,
+          "benchmark_return": -0.018286416891406483,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.4312470365101943
+        },
+        {
+          "signal_date": "2022-03-01",
+          "target_date": "2022-03-29",
+          "selected_symbols": [
+            "sh601229",
+            "sz000061"
+          ],
+          "strategy_return": -0.0011856978101610774,
+          "benchmark_return": -0.03003077045644363,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": -0.3515884305357989
+        },
+        {
+          "signal_date": "2022-04-21",
+          "target_date": "2022-05-24",
+          "selected_symbols": [
+            "sh601229",
+            "sh688658"
+          ],
+          "strategy_return": -0.007105755641663874,
+          "benchmark_return": -0.0006085523861454112,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.18123249299719887
+        },
+        {
+          "signal_date": "2022-06-15",
+          "target_date": "2022-07-13",
+          "selected_symbols": [
+            "sh601229",
+            "sz000882"
+          ],
+          "strategy_return": -0.0006335942039430796,
+          "benchmark_return": 0.00275886778179224,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.054463459759481955
+        },
+        {
+          "signal_date": "2022-07-25",
+          "target_date": "2022-08-22",
+          "selected_symbols": [
+            "sz002916",
+            "sz002065"
+          ],
+          "strategy_return": 0.0030920273732515033,
+          "benchmark_return": -0.002750741565744874,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.012570356472795498
+        },
+        {
+          "signal_date": "2022-09-13",
+          "target_date": "2022-10-18",
+          "selected_symbols": [
+            "sh601229",
+            "sz002065"
+          ],
+          "strategy_return": -0.005151370160222173,
+          "benchmark_return": -0.01624753659034901,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.22745320476460582
+        },
+        {
+          "signal_date": "2022-11-08",
+          "target_date": "2022-12-06",
+          "selected_symbols": [
+            "sh601229",
+            "sh600906"
+          ],
+          "strategy_return": 0.0318000549427197,
+          "benchmark_return": 0.01738963721726197,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.2085561497326203
+        },
+        {
+          "signal_date": "2022-12-27",
+          "target_date": "2023-02-01",
+          "selected_symbols": [
+            "sh601229",
+            "sz002916"
+          ],
+          "strategy_return": 0.014472459505671723,
+          "benchmark_return": 0.02485371801360612,
+          "traded_legs": 2,
+          "requested_legs": 2,
+          "rank_ic": 0.4182551319648093
+        }
+      ],
+      "development_admission": {
+        "passed": false,
+        "checks": {
+          "positive_total_return": true,
+          "positive_mean_excess": true,
+          "mean_rank_ic_at_least_5pct": true,
+          "maximum_drawdown_within_15pct": true,
+          "positive_year_fraction_at_least_60pct": false,
+          "leg_fill_rate_at_least_85pct": true
+        }
+      }
+    }
+  },
+  "selected_candidate": "broad_contrarian_four",
+  "frozen_validation_policy": {
+    "kind": "static_cross_section_v2",
+    "name": "broad_contrarian_four",
+    "portfolio": {
+      "top_k": 4,
+      "total_exposure": 0.4,
+      "selection": "rank_top_k"
+    }
+  },
+  "validation_result": null,
+  "locked_holdout_ready": false,
+  "status": "development_failed",
+  "claim_boundary": "V2 was selected using 2018-2022 only; 2023-2025 is a frozen validation; 2026 remains locked unless every validation gate passes"
+}

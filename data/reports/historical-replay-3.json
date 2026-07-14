@@ -1,0 +1,1672 @@
+{
+  "method": "anonymized, non-overlapping, point-in-time historical blind replay",
+  "requested_range": {
+    "start": "2025-01-01",
+    "end": "2025-06-30"
+  },
+  "horizon_days": 20,
+  "requested_episodes": 2,
+  "completed_episodes": 2,
+  "selection_rule": "eligible common trading dates with >=200 prior observations; non-overlapping episodes selected evenly across the requested range without using outcomes",
+  "source": "cached:fallback",
+  "degraded_sources": [],
+  "blinding": {
+    "actual_symbol_supplied_to_llm": false,
+    "actual_date_supplied_to_llm": false,
+    "price_normalized_to": 100.0,
+    "normalized_price_path_120_supplied": true,
+    "normalized_price_path_contains_absolute_prices": false,
+    "actual_identity_stored_only_outside_llm_context": true
+  },
+  "statistical_model_contract": "each episode refits using samples whose as_of and evaluated_at are before the signal date",
+  "execution_contract": "T close signal, T+1 open buy, horizon-day close sell, ETF costs, whole lots, and path-dependent capital per comparison arm",
+  "episodes": [
+    {
+      "episode": 1,
+      "actual_as_of": "2025-01-02",
+      "blind_symbol": "ETF_CANDIDATE_01",
+      "blind_date": "2000-02-03",
+      "actual_symbol": "sh513100",
+      "entry_date": "2025-01-03",
+      "outcome_date": "2025-02-07",
+      "strategy_signal": {
+        "strategy": "etf_rotation",
+        "symbol": "sh513100",
+        "as_of": "2025-01-02",
+        "score": 0.43298779240997076,
+        "target_weight": 0.5,
+        "confidence": 0.6354272150500684,
+        "reasons": [
+          "multi-period momentum=8.46%",
+          "annualized volatility=17.99%"
+        ],
+        "evidence": [],
+        "valid_until": null
+      },
+      "market_regime": "bull",
+      "decision": {
+        "symbol": "ETF_CANDIDATE_01",
+        "as_of": "2000-02-03",
+        "action": "review_required",
+        "confidence": 0.46349999999999997,
+        "target_weight": 0.0,
+        "entry_price": 100.0,
+        "stop_loss": null,
+        "target_1": null,
+        "target_2": null,
+        "reasons": [
+          "composite_score=0.317",
+          "strategy_signal_score=0.433",
+          "council_score=0.488",
+          "forecast_score=0.084",
+          "evidence_coverage=0.90",
+          "momentum_technical_sync=True",
+          "buy_requires_composite>0.35"
+        ],
+        "risks": [
+          "Momentum acceleration is negative (-0.000236), indicating potential slowdown.",
+          "RSI at 54.74 is neutral, not confirming strong momentum.",
+          "Annualized volatility of 17.99% is moderate, but could lead to drawdowns.",
+          "Pullback reversal not triggered, but strength is low (0.25).",
+          "Momentum acceleration is negative (-0.00024, score -0.059), indicating deceleration in recent momentum.",
+          "Volume asymmetry is near zero (0.0048, score 0.005), lacking strong volume confirmation.",
+          "Cross-section momentum_120_rank is only 0.5, suggesting longer-term relative strength is average.",
+          "Pullback/reversal not triggered, but strength is low (0.25).",
+          "Momentum acceleration is negative (-0.000236) and scores -0.059, indicating deceleration in the most recent 20-day speed relative to 60-day speed.",
+          "Volume asymmetry is near zero (0.005), suggesting no strong volume confirmation on up days vs down days.",
+          "Pullback reversal conditions not triggered; no oversold RSI or volume contraction to suggest a reversal setup.",
+          "A 50% allocation would create substantial concentration exposure, particularly because the ETF's underlying assets and structural risks are unidentified.",
+          "Without NAV and holdings data, no discount-to-intrinsic-value or look-through earnings assessment can be performed.",
+          "Unknown leverage, derivatives exposure, redemption mechanics, fees, counterparty exposure, and liquidity could materially affect permanent-loss risk, but the supplied evidence does not establish that these risks are actually present.",
+          "Unbounded execution and liquidation risk due to absent spread, depth, turnover, fund-size, and portfolio-capacity data.",
+          "Concentration risk from placing 50% in one unidentified ETF.",
+          "Potential structural permanent-loss risk cannot be excluded because leverage, counterparty exposure, holdings concentration, tracking structure, and liquidation provisions are unknown.",
+          "No explicit loss limit or invalidation rule is supplied, so drawdown containment is not demonstrated.",
+          "Reported data-quality confidence is not independently supported and conflicts with the apparent path-length inconsistency.",
+          "The as-of-only signal has no expiry, increasing stale-signal risk.",
+          "Momentum acceleration negative, suggesting possible deceleration",
+          "Pullback/reversal not triggered but strength moderate (0.25)",
+          "No liquidity data provided (e.g., bid-ask spread, volume trends)"
+        ],
+        "degraded_sources": [],
+        "requires_human_review": true
+      },
+      "decision_trace": {
+        "formula": "sum(component_weight * component_value)",
+        "weights": {
+          "strategy_signal_score": 0.3,
+          "council_score": 0.3,
+          "forecast_score": 0.15,
+          "analyst_score": 0.1,
+          "debate_score": 0.15
+        },
+        "components": {
+          "strategy_signal_score": 0.4329877924099707,
+          "council_score": 0.4877338877338877,
+          "forecast_score": 0.08372843558300741,
+          "analyst_score": 0.2333333333333333,
+          "debate_score": 0.030000000000000027
+        },
+        "composite_score": 0.31660910271394194,
+        "council_diagnostics": {
+          "momentum_technical_sync": true,
+          "veto_triggered": true,
+          "veto_roles": [
+            "risk"
+          ],
+          "market_regime": "bull"
+        },
+        "conflict": 0.97,
+        "confidence_formula": "evidence_coverage * (1 - 0.5 * conflict)",
+        "confidence": 0.46349999999999997,
+        "evidence_coverage": {
+          "asset_type": "etf",
+          "weights": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.35,
+            "market_regime": 0.2,
+            "news": 0.1
+          },
+          "availability": {
+            "strategy_signal": true,
+            "quant_factors": true,
+            "market_regime": true,
+            "news": false
+          },
+          "contributions": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.35,
+            "market_regime": 0.2,
+            "news": 0.0
+          },
+          "raw": 0.8999999999999999,
+          "data_quality": 1.0,
+          "adjusted": 0.8999999999999999
+        }
+      },
+      "reviewer": {
+        "approved": true,
+        "status": "approved",
+        "issues": [],
+        "summary": "Decision is consistent with policy: composite score 0.317 below buy threshold 0.35, so review_required with zero target weight is correct. Evidence coverage meets required list, confidence 0.463 above minimum 0.25, and all calculations match decision_calculation trace. No material errors or contradictions found."
+      },
+      "council": {
+        "tactical_score": 0.4877338877338877,
+        "strategic_score": null,
+        "combined_score": 0.4877338877338877,
+        "veto_triggered": true,
+        "veto_roles": [
+          "risk"
+        ],
+        "momentum_tech_sync": true,
+        "market_regime": "bull",
+        "opinions": [
+          {
+            "role": "technical",
+            "perspective": "price structure and multi-timeframe trend",
+            "stance": "bullish",
+            "score": 0.6,
+            "confidence": 0.7,
+            "weight": 1.3,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Multi-timeframe consensus is uptrend (daily neutral, weekly/monthly uptrend).",
+              "Price is near the top of its 60-day range (price_position_60=0.87), indicating strong upward momentum.",
+              "Medium-term momentum (60-day) is positive and ranks at the top of the cross-section.",
+              "Path quality is positive, suggesting orderly upward movement."
+            ],
+            "evidence": [
+              "Multi-timeframe verdict: uptrend (daily=0, weekly=1, monthly=1, consensus=2).",
+              "price_position_60: 0.87 (score 0.75) – near top of 60-day range.",
+              "momentum_60: 0.151 (score 0.425) – positive medium-term return.",
+              "cross_section_momentum_60_rank: 1.0 – top rank among peers.",
+              "path_quality_60: 0.288 (score 0.288) – positive trend quality.",
+              "ma_spread_5_20: 0.0105 (score 0.125) – short-term MA above medium-term MA.",
+              "return_skewness_60: 0.359 (score 0.178) – positive skew, more upside days.",
+              "rsi_14: 54.7 (score 0.158) – neutral, not overbought."
+            ],
+            "risks": [
+              "Momentum acceleration is negative (-0.00024, score -0.059), indicating deceleration in recent momentum.",
+              "Volume asymmetry is near zero (0.0048, score 0.005), lacking strong volume confirmation.",
+              "Cross-section momentum_120_rank is only 0.5, suggesting longer-term relative strength is average.",
+              "Pullback/reversal not triggered, but strength is low (0.25)."
+            ],
+            "missing_data": [
+              "No daily/weekly/monthly price data beyond normalized 120-day path; cannot verify exact support/resistance levels.",
+              "No volume data to confirm price action; volume asymmetry is provided but absolute volume levels missing.",
+              "No volatility trend (e.g., Bollinger Bands, ATR) to assess risk of sharp reversals.",
+              "No news or fundamental data to contextualize price moves."
+            ]
+          },
+          {
+            "role": "momentum",
+            "perspective": "momentum quality and continuation",
+            "stance": "bullish",
+            "score": 0.3,
+            "confidence": 0.6,
+            "weight": 1.5,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Strong multi-period momentum (8.46%) and high cross-sectional ranks (1.0 for 20d and 60d) indicate robust recent and medium-term performance.",
+              "Path quality is positive (0.288) suggesting the uptrend is relatively smooth, supporting continuation.",
+              "Price near top of 60-day range (0.873) and uptrend consensus from multi-timeframe analysis reinforce bullish bias."
+            ],
+            "evidence": [
+              "multi-period momentum=8.46% from strategy signals.",
+              "momentum_20 score 0.212, momentum_60 score 0.425.",
+              "path_quality_60 value 0.288, score 0.288.",
+              "price_position_60 value 0.873, score 0.746.",
+              "multi_timeframe consensus 'uptrend'.",
+              "cross_section_momentum_20_rank=1.0, cross_section_momentum_60_rank=1.0."
+            ],
+            "risks": [
+              "Momentum acceleration is negative (-0.000236) and scores -0.059, indicating deceleration in the most recent 20-day speed relative to 60-day speed.",
+              "Volume asymmetry is near zero (0.005), suggesting no strong volume confirmation on up days vs down days.",
+              "Pullback reversal conditions not triggered; no oversold RSI or volume contraction to suggest a reversal setup."
+            ],
+            "missing_data": [
+              "No news or fundamental data provided to assess catalyst or valuation risk.",
+              "No volume levels or absolute volume data beyond asymmetry ratio.",
+              "No sector or peer comparison beyond cross-sectional ranks."
+            ]
+          },
+          {
+            "role": "value_veto",
+            "perspective": "extreme valuation and solvency veto",
+            "stance": "neutral",
+            "score": -0.35,
+            "confidence": 0.2,
+            "weight": 0.6,
+            "mode": "veto_only",
+            "veto": false,
+            "thesis": [
+              "No valuation-based approval is possible because the ETF's holdings, NAV, underlying owner earnings, liabilities, leverage, fees, and cash-generation characteristics are not supplied.",
+              "The momentum and regime signals indicate recent price strength but provide no evidence of intrinsic value or a margin of safety.",
+              "The supplied evidence does not demonstrate a concrete permanent-loss, solvency, fraud, unbounded-liquidity, or execution risk sufficient to trigger an extreme-risk veto."
+            ],
+            "evidence": [
+              "Fact: The quoted ETF price is 100.0 as of 2000-02-03.",
+              "Fact: The fundamentals field is empty and no holdings, NAV, issuer, structure, leverage, assets under management, expense ratio, spreads, or trading liquidity are provided.",
+              "Fact: Reported multi-period momentum is 8.46%, annualized volatility is 17.99%, and the 60-day price-position factor is 0.8729.",
+              "Fact: The strategy signal proposes a 0.5 target weight with confidence of approximately 0.635.",
+              "Inference: Price momentum and a bull-market regime cannot establish intrinsic value, solvency, or downside protection."
+            ],
+            "risks": [
+              "A 50% allocation would create substantial concentration exposure, particularly because the ETF's underlying assets and structural risks are unidentified.",
+              "Without NAV and holdings data, no discount-to-intrinsic-value or look-through earnings assessment can be performed.",
+              "Unknown leverage, derivatives exposure, redemption mechanics, fees, counterparty exposure, and liquidity could materially affect permanent-loss risk, but the supplied evidence does not establish that these risks are actually present."
+            ],
+            "missing_data": [
+              "ETF identity, mandate, benchmark, and issuer",
+              "Current NAV and premium or discount to NAV",
+              "Complete holdings and concentration profile",
+              "Look-through earnings, free cash flow, and cash-conversion history",
+              "Look-through balance-sheet leverage and solvency metrics",
+              "Fund structure, derivatives usage, counterparty exposure, and redemption mechanics",
+              "Assets under management, bid-ask spread, average trading volume, and market depth",
+              "Expense ratio, turnover, tracking error, distributions, and tax characteristics"
+            ]
+          },
+          {
+            "role": "risk",
+            "perspective": "capital preservation and trade feasibility",
+            "stance": "bearish",
+            "score": -0.6,
+            "confidence": 0.9,
+            "weight": 1.0,
+            "mode": "veto_only",
+            "veto": true,
+            "thesis": [
+              "Veto the proposed 50% allocation because execution capacity and downside cannot be bounded from the supplied evidence.",
+              "The positive momentum and bull-regime signals do not establish that this unidentified ETF is liquid, unlevered, diversified, structurally sound, or executable at the stated price.",
+              "No position-level invalidation, stop, maximum-loss constraint, or valid-until date is supplied."
+            ],
+            "evidence": [
+              "Fact: the strategy proposes a target weight of 0.5, creating substantial single-instrument concentration.",
+              "Fact: annualized volatility is reported as 17.99%, while the 60-day path-quality score is only 0.2877 and momentum acceleration is negative.",
+              "Fact: no volume, bid-ask spread, assets under management, creation/redemption activity, market depth, or order-size information is provided.",
+              "Fact: the instrument is identified only as ETF_CANDIDATE_01; holdings, issuer, benchmark, leverage, derivatives exposure, domicile, and closure or liquidation terms are absent.",
+              "Fact: strategy evidence is empty, news and fundamentals are empty, and valid_until is null.",
+              "Fact: the field labeled normalized_price_path_120 contains only 30 supplied observations, creating an internal presentation inconsistency despite data_quality being reported as 1.0.",
+              "Inference: without instrument identity and liquidity/capacity evidence, market impact and exit feasibility for a 50% allocation are unbounded; this is a concrete execution-risk basis for veto."
+            ],
+            "risks": [
+              "Unbounded execution and liquidation risk due to absent spread, depth, turnover, fund-size, and portfolio-capacity data.",
+              "Concentration risk from placing 50% in one unidentified ETF.",
+              "Potential structural permanent-loss risk cannot be excluded because leverage, counterparty exposure, holdings concentration, tracking structure, and liquidation provisions are unknown.",
+              "No explicit loss limit or invalidation rule is supplied, so drawdown containment is not demonstrated.",
+              "Reported data-quality confidence is not independently supported and conflicts with the apparent path-length inconsistency.",
+              "The as-of-only signal has no expiry, increasing stale-signal risk."
+            ],
+            "missing_data": [
+              "ETF name, ticker, issuer, exchange, domicile, benchmark, and legal structure",
+              "Average daily value traded, bid-ask spread, market depth, AUM, shares outstanding, and proposed order notional",
+              "Holdings concentration, sector and geographic exposures, leverage, derivatives, securities lending, and counterparty exposure",
+              "Historical maximum drawdown, downside volatility, tail loss, recovery time, and stress-test results",
+              "Tracking error, premium or discount to NAV, creation/redemption liquidity, and closure or liquidation provisions",
+              "Portfolio-level capital base and existing exposures needed to evaluate the 50% target weight",
+              "Entry method, slippage limit, stop or invalidation rule, maximum acceptable loss, and exit plan",
+              "Source provenance and reconciliation of the normalized_price_path_120 length inconsistency"
+            ]
+          },
+          {
+            "role": "macro",
+            "perspective": "market regime and liquidity",
+            "stance": "bullish",
+            "score": 0.6,
+            "confidence": 0.85,
+            "weight": 0.7,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Bull market regime supports long-biased strategies",
+              "Strong uptrend confirmed by multi-timeframe consensus",
+              "Low volatility regime reduces execution risk"
+            ],
+            "evidence": [
+              "Market regime classified as 'bull' with 94.87% confidence",
+              "Multi-timeframe consensus verdict: 'uptrend'",
+              "Annualized volatility 17.99% (moderate, not high)",
+              "Price position near top of 60-day range (87.29%)",
+              "Positive medium-term momentum (60-day return 15.13%)"
+            ],
+            "risks": [
+              "Momentum acceleration negative, suggesting possible deceleration",
+              "Pullback/reversal not triggered but strength moderate (0.25)",
+              "No liquidity data provided (e.g., bid-ask spread, volume trends)"
+            ],
+            "missing_data": [
+              "Liquidity metrics (bid-ask spread, average volume, market depth)",
+              "Macroeconomic releases or central bank policy context",
+              "Sector or peer comparison for relative liquidity"
+            ]
+          }
+        ],
+        "summary": "tactical=0.488; strategic=None; veto=risk"
+      },
+      "forecast": {
+        "symbol": "ETF_CANDIDATE_01",
+        "as_of": "2000-02-03",
+        "horizon_days": 20,
+        "up_probability": 0.44555221051195404,
+        "flat_probability": 0.2280599961545763,
+        "down_probability": 0.32638779333346973,
+        "expected_return_pct": 2.0,
+        "lower_return_pct": -5.0,
+        "upper_return_pct": 8.0,
+        "confidence": 0.65,
+        "drivers": [
+          "Bull market regime with 94.87% confidence",
+          "Strong multi-period momentum (8.46% over 60 days)",
+          "High cross-sectional momentum ranks (1.0 for 20d and 60d)",
+          "Multi-timeframe consensus uptrend (weekly/monthly)",
+          "online statistical model blended at weight=0.500"
+        ],
+        "counter_evidence": [
+          "Negative momentum acceleration (-0.000236)",
+          "Neutral RSI (54.74) and near-zero volume asymmetry",
+          "Price near top of 60-day range (0.87) increasing mean reversion risk",
+          "Risk analyst veto due to missing liquidity and structural data"
+        ],
+        "invalidation_conditions": [
+          "Break below 20-day moving average",
+          "Volume spike with price decline",
+          "Negative news or macro shock",
+          "Failure to hold above 95 support level"
+        ],
+        "evidence_ids": [
+          "quant_evidence_1",
+          "quant_evidence_2",
+          "quant_evidence_3",
+          "quant_evidence_4",
+          "quant_evidence_5"
+        ],
+        "model": "deepseek-chat+online-v0",
+        "model_provider": "deepseek",
+        "statistical_model_id": "pit-etf-20-2025-01-02",
+        "statistical_model_version": 0,
+        "statistical_weight": 0.5,
+        "statistical_up_probability": 0.341104421023908,
+        "statistical_flat_probability": 0.2561199923091526,
+        "statistical_down_probability": 0.40277558666693947,
+        "raw_llm_up_probability": 0.55,
+        "raw_llm_flat_probability": 0.2,
+        "raw_llm_down_probability": 0.25
+      },
+      "realized_return_pct": -1.2165450121654708,
+      "outcome": "down",
+      "strategy_weight": 0.15,
+      "full_system_weight": 0.0,
+      "strategy_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 9100,
+        "entry_price": 1.6408199999999997,
+        "exit_price": 1.6191900000000001,
+        "entry_date": "2025-01-03",
+        "exit_date": "2025-02-07",
+        "fees": 10.0,
+        "slippage": 14.832999999998165,
+        "net_pnl": -206.8329999999969,
+        "net_return": -0.002068329999999969,
+        "capital_before": 100000.0,
+        "capital_after": 99793.167
+      },
+      "full_system_trade": {
+        "traded": false,
+        "weight": 0.0,
+        "quantity": 0,
+        "net_pnl": 0.0,
+        "net_return": 0.0,
+        "capital_before": 100000.0,
+        "capital_after": 100000.0
+      },
+      "benchmark_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 4000,
+        "entry_price": 3.70185,
+        "exit_price": 3.77811,
+        "entry_date": "2025-01-03",
+        "exit_date": "2025-02-07",
+        "fees": 10.0,
+        "slippage": 14.95999999999853,
+        "net_pnl": 295.03999999999905,
+        "net_return": 0.0029503999999999906,
+        "capital_before": 100000.0,
+        "capital_after": 100295.04
+      },
+      "gate_effect": "avoided_loss",
+      "point_in_time_model": {
+        "cutoff": "2025-01-02",
+        "asset_scope": "etf",
+        "horizons": {
+          "5": {
+            "status": "rejected",
+            "samples": 342,
+            "fold_pass_rate": 0.6666666666666666,
+            "brier_score": 0.19621995891835428,
+            "log_loss": 0.9980564875570267,
+            "accuracy": 0.543859649122807,
+            "baseline_brier": 0.20958724821137056,
+            "baseline_log_loss": 1.0445064445452263
+          },
+          "20": {
+            "status": "admitted",
+            "samples": 335,
+            "validation_samples": 335,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-07-19",
+              "inner_training_samples": 425,
+              "calibration_samples": 109,
+              "baseline_brier": 0.2180346466699948,
+              "baseline_log_loss": 1.0802934282709755,
+              "prior_blend": 0.6000000000000001,
+              "brier_score": 0.2058503330064444,
+              "log_loss": 1.0297360546899432,
+              "normalized_score": 1.8973178664912433
+            },
+            "brier_score": 0.19602470421589446,
+            "log_loss": 1.0013314446760075,
+            "accuracy": 0.5701492537313433,
+            "baseline_brier": 0.22012665638857923,
+            "baseline_log_loss": 1.0895083135126
+          }
+        },
+        "contract": "as_of < cutoff and evaluated_at < cutoff"
+      },
+      "llm_audit": {
+        "health": {
+          "provider": "router",
+          "model": "resilient-router",
+          "endpoints": [
+            {
+              "endpoint_id": "deepseek-1",
+              "provider": "deepseek",
+              "model": "deepseek-chat",
+              "failures": 0,
+              "status": "ready",
+              "cooldown_remaining_seconds": 0.0
+            },
+            {
+              "endpoint_id": "openai-1",
+              "provider": "openai",
+              "model": "gpt-5.6-terra",
+              "failures": 1,
+              "status": "cooldown",
+              "cooldown_remaining_seconds": 108.21799999999348
+            }
+          ],
+          "recent_calls": 12,
+          "recent_successes": 11,
+          "recent_total_tokens": 32175
+        },
+        "calls": [
+          {
+            "timestamp": "2026-07-13T13:47:06.799183+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "AnalystReport",
+            "routing_key": "quant",
+            "status": "ok",
+            "latency_ms": 4217.46,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1488,
+              "output_tokens": 331,
+              "total_tokens": 1819
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:47:10.204528+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "macro",
+            "status": "ok",
+            "latency_ms": 3345.37,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1708,
+              "output_tokens": 301,
+              "total_tokens": 2009
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:47:11.371165+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "momentum",
+            "status": "ok",
+            "latency_ms": 4568.9,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1710,
+              "output_tokens": 431,
+              "total_tokens": 2141
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:47:12.431005+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "technical",
+            "status": "ok",
+            "latency_ms": 5631.02,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1709,
+              "output_tokens": 573,
+              "total_tokens": 2282
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:47:32.429802+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "risk",
+            "status": "ok",
+            "latency_ms": 25572.6,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1922,
+              "output_tokens": 1142,
+              "total_tokens": 3064,
+              "reasoning_tokens": 508
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:47:32.803734+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "value_veto",
+            "status": "ok",
+            "latency_ms": 25999.41,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1926,
+              "output_tokens": 1011,
+              "total_tokens": 2937,
+              "reasoning_tokens": 516
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:47:46.230654+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": "medium",
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "status": "ok",
+            "latency_ms": 13425.8,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1883,
+              "output_tokens": 601,
+              "total_tokens": 2484,
+              "reasoning_tokens": 29
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:48:32.811044+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "error",
+            "latency_ms": 60003.87,
+            "error_type": "APITimeoutError",
+            "usage": {}
+          },
+          {
+            "timestamp": "2026-07-13T13:48:38.103004+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "ok",
+            "latency_ms": 5292.44,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1665,
+              "output_tokens": 371,
+              "total_tokens": 2036
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:48:41.987977+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 3883.97,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3160,
+              "output_tokens": 453,
+              "total_tokens": 3613
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:48:42.314654+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 4209.02,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3160,
+              "output_tokens": 465,
+              "total_tokens": 3625
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:48:44.581724+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ReviewReport",
+            "routing_key": "review",
+            "status": "ok",
+            "latency_ms": 1863.47,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 6074,
+              "output_tokens": 91,
+              "total_tokens": 6165
+            }
+          }
+        ],
+        "summary": {
+          "calls": 12,
+          "successes": 11,
+          "errors": 1,
+          "total_tokens": 32175,
+          "total_latency_ms": 158013.33
+        },
+        "secrets_exposed": false,
+        "prompts_persisted": false
+      },
+      "llm_validation": {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "macro": 1,
+          "momentum": 1,
+          "technical": 1,
+          "risk": 1,
+          "value_veto": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 12,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "error_type": "APITimeoutError"
+          }
+        ],
+        "complete": true
+      }
+    },
+    {
+      "episode": 2,
+      "actual_as_of": "2025-06-20",
+      "blind_symbol": "ETF_CANDIDATE_02",
+      "blind_date": "2000-03-05",
+      "actual_symbol": "sh518880",
+      "entry_date": "2025-06-23",
+      "outcome_date": "2025-07-18",
+      "strategy_signal": {
+        "strategy": "etf_rotation",
+        "symbol": "sh518880",
+        "as_of": "2025-06-20",
+        "score": 0.476427254668331,
+        "target_weight": 0.5,
+        "confidence": 0.657340890196938,
+        "reasons": [
+          "multi-period momentum=11.74%",
+          "annualized volatility=23.21%"
+        ],
+        "evidence": [],
+        "valid_until": null
+      },
+      "market_regime": "bull",
+      "decision": {
+        "symbol": "ETF_CANDIDATE_02",
+        "as_of": "2000-03-05",
+        "action": "watch",
+        "confidence": 0.486,
+        "target_weight": 0.0,
+        "entry_price": 100.0,
+        "stop_loss": null,
+        "target_1": null,
+        "target_2": null,
+        "reasons": [
+          "composite_score=0.263",
+          "strategy_signal_score=0.476",
+          "council_score=0.313",
+          "forecast_score=0.110",
+          "evidence_coverage=0.90",
+          "momentum_technical_sync=False",
+          "buy_requires_composite>0.35"
+        ],
+        "risks": [
+          "Momentum acceleration score -0.37 (short) suggests slowing momentum",
+          "Return skewness 60 score -0.53 (short) indicates negative skew",
+          "20-day momentum score 0.0 (neutral) shows no recent return",
+          "Annualized volatility 23.21% is moderate",
+          "Momentum acceleration negative (-0.00155, score -0.37) suggests recent deceleration.",
+          "Return skewness negative (-1.18, score -0.53) indicates left-tail risk.",
+          "Daily trend neutral (score 0) could precede a pullback.",
+          "Negative momentum acceleration and negative skewness indicate deteriorating momentum quality and potential reversal.",
+          "Pullback reversal not triggered; no clear entry point for continuation.",
+          "A 50% allocation to an instrument with reported 23.21% annualized volatility and materially negative return skewness creates substantial concentration and downside-tail exposure, although this evidence alone does not prove permanent loss.",
+          "Without holdings and structural information, look-through leverage, issuer or counterparty exposure, concentration, tracking risk, and redemption mechanics cannot be assessed.",
+          "Without NAV or underlying earning-power data, the relationship between the 100.0 market price and intrinsic value is indeterminate; therefore no margin of safety can be established.",
+          "Concentration risk: a 50% position could dominate portfolio drawdown, particularly with 23.21% reported volatility.",
+          "Tail risk: negative return skewness suggests losses may occur more abruptly than gains.",
+          "Execution risk is unmeasured because trading volume, bid-ask spread, assets under management, creation-redemption capacity, and underlying-market liquidity are absent.",
+          "Event and structural risks cannot be assessed without the ETF's holdings, index methodology, leverage status, derivatives exposure, counterparty exposure, or tracking behavior.",
+          "Signal invalidation is undefined because no stop-loss, maximum tolerated drawdown, rebalance trigger, or valid-until date is provided.",
+          "The supplied normalized path labeled as 120-day contains only 30 observations, creating ambiguity about the displayed risk-history coverage.",
+          "Momentum acceleration is negative, suggesting recent slowdown",
+          "Return skewness is negative, indicating left-tail risk",
+          "No liquidity data provided; execution risk in stressed conditions is unknown"
+        ],
+        "degraded_sources": [],
+        "requires_human_review": false
+      },
+      "decision_trace": {
+        "formula": "sum(component_weight * component_value)",
+        "weights": {
+          "strategy_signal_score": 0.3,
+          "council_score": 0.3,
+          "forecast_score": 0.15,
+          "analyst_score": 0.1,
+          "debate_score": 0.15
+        },
+        "components": {
+          "strategy_signal_score": 0.4764272546683311,
+          "council_score": 0.3131236442516269,
+          "forecast_score": 0.10956038731230516,
+          "analyst_score": 0.21666666666666667,
+          "debate_score": -0.07999999999999996
+        },
+        "composite_score": 0.26296599443949986,
+        "council_diagnostics": {
+          "momentum_technical_sync": false,
+          "veto_triggered": false,
+          "veto_roles": [],
+          "market_regime": "bull"
+        },
+        "conflict": 0.92,
+        "confidence_formula": "evidence_coverage * (1 - 0.5 * conflict)",
+        "confidence": 0.486,
+        "evidence_coverage": {
+          "asset_type": "etf",
+          "weights": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.35,
+            "market_regime": 0.2,
+            "news": 0.1
+          },
+          "availability": {
+            "strategy_signal": true,
+            "quant_factors": true,
+            "market_regime": true,
+            "news": false
+          },
+          "contributions": {
+            "strategy_signal": 0.35,
+            "quant_factors": 0.35,
+            "market_regime": 0.2,
+            "news": 0.0
+          },
+          "raw": 0.8999999999999999,
+          "data_quality": 1.0,
+          "adjusted": 0.8999999999999999
+        }
+      },
+      "reviewer": {
+        "approved": true,
+        "status": "approved",
+        "issues": [
+          "Non-blocking clarity: the reason \"buy_requires_composite>0.35\" should ideally use the policy's exact threshold notation rather than implying an unspecified strict-boundary rule; this does not affect the current 0.263 score.",
+          "Non-blocking clarity: references to a proposed 50% allocation concern the advisory raw strategy weight, while the final non-buy allocation is correctly set to 0%. This distinction could be stated more explicitly."
+        ],
+        "summary": "Approved. The deterministic calculation is internally consistent: the weighted components produce a composite score of approximately 0.262966, and 0.90 evidence coverage with 0.92 conflict produces confidence of 0.486. The composite is above the 0.12 watch threshold but below the 0.35 buy threshold, so \"watch\" is correct. Confidence exceeds the supplied 0.25 minimum, and the non-buy target weight is correctly zero. All required evidence categories are present; absent fundamentals and news are optional for this ETF. Forecast probabilities are coherent, major momentum, tail, concentration, liquidity, structural, and data-history limitations are disclosed, and no degraded source is silently concealed."
+      },
+      "council": {
+        "tactical_score": 0.3131236442516269,
+        "strategic_score": null,
+        "combined_score": 0.3131236442516269,
+        "veto_triggered": false,
+        "veto_roles": [],
+        "momentum_tech_sync": false,
+        "market_regime": "bull",
+        "opinions": [
+          {
+            "role": "technical",
+            "perspective": "price structure and multi-timeframe trend",
+            "stance": "bullish",
+            "score": 0.35,
+            "confidence": 0.65,
+            "weight": 1.3,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Multi-timeframe consensus is uptrend (weekly and monthly bullish, daily neutral).",
+              "Medium-term momentum (60-day) is positive and cross-section rank is top (1.0).",
+              "Price is in the upper half of its 60-day range, and short-term MA spread is positive.",
+              "Volume asymmetry favors up-volume, supporting price strength."
+            ],
+            "evidence": [
+              "Multi-timeframe verdict: uptrend (daily 0, weekly 1, monthly 1, consensus 2).",
+              "Momentum_60 value 0.0977, score 0.285, direction long.",
+              "Cross-section momentum_60 rank 1.0, momentum_120 rank 1.0.",
+              "Price_position_60 value 0.556, score 0.111, direction long.",
+              "MA_spread_5_20 value 0.0064, score 0.077, direction long.",
+              "Volume_asymmetry_20 value 0.0913, score 0.091, direction long.",
+              "RSI_14 value 56.52, score 0.217, direction long.",
+              "Strategy signal confidence 0.657, target weight 0.5."
+            ],
+            "risks": [
+              "Momentum acceleration negative (-0.00155, score -0.37) suggests recent deceleration.",
+              "Return skewness negative (-1.18, score -0.53) indicates left-tail risk.",
+              "Daily trend neutral (score 0) could precede a pullback."
+            ],
+            "missing_data": [
+              "No volume or price data beyond normalized path; actual price levels and volume figures not provided.",
+              "No news or fundamental data to assess external catalysts.",
+              "No data on sector or peer performance for context."
+            ]
+          },
+          {
+            "role": "momentum",
+            "perspective": "momentum quality and continuation",
+            "stance": "neutral",
+            "score": 0.1,
+            "confidence": 0.6,
+            "weight": 1.5,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Multi-period momentum is positive (11.74%) and cross-section ranks are high (60-day and 120-day rank 1.0), indicating strong relative trend.",
+              "Momentum acceleration is negative, suggesting recent deceleration; path quality is moderate (0.16), volume asymmetry positive but modest.",
+              "Pullback reversal not triggered; uptrend intact but no clear reversal signal."
+            ],
+            "evidence": [
+              "multi-period momentum=11.74% (from strategy signals)",
+              "momentum_60 score=0.285 (positive, long direction)",
+              "momentum_acceleration score=-0.370 (negative, short direction)",
+              "path_quality_60 score=0.161 (positive, long direction)",
+              "volume_asymmetry_20 score=0.091 (positive, long direction)",
+              "return_skewness_60 score=-0.531 (negative, short direction)",
+              "pullback_reversal triggered=false, uptrend=true, consecutive_pullback=false",
+              "cross_section_momentum_60_rank=1.0, cross_section_momentum_120_rank=1.0"
+            ],
+            "risks": [
+              "Negative momentum acceleration and negative skewness indicate deteriorating momentum quality and potential reversal.",
+              "Pullback reversal not triggered; no clear entry point for continuation."
+            ],
+            "missing_data": [
+              "No news or fundamental data to assess catalyst or risk.",
+              "No volume data beyond asymmetry; absolute volume levels unknown.",
+              "No data on sector or macro context."
+            ]
+          },
+          {
+            "role": "value_veto",
+            "perspective": "extreme valuation and solvency veto",
+            "stance": "neutral",
+            "score": -0.25,
+            "confidence": 0.3,
+            "weight": 0.6,
+            "mode": "veto_only",
+            "veto": false,
+            "thesis": [
+              "No valuation-based approval is possible because the ETF's holdings, look-through earnings, balance-sheet exposure, cash conversion, and net asset value are not supplied.",
+              "The supplied evidence does not establish a concrete solvency, fraud, permanent-loss, unbounded-liquidity, or execution risk sufficient for an extreme-risk veto.",
+              "Momentum and bull-regime signals do not demonstrate intrinsic value or a margin of safety."
+            ],
+            "evidence": [
+              "Reported price is 100.0 as of 2000-03-05.",
+              "The rotation signal reports 11.74% multi-period momentum, 23.21% annualized volatility, and a proposed 50% target weight.",
+              "The composite quant-factor score is only 0.0137 despite an uptrend verdict.",
+              "The 60-day return skewness is negative at -1.183, and momentum acceleration is negative.",
+              "Fundamentals and news are empty; no ETF holdings, NAV, leverage, liabilities, cash flows, fees, assets under management, or trading-liquidity data are provided."
+            ],
+            "risks": [
+              "A 50% allocation to an instrument with reported 23.21% annualized volatility and materially negative return skewness creates substantial concentration and downside-tail exposure, although this evidence alone does not prove permanent loss.",
+              "Without holdings and structural information, look-through leverage, issuer or counterparty exposure, concentration, tracking risk, and redemption mechanics cannot be assessed.",
+              "Without NAV or underlying earning-power data, the relationship between the 100.0 market price and intrinsic value is indeterminate; therefore no margin of safety can be established."
+            ],
+            "missing_data": [
+              "ETF identity, mandate, benchmark, and legal structure",
+              "Current holdings and concentration by issuer, sector, and asset class",
+              "NAV, premium or discount to NAV, and tracking difference",
+              "Assets under management, bid-ask spread, trading volume, and creation-redemption liquidity",
+              "Expense ratio, turnover, taxes, and other ownership costs",
+              "Use of leverage, derivatives, securities lending, and counterparty exposure",
+              "Look-through owner earnings, balance-sheet strength, debt, and cash conversion of underlying holdings",
+              "Historical drawdowns, closure risk, and liquidation provisions"
+            ]
+          },
+          {
+            "role": "risk",
+            "perspective": "capital preservation and trade feasibility",
+            "stance": "bearish",
+            "score": -0.35,
+            "confidence": 0.62,
+            "weight": 1.0,
+            "mode": "veto_only",
+            "veto": false,
+            "thesis": [
+              "No veto: the supplied evidence does not establish a concrete permanent-loss, solvency, fraud, or unbounded execution risk.",
+              "The proposed 50% allocation is materially concentrated relative to the reported 23.21% annualized volatility and negatively skewed returns.",
+              "Trade feasibility and downside cannot be adequately bounded because liquidity, holdings, drawdown, and exit criteria are not supplied; this lowers confidence but does not alone justify a veto."
+            ],
+            "evidence": [
+              "Fact: strategy target weight is 50%.",
+              "Fact: reported annualized volatility is 23.21%.",
+              "Fact: 60-day return skewness is -1.183, indicating an observed downside-tailed return distribution.",
+              "Fact: momentum acceleration is negative at -0.00155 even though weekly and monthly signals indicate an uptrend.",
+              "Fact: the composite factor score is only 0.0137, while 60- and 120-day cross-sectional momentum ranks are both 1.0.",
+              "Fact: data quality is reported as 1.0, with no warnings or degraded sources.",
+              "Fact: the strategy signal contains no supporting evidence items and has no validity-expiration date."
+            ],
+            "risks": [
+              "Concentration risk: a 50% position could dominate portfolio drawdown, particularly with 23.21% reported volatility.",
+              "Tail risk: negative return skewness suggests losses may occur more abruptly than gains.",
+              "Execution risk is unmeasured because trading volume, bid-ask spread, assets under management, creation-redemption capacity, and underlying-market liquidity are absent.",
+              "Event and structural risks cannot be assessed without the ETF's holdings, index methodology, leverage status, derivatives exposure, counterparty exposure, or tracking behavior.",
+              "Signal invalidation is undefined because no stop-loss, maximum tolerated drawdown, rebalance trigger, or valid-until date is provided.",
+              "The supplied normalized path labeled as 120-day contains only 30 observations, creating ambiguity about the displayed risk-history coverage."
+            ],
+            "missing_data": [
+              "Maximum drawdown, downside volatility, value-at-risk or expected shortfall, and stress-test results",
+              "Average daily trading value, bid-ask spread, market depth, AUM, and intended order size",
+              "ETF holdings, sector and issuer concentrations, leverage, derivatives, counterparties, and underlying-asset liquidity",
+              "Tracking error, premium/discount history, fund flows, and creation-redemption activity",
+              "Portfolio-level covariance and contribution-to-risk estimates for the proposed 50% allocation",
+              "Explicit exit, rebalancing, loss-limit, and signal-invalidation rules",
+              "Corporate actions, scheduled events, and ETF-specific news"
+            ]
+          },
+          {
+            "role": "macro",
+            "perspective": "market regime and liquidity",
+            "stance": "bullish",
+            "score": 0.6,
+            "confidence": 0.8,
+            "weight": 0.7,
+            "mode": "vote",
+            "veto": false,
+            "thesis": [
+              "Bull market regime supports long positions in equity ETFs",
+              "Uptrend confirmed by multi-timeframe consensus and positive medium-term momentum"
+            ],
+            "evidence": [
+              "Market regime is explicitly labeled 'bull' with regime_confidence=1.0",
+              "Multi-timeframe consensus verdict is 'uptrend'",
+              "60-day momentum score is positive (0.2849) and cross-section rank is 1.0",
+              "Price path shows recent upward movement (normalized price from ~0.79 to 0.86 over 120 days)"
+            ],
+            "risks": [
+              "Momentum acceleration is negative, suggesting recent slowdown",
+              "Return skewness is negative, indicating left-tail risk",
+              "No liquidity data provided; execution risk in stressed conditions is unknown"
+            ],
+            "missing_data": [
+              "Liquidity metrics (bid-ask spread, average volume, market depth)",
+              "Macroeconomic releases or central bank policy data",
+              "Volatility regime classification beyond annualized vol=23.21%"
+            ]
+          }
+        ],
+        "summary": "tactical=0.313; strategic=None; veto=none"
+      },
+      "forecast": {
+        "symbol": "ETF_CANDIDATE_02",
+        "as_of": "2000-03-05",
+        "horizon_days": 20,
+        "up_probability": 0.5047593270184673,
+        "flat_probability": 0.215061880319094,
+        "down_probability": 0.2801787926624387,
+        "expected_return_pct": 1.0,
+        "lower_return_pct": -9.0,
+        "upper_return_pct": 7.5,
+        "confidence": 0.58,
+        "drivers": [
+          "The confirmed weekly/monthly uptrend, +11.74% multi-period momentum, and positive 60-day momentum support medium-term trend persistence.",
+          "Top-ranked 60-day and 120-day cross-sectional momentum indicates strong relative performance within the supplied universe.",
+          "The bull market regime improves the base rate for continuation over the 20-day horizon.",
+          "Negative momentum acceleration, neutral 20-day momentum, and a neutral daily trend reduce the probability of immediate continuation and increase consolidation risk.",
+          "Negative return skewness creates asymmetric tail risk, reflected in a wider downside return bound despite the positive central forecast.",
+          "online statistical model blended at weight=0.500"
+        ],
+        "counter_evidence": [
+          "Momentum acceleration score of -0.37 indicates that the established advance is slowing.",
+          "The neutral 20-day momentum score and neutral daily trend provide no recent confirmation of the longer-term bullish signals.",
+          "Reported 60-day skewness of -1.18 indicates that adverse moves may be sharper than favorable moves.",
+          "No catalyst, volume confirmation, liquidity data, holdings information, or pullback-reversal entry signal is available.",
+          "Annualized volatility of 23.21% permits a broad 20-day outcome range and makes a concentrated allocation risky."
+        ],
+        "invalidation_conditions": [
+          "The daily trend turns bearish and 20-day momentum becomes materially negative.",
+          "The 60-day momentum signal loses its long classification or the 60-/120-day relative-strength ranks deteriorate substantially.",
+          "The broader market regime shifts from bull to neutral or bear.",
+          "Price breaks the medium-term uptrend with persistent downside follow-through rather than a brief consolidation.",
+          "Liquidity, spread, creation-redemption, or holdings data reveal material execution, leverage, concentration, or structural risk."
+        ],
+        "evidence_ids": [
+          "quant.evidence.multi_period_momentum",
+          "quant.evidence.momentum_60d",
+          "quant.evidence.multi_timeframe_consensus",
+          "quant.evidence.cross_section_rank_60d",
+          "quant.evidence.cross_section_rank_120d",
+          "quant.risks.momentum_acceleration",
+          "quant.risks.return_skewness",
+          "quant.risks.momentum_20d",
+          "quant.risks.annualized_volatility",
+          "council.market_regime",
+          "council.risk.execution_data_missing"
+        ],
+        "model": "gpt-5.6-sol+online-v0",
+        "model_provider": "openai",
+        "statistical_model_id": "pit-etf-20-2025-06-20",
+        "statistical_model_version": 0,
+        "statistical_weight": 0.5,
+        "statistical_up_probability": 0.4895186540369345,
+        "statistical_flat_probability": 0.22012376063818806,
+        "statistical_down_probability": 0.2903575853248774,
+        "raw_llm_up_probability": 0.52,
+        "raw_llm_flat_probability": 0.21,
+        "raw_llm_down_probability": 0.27
+      },
+      "realized_return_pct": -0.3558718861210064,
+      "outcome": "flat",
+      "strategy_weight": 0.15,
+      "full_system_weight": 0.0,
+      "strategy_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 2000,
+        "entry_price": 7.4537249999999995,
+        "exit_price": 7.396300000000001,
+        "entry_date": "2025-06-23",
+        "exit_date": "2025-07-18",
+        "fees": 10.0,
+        "slippage": 14.849999999997365,
+        "net_pnl": -124.84999999999673,
+        "net_return": -0.00125108766214421,
+        "capital_before": 99793.167,
+        "capital_after": 99668.31700000001
+      },
+      "full_system_trade": {
+        "traded": false,
+        "weight": 0.0,
+        "quantity": 0,
+        "net_pnl": 0.0,
+        "net_return": 0.0,
+        "capital_before": 100000.0,
+        "capital_after": 100000.0
+      },
+      "benchmark_trade": {
+        "traded": true,
+        "weight": 0.15,
+        "quantity": 4000,
+        "entry_price": 3.7518749999999996,
+        "exit_price": 4.007995,
+        "entry_date": "2025-06-23",
+        "exit_date": "2025-07-18",
+        "fees": 10.0,
+        "slippage": 15.51999999999687,
+        "net_pnl": 1014.4800000000032,
+        "net_return": 0.010114956831364773,
+        "capital_before": 100295.04,
+        "capital_after": 101309.51999999999
+      },
+      "gate_effect": "avoided_loss",
+      "point_in_time_model": {
+        "cutoff": "2025-06-20",
+        "asset_scope": "etf",
+        "horizons": {
+          "5": {
+            "status": "admitted",
+            "samples": 425,
+            "validation_samples": 425,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.40238656874197987,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-12-17",
+              "inner_training_samples": 563,
+              "calibration_samples": 139,
+              "baseline_brier": 0.20147434600110498,
+              "baseline_log_loss": 1.0106516880599432,
+              "prior_blend": 0.30000000000000004,
+              "brier_score": 0.18342932164012274,
+              "log_loss": 0.9308877801118572,
+              "normalized_score": 1.8315118840706806
+            },
+            "brier_score": 0.19305190706155068,
+            "log_loss": 0.9789351859230042,
+            "accuracy": 0.5247058823529411,
+            "baseline_brier": 0.20994795446376505,
+            "baseline_log_loss": 1.0465390239255354
+          },
+          "20": {
+            "status": "admitted",
+            "samples": 414,
+            "validation_samples": 414,
+            "fold_pass_rate": 1.0,
+            "ensemble_weight": 0.5,
+            "probability_calibration": {
+              "method": "inner_time_prior_blend",
+              "calibration_start": "2024-12-02",
+              "inner_training_samples": 528,
+              "calibration_samples": 138,
+              "baseline_brier": 0.22087148551585586,
+              "baseline_log_loss": 1.0926351340157934,
+              "prior_blend": 0.30000000000000004,
+              "brier_score": 0.20377393989529494,
+              "log_loss": 1.0107525658970196,
+              "normalized_score": 1.8476500759907222
+            },
+            "brier_score": 0.1986854621279143,
+            "log_loss": 1.0012594536134916,
+            "accuracy": 0.5217391304347826,
+            "baseline_brier": 0.22138738050769927,
+            "baseline_log_loss": 1.095331656936142
+          }
+        },
+        "contract": "as_of < cutoff and evaluated_at < cutoff"
+      },
+      "llm_audit": {
+        "health": {
+          "provider": "router",
+          "model": "resilient-router",
+          "endpoints": [
+            {
+              "endpoint_id": "deepseek-1",
+              "provider": "deepseek",
+              "model": "deepseek-chat",
+              "failures": 0,
+              "status": "ready",
+              "cooldown_remaining_seconds": 0.0
+            },
+            {
+              "endpoint_id": "openai-1",
+              "provider": "openai",
+              "model": "gpt-5.6-terra",
+              "failures": 0,
+              "status": "ready",
+              "cooldown_remaining_seconds": 0.0
+            }
+          ],
+          "recent_calls": 11,
+          "recent_successes": 11,
+          "recent_total_tokens": 35532
+        },
+        "calls": [
+          {
+            "timestamp": "2026-07-13T13:48:48.240561+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "AnalystReport",
+            "routing_key": "quant",
+            "status": "ok",
+            "latency_ms": 3549.26,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1485,
+              "output_tokens": 337,
+              "total_tokens": 1822
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:48:51.751206+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "macro",
+            "status": "ok",
+            "latency_ms": 3504.73,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1705,
+              "output_tokens": 300,
+              "total_tokens": 2005
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:48:52.575542+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "momentum",
+            "status": "ok",
+            "latency_ms": 4332.14,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1707,
+              "output_tokens": 409,
+              "total_tokens": 2116
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:48:53.013918+00:00",
+            "endpoint_id": "deepseek-1",
+            "provider": "deepseek",
+            "model": "deepseek-chat",
+            "reasoning_effort": null,
+            "schema": "ExpertOpinion",
+            "routing_key": "technical",
+            "status": "ok",
+            "latency_ms": 4772.57,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1706,
+              "output_tokens": 472,
+              "total_tokens": 2178
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:49:06.734458+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "value_veto",
+            "status": "ok",
+            "latency_ms": 18489.79,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1923,
+              "output_tokens": 877,
+              "total_tokens": 2800,
+              "reasoning_tokens": 363
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:49:20.026635+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ExpertOpinion",
+            "routing_key": "risk",
+            "status": "ok",
+            "latency_ms": 31781.78,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1919,
+              "output_tokens": 1610,
+              "total_tokens": 3529,
+              "reasoning_tokens": 1034
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:49:30.648590+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": "medium",
+            "schema": "DebateReport",
+            "routing_key": "bull",
+            "status": "ok",
+            "latency_ms": 10620.27,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1785,
+              "output_tokens": 460,
+              "total_tokens": 2245,
+              "reasoning_tokens": 36
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:49:37.162005+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": "medium",
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "status": "ok",
+            "latency_ms": 17133.15,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 1785,
+              "output_tokens": 725,
+              "total_tokens": 2510,
+              "reasoning_tokens": 34
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:49:56.253900+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 19090.89,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3296,
+              "output_tokens": 805,
+              "total_tokens": 4101,
+              "reasoning_tokens": 286
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:49:58.817551+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "Forecast",
+            "routing_key": "forecast",
+            "status": "ok",
+            "latency_ms": 21652.84,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 3296,
+              "output_tokens": 923,
+              "total_tokens": 4219,
+              "reasoning_tokens": 315
+            }
+          },
+          {
+            "timestamp": "2026-07-13T13:50:38.074786+00:00",
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-sol",
+            "reasoning_effort": "high",
+            "schema": "ReviewReport",
+            "routing_key": "review",
+            "status": "ok",
+            "latency_ms": 38733.72,
+            "error_type": null,
+            "usage": {
+              "input_tokens": 6718,
+              "output_tokens": 1289,
+              "total_tokens": 8007,
+              "reasoning_tokens": 1034
+            }
+          }
+        ],
+        "summary": {
+          "calls": 11,
+          "successes": 11,
+          "errors": 0,
+          "total_tokens": 35532,
+          "total_latency_ms": 173661.14
+        },
+        "secrets_exposed": false,
+        "prompts_persisted": false
+      },
+      "llm_validation": {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "macro": 1,
+          "momentum": 1,
+          "technical": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 11,
+        "fallback_errors": [],
+        "complete": true
+      }
+    }
+  ],
+  "metrics": {
+    "strategy_only": {
+      "episodes": 2,
+      "trades": 2,
+      "participation_rate": 1.0,
+      "total_return": -0.0033168299999999373,
+      "average_episode_return": -0.0016597088310720894,
+      "trade_win_rate": 0.0,
+      "max_drawdown": -0.0033168299999999373,
+      "final_equity": 99668.31700000001
+    },
+    "full_system": {
+      "episodes": 2,
+      "trades": 0,
+      "participation_rate": 0.0,
+      "total_return": 0.0,
+      "average_episode_return": 0.0,
+      "trade_win_rate": null,
+      "max_drawdown": 0.0,
+      "final_equity": 100000.0
+    },
+    "hs300_same_risk_budget": {
+      "episodes": 2,
+      "trades": 2,
+      "participation_rate": 1.0,
+      "total_return": 0.013095199999999974,
+      "average_episode_return": 0.006532678415682382,
+      "trade_win_rate": 1.0,
+      "max_drawdown": 0.0,
+      "final_equity": 101309.51999999999
+    },
+    "full_minus_strategy_total_return": 0.0033168299999999373,
+    "forecast_ablation": {
+      "final_ensemble": {
+        "samples": 2,
+        "brier_score": 0.27561525415106336,
+        "log_loss": 1.3282492656473237,
+        "accuracy": 0.0
+      },
+      "raw_llm": {
+        "samples": 2,
+        "brier_score": 0.3120666666666667,
+        "log_loss": 1.4734710546922796,
+        "accuracy": 0.0
+      },
+      "point_in_time_statistical": {
+        "samples": 2,
+        "brier_score": 0.2451282775184103,
+        "log_loss": 1.2114705357445428,
+        "accuracy": 0.5
+      }
+    },
+    "gate_effects": {
+      "avoided_loss": 2,
+      "missed_gain": 0,
+      "participated": 0
+    }
+  },
+  "llm_validation": {
+    "required_role_outputs": 22,
+    "required_role_outputs_per_episode": 11,
+    "successful_non_mock_role_outputs": 22,
+    "recorded_endpoint_attempts": 23,
+    "fallback_errors": [
+      {
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "schema": "DebateReport",
+        "routing_key": "bear",
+        "error_type": "APITimeoutError"
+      }
+    ],
+    "episodes": [
+      {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "macro": 1,
+          "momentum": 1,
+          "technical": 1,
+          "risk": 1,
+          "value_veto": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 12,
+        "fallback_errors": [
+          {
+            "endpoint_id": "openai-1",
+            "provider": "openai",
+            "model": "gpt-5.6-terra",
+            "schema": "DebateReport",
+            "routing_key": "bear",
+            "error_type": "APITimeoutError"
+          }
+        ],
+        "complete": true
+      },
+      {
+        "required_role_outputs": 11,
+        "expected_role_counts": {
+          "quant": 1,
+          "technical": 1,
+          "momentum": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "macro": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "successful_role_counts": {
+          "quant": 1,
+          "macro": 1,
+          "momentum": 1,
+          "technical": 1,
+          "value_veto": 1,
+          "risk": 1,
+          "bull": 1,
+          "bear": 1,
+          "forecast": 2,
+          "review": 1
+        },
+        "missing_roles": {},
+        "unexpected_success_roles": {},
+        "successful_non_mock_role_outputs": 11,
+        "recorded_endpoint_attempts": 11,
+        "fallback_errors": [],
+        "complete": true
+      }
+    ],
+    "live_llm_complete": true
+  },
+  "evidence_status": "illustrative",
+  "claim_boundary": "a short replay is illustrative and cannot prove future profitability; expand the fixed window and prospective paper sample before making performance claims",
+  "evidence_qualification": {
+    "sample_size_status": "illustrative",
+    "live_llm_complete": true,
+    "clean_data_path": true,
+    "qualified": false,
+    "limitations": [
+      "fewer than 30 non-overlapping episodes"
+    ]
+  }
+}

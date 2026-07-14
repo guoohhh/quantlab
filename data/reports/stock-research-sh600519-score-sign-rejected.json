@@ -1,0 +1,2057 @@
+{
+  "schema_version": "1.0",
+  "report_type": "quantlab_research_audit",
+  "generated_at": "2026-07-13T18:03:42.519679+00:00",
+  "run_id": "8af15784-4d52-4788-9791-ddeb08734583",
+  "symbol": "sh600519",
+  "as_of": "2026-07-13",
+  "data": {
+    "source": "cached:fallback",
+    "bars": 332,
+    "price": 1210.99,
+    "effective_as_of": "2026-07-13",
+    "degraded_sources": [],
+    "event_collection": {
+      "news": {
+        "new_records": 0,
+        "matched_records": 10,
+        "available": 10,
+        "source": "eastmoney via akshare",
+        "coverage_warning": "free endpoint returns a limited recent-news window"
+      },
+      "notices": {
+        "new_records": 0,
+        "matched_records": 9,
+        "available": 9,
+        "source": "eastmoney notice via akshare",
+        "coverage_warning": "empty responses are treated as no matching notices; source availability is not guaranteed"
+      },
+      "degraded_sources": []
+    }
+  },
+  "factor_report": {
+    "symbol": "sh600519",
+    "as_of": "2026-07-13",
+    "regime": "bear",
+    "regime_confidence": 0.6707327852168594,
+    "factors": [
+      {
+        "name": "momentum_20",
+        "value": -0.03338653255826218,
+        "score": -0.16539914360297936,
+        "horizon_days": 20,
+        "direction": "short",
+        "description": "recent return"
+      },
+      {
+        "name": "momentum_60",
+        "value": -0.11952184315752701,
+        "score": -0.34394988823889083,
+        "horizon_days": 60,
+        "direction": "short",
+        "description": "medium return"
+      },
+      {
+        "name": "momentum_acceleration",
+        "value": 0.00042367330691811013,
+        "score": 0.10552400777284382,
+        "horizon_days": 20,
+        "direction": "long",
+        "description": "20-day log-return speed minus 60-day speed"
+      },
+      {
+        "name": "path_quality_60",
+        "value": -0.22219939288157747,
+        "score": -0.22219939288157747,
+        "horizon_days": 60,
+        "direction": "short",
+        "description": "signed net move divided by total daily path length"
+      },
+      {
+        "name": "volume_asymmetry_20",
+        "value": 0.11191358566953274,
+        "score": 0.11144868841288419,
+        "horizon_days": 20,
+        "direction": "long",
+        "description": "log ratio of average up-day volume to down-day volume"
+      },
+      {
+        "name": "return_skewness_60",
+        "value": 0.2902724700299761,
+        "score": 0.14412567359434392,
+        "horizon_days": 60,
+        "direction": "long",
+        "description": "daily return skewness"
+      },
+      {
+        "name": "price_position_60",
+        "value": 0.15640376313752222,
+        "score": -0.6871924737249555,
+        "horizon_days": 60,
+        "direction": "short",
+        "description": "position inside the 60-day close range"
+      },
+      {
+        "name": "ma_spread_5_20",
+        "value": -0.0009504871743883925,
+        "score": -0.011405351510249557,
+        "horizon_days": 20,
+        "direction": "neutral",
+        "description": "5-day average relative to 20-day average"
+      },
+      {
+        "name": "rsi_14",
+        "value": 54.51402339815598,
+        "score": 0.15046744660519926,
+        "horizon_days": 14,
+        "direction": "long",
+        "description": "relative strength index centered at 50"
+      }
+    ],
+    "composite_score": -0.11794613320797337,
+    "multi_timeframe": {
+      "daily": 0,
+      "weekly": -1,
+      "monthly": 0,
+      "consensus": -1,
+      "verdict": "weak_downtrend"
+    },
+    "pullback_reversal": {
+      "triggered": false,
+      "strength": 0.0,
+      "conditions": {
+        "uptrend": false,
+        "consecutive_pullback": false,
+        "rsi_oversold": false,
+        "volume_contraction": false
+      }
+    },
+    "data_points": 332,
+    "warnings": []
+  },
+  "price_history": {
+    "evidence_type": "market_price_history",
+    "symbol": "sh600519",
+    "requested_cutoff_date": "2026-07-14",
+    "cutoff_date": "2026-07-13",
+    "contains_observations_after_cutoff": false,
+    "observations": 332,
+    "date_range": {
+      "start": "2025-03-03",
+      "end": "2026-07-13"
+    },
+    "price_semantics": {
+      "raw_ohlc": "unadjusted market prices; use for executable price levels",
+      "adjusted_ohlc": "provider-supplied back-adjusted prices (AkShare uses hfq); use for returns, trend and moving averages, never as an executable quote",
+      "signal_close_fallback": "adjusted_close when present, otherwise raw_close",
+      "raw_and_adjusted_fields_are_separate": true
+    },
+    "adjustment_availability": {
+      "adjusted_close_observations": 332,
+      "raw_fallback_observations": 0
+    },
+    "latest": {
+      "date": "2026-07-13",
+      "raw_close": 1210.99,
+      "adjusted_close": 8618.49,
+      "signal_close": 8618.49,
+      "volume": 41983.0,
+      "amount": 5056690000.0
+    },
+    "recent_raw_and_adjusted_bars_30": [
+      {
+        "date": "2026-06-01",
+        "raw_open": 1298.98,
+        "raw_high": 1298.98,
+        "raw_low": 1273.29,
+        "raw_close": 1281.58,
+        "adjusted_open": 9113.65,
+        "adjusted_high": 9113.65,
+        "adjusted_low": 8969.07,
+        "adjusted_close": 9015.73,
+        "volume": 43845.0,
+        "amount": 5741130000.0
+      },
+      {
+        "date": "2026-06-02",
+        "raw_open": 1277.98,
+        "raw_high": 1298.34,
+        "raw_low": 1272.98,
+        "raw_close": 1279.2,
+        "adjusted_open": 8995.47,
+        "adjusted_high": 9110.05,
+        "adjusted_low": 8967.33,
+        "adjusted_close": 9002.33,
+        "volume": 36362.0,
+        "amount": 4769960000.0
+      },
+      {
+        "date": "2026-06-03",
+        "raw_open": 1275.98,
+        "raw_high": 1275.98,
+        "raw_low": 1247.98,
+        "raw_close": 1253.89,
+        "adjusted_open": 8984.21,
+        "adjusted_high": 8984.21,
+        "adjusted_low": 8826.63,
+        "adjusted_close": 8859.89,
+        "volume": 52477.0,
+        "amount": 6743200000.0
+      },
+      {
+        "date": "2026-06-04",
+        "raw_open": 1250.97,
+        "raw_high": 1260.97,
+        "raw_low": 1238.67,
+        "raw_close": 1239.98,
+        "adjusted_open": 8843.46,
+        "adjusted_high": 8899.74,
+        "adjusted_low": 8774.24,
+        "adjusted_close": 8781.61,
+        "volume": 33506.0,
+        "amount": 4273270000.0
+      },
+      {
+        "date": "2026-06-05",
+        "raw_open": 1249.98,
+        "raw_high": 1254.98,
+        "raw_low": 1239.72,
+        "raw_close": 1244.84,
+        "adjusted_open": 8837.89,
+        "adjusted_high": 8866.03,
+        "adjusted_low": 8780.15,
+        "adjusted_close": 8808.96,
+        "volume": 31304.0,
+        "amount": 3984000000.0
+      },
+      {
+        "date": "2026-06-08",
+        "raw_open": 1243.98,
+        "raw_high": 1249.98,
+        "raw_low": 1231.98,
+        "raw_close": 1234.96,
+        "adjusted_open": 8804.12,
+        "adjusted_high": 8837.89,
+        "adjusted_low": 8736.59,
+        "adjusted_close": 8753.36,
+        "volume": 30828.0,
+        "amount": 3898030000.0
+      },
+      {
+        "date": "2026-06-09",
+        "raw_open": 1234.97,
+        "raw_high": 1234.98,
+        "raw_low": 1224.53,
+        "raw_close": 1227.98,
+        "adjusted_open": 8753.42,
+        "adjusted_high": 8753.47,
+        "adjusted_low": 8694.66,
+        "adjusted_close": 8714.08,
+        "volume": 27860.0,
+        "amount": 3500590000.0
+      },
+      {
+        "date": "2026-06-10",
+        "raw_open": 1224.06,
+        "raw_high": 1253.98,
+        "raw_low": 1222.19,
+        "raw_close": 1247.86,
+        "adjusted_open": 8692.02,
+        "adjusted_high": 8860.4,
+        "adjusted_low": 8681.49,
+        "adjusted_close": 8825.96,
+        "volume": 39244.0,
+        "amount": 4991690000.0
+      },
+      {
+        "date": "2026-06-11",
+        "raw_open": 1244.1,
+        "raw_high": 1254.86,
+        "raw_low": 1238.89,
+        "raw_close": 1250.98,
+        "adjusted_open": 8804.8,
+        "adjusted_high": 8865.35,
+        "adjusted_low": 8775.48,
+        "adjusted_close": 8843.52,
+        "volume": 25352.0,
+        "amount": 3230010000.0
+      },
+      {
+        "date": "2026-06-12",
+        "raw_open": 1243.16,
+        "raw_high": 1266.98,
+        "raw_low": 1236.99,
+        "raw_close": 1263.89,
+        "adjusted_open": 8799.51,
+        "adjusted_high": 8933.56,
+        "adjusted_low": 8764.78,
+        "adjusted_close": 8916.17,
+        "volume": 50495.0,
+        "amount": 6477910000.0
+      },
+      {
+        "date": "2026-06-15",
+        "raw_open": 1264.68,
+        "raw_high": 1264.68,
+        "raw_low": 1242.08,
+        "raw_close": 1243.08,
+        "adjusted_open": 8920.62,
+        "adjusted_high": 8920.62,
+        "adjusted_low": 8793.43,
+        "adjusted_close": 8799.06,
+        "volume": 41586.0,
+        "amount": 5303660000.0
+      },
+      {
+        "date": "2026-06-16",
+        "raw_open": 1238.99,
+        "raw_high": 1239.86,
+        "raw_low": 1226.98,
+        "raw_close": 1227.65,
+        "adjusted_open": 8776.04,
+        "adjusted_high": 8780.94,
+        "adjusted_low": 8708.45,
+        "adjusted_close": 8712.22,
+        "volume": 34970.0,
+        "amount": 4399960000.0
+      },
+      {
+        "date": "2026-06-17",
+        "raw_open": 1229.98,
+        "raw_high": 1231.75,
+        "raw_low": 1210.54,
+        "raw_close": 1211.98,
+        "adjusted_open": 8725.33,
+        "adjusted_high": 8735.29,
+        "adjusted_low": 8615.93,
+        "adjusted_close": 8624.03,
+        "volume": 44803.0,
+        "amount": 5581260000.0
+      },
+      {
+        "date": "2026-06-18",
+        "raw_open": 1206.98,
+        "raw_high": 1210.85,
+        "raw_low": 1183.2,
+        "raw_close": 1186.98,
+        "adjusted_open": 8595.89,
+        "adjusted_high": 8617.67,
+        "adjusted_low": 8462.07,
+        "adjusted_close": 8483.34,
+        "volume": 57472.0,
+        "amount": 7016710000.0
+      },
+      {
+        "date": "2026-06-22",
+        "raw_open": 1186.29,
+        "raw_high": 1224.78,
+        "raw_low": 1176.98,
+        "raw_close": 1213.39,
+        "adjusted_open": 8479.46,
+        "adjusted_high": 8696.07,
+        "adjusted_low": 8427.06,
+        "adjusted_close": 8631.97,
+        "volume": 58251.0,
+        "amount": 7163240000.0
+      },
+      {
+        "date": "2026-06-23",
+        "raw_open": 1210.98,
+        "raw_high": 1235.98,
+        "raw_low": 1188.98,
+        "raw_close": 1194.43,
+        "adjusted_open": 8618.41,
+        "adjusted_high": 8759.1,
+        "adjusted_low": 8494.59,
+        "adjusted_close": 8525.27,
+        "volume": 58004.0,
+        "amount": 7179750000.0
+      },
+      {
+        "date": "2026-06-24",
+        "raw_open": 1194.63,
+        "raw_high": 1213.85,
+        "raw_low": 1179.49,
+        "raw_close": 1179.66,
+        "adjusted_open": 8526.39,
+        "adjusted_high": 8634.56,
+        "adjusted_low": 8441.19,
+        "adjusted_close": 8442.14,
+        "volume": 45335.0,
+        "amount": 5516570000.0
+      },
+      {
+        "date": "2026-06-25",
+        "raw_open": 1178.98,
+        "raw_high": 1198.98,
+        "raw_low": 1171.98,
+        "raw_close": 1184.08,
+        "adjusted_open": 8438.32,
+        "adjusted_high": 8550.87,
+        "adjusted_low": 8398.92,
+        "adjusted_close": 8467.02,
+        "volume": 48446.0,
+        "amount": 5860480000.0
+      },
+      {
+        "date": "2026-06-26",
+        "raw_open": 1199.0,
+        "raw_high": 1199.0,
+        "raw_low": 1168.1,
+        "raw_close": 1168.63,
+        "adjusted_open": 8551.01,
+        "adjusted_high": 8551.01,
+        "adjusted_low": 8377.11,
+        "adjusted_close": 8380.09,
+        "volume": 50066.0,
+        "amount": 5922010000.0
+      },
+      {
+        "date": "2026-06-29",
+        "raw_open": 1169.0,
+        "raw_high": 1215.0,
+        "raw_low": 1151.01,
+        "raw_close": 1194.96,
+        "adjusted_open": 8382.18,
+        "adjusted_high": 8641.05,
+        "adjusted_low": 8280.93,
+        "adjusted_close": 8528.27,
+        "volume": 66878.0,
+        "amount": 7949240000.0
+      },
+      {
+        "date": "2026-06-30",
+        "raw_open": 1187.0,
+        "raw_high": 1195.67,
+        "raw_low": 1176.0,
+        "raw_close": 1185.49,
+        "adjusted_open": 8483.48,
+        "adjusted_high": 8532.27,
+        "adjusted_low": 8421.57,
+        "adjusted_close": 8474.98,
+        "volume": 39608.0,
+        "amount": 4684240000.0
+      },
+      {
+        "date": "2026-07-01",
+        "raw_open": 1180.1,
+        "raw_high": 1196.8,
+        "raw_low": 1166.33,
+        "raw_close": 1193.01,
+        "adjusted_open": 8444.64,
+        "adjusted_high": 8538.63,
+        "adjusted_low": 8367.15,
+        "adjusted_close": 8517.3,
+        "volume": 42474.0,
+        "amount": 5033840000.0
+      },
+      {
+        "date": "2026-07-02",
+        "raw_open": 1193.01,
+        "raw_high": 1215.52,
+        "raw_low": 1190.51,
+        "raw_close": 1203.0,
+        "adjusted_open": 8517.3,
+        "adjusted_high": 8643.98,
+        "adjusted_low": 8503.23,
+        "adjusted_close": 8573.52,
+        "volume": 50870.0,
+        "amount": 6122360000.0
+      },
+      {
+        "date": "2026-07-03",
+        "raw_open": 1205.24,
+        "raw_high": 1210.14,
+        "raw_low": 1185.0,
+        "raw_close": 1194.45,
+        "adjusted_open": 8586.13,
+        "adjusted_high": 8613.7,
+        "adjusted_low": 8472.22,
+        "adjusted_close": 8525.4,
+        "volume": 34268.0,
+        "amount": 4099270000.0
+      },
+      {
+        "date": "2026-07-06",
+        "raw_open": 1186.0,
+        "raw_high": 1215.0,
+        "raw_low": 1180.0,
+        "raw_close": 1206.91,
+        "adjusted_open": 8477.85,
+        "adjusted_high": 8641.05,
+        "adjusted_low": 8444.08,
+        "adjusted_close": 8595.52,
+        "volume": 40970.0,
+        "amount": 4913750000.0
+      },
+      {
+        "date": "2026-07-07",
+        "raw_open": 1200.0,
+        "raw_high": 1202.0,
+        "raw_low": 1188.11,
+        "raw_close": 1188.8,
+        "adjusted_open": 8556.64,
+        "adjusted_high": 8567.89,
+        "adjusted_low": 8489.72,
+        "adjusted_close": 8493.61,
+        "volume": 27365.0,
+        "amount": 3264970000.0
+      },
+      {
+        "date": "2026-07-08",
+        "raw_open": 1188.77,
+        "raw_high": 1200.98,
+        "raw_low": 1177.0,
+        "raw_close": 1199.3,
+        "adjusted_open": 8493.44,
+        "adjusted_high": 8562.15,
+        "adjusted_low": 8427.2,
+        "adjusted_close": 8552.7,
+        "volume": 25776.0,
+        "amount": 3071930000.0
+      },
+      {
+        "date": "2026-07-09",
+        "raw_open": 1191.0,
+        "raw_high": 1191.99,
+        "raw_low": 1178.0,
+        "raw_close": 1182.19,
+        "adjusted_open": 8505.99,
+        "adjusted_high": 8511.56,
+        "adjusted_low": 8432.83,
+        "adjusted_close": 8456.41,
+        "volume": 34096.0,
+        "amount": 4035220000.0
+      },
+      {
+        "date": "2026-07-10",
+        "raw_open": 1182.2,
+        "raw_high": 1204.98,
+        "raw_low": 1170.28,
+        "raw_close": 1204.98,
+        "adjusted_open": 8456.46,
+        "adjusted_high": 8584.66,
+        "adjusted_low": 8389.38,
+        "adjusted_close": 8584.66,
+        "volume": 52213.0,
+        "amount": 6223340000.0
+      },
+      {
+        "date": "2026-07-13",
+        "raw_open": 1197.12,
+        "raw_high": 1215.0,
+        "raw_low": 1190.19,
+        "raw_close": 1210.99,
+        "adjusted_open": 8540.43,
+        "adjusted_high": 8641.05,
+        "adjusted_low": 8501.43,
+        "adjusted_close": 8618.49,
+        "volume": 41983.0,
+        "amount": 5056690000.0
+      }
+    ],
+    "normalized_adjusted_close_path_120": {
+      "normalization": "latest_observation=100",
+      "observations": 120,
+      "start_date": "2026-01-12",
+      "end_date": "2026-07-13",
+      "values": [
+        112.029021,
+        111.23039,
+        110.382213,
+        109.786633,
+        109.336786,
+        108.944954,
+        108.78495,
+        107.316363,
+        106.59814,
+        106.398337,
+        106.724844,
+        106.790749,
+        105.529159,
+        112.975127,
+        110.577375,
+        112.275236,
+        115.404323,
+        118.674501,
+        120.633429,
+        118.022067,
+        118.671832,
+        117.355476,
+        117.324729,
+        116.166985,
+        116.082051,
+        114.874067,
+        116.497437,
+        114.835545,
+        114.104907,
+        113.131303,
+        112.222327,
+        110.58921,
+        110.449394,
+        110.6427,
+        110.316192,
+        110.634926,
+        110.512166,
+        109.989685,
+        111.40281,
+        114.441741,
+        116.062559,
+        115.004717,
+        113.964511,
+        113.450616,
+        111.039057,
+        110.990788,
+        111.182701,
+        110.58921,
+        111.558173,
+        111.81808,
+        113.777007,
+        114.393473,
+        114.422248,
+        114.430022,
+        113.125385,
+        114.757806,
+        114.462046,
+        114.035637,
+        113.340156,
+        113.574652,
+        114.919783,
+        114.615437,
+        110.984871,
+        111.223196,
+        111.29641,
+        111.132461,
+        111.752755,
+        114.331397,
+        110.72102,
+        110.838558,
+        110.588514,
+        109.518953,
+        108.87963,
+        108.621696,
+        108.7484,
+        107.987014,
+        107.544245,
+        106.861295,
+        106.735867,
+        106.133789,
+        105.484139,
+        105.568957,
+        104.961774,
+        104.700475,
+        103.342349,
+        103.060165,
+        102.244013,
+        104.17811,
+        102.413764,
+        105.679997,
+        104.60916,
+        104.45368,
+        102.800955,
+        101.892675,
+        102.210016,
+        101.564891,
+        101.109127,
+        102.407266,
+        102.611014,
+        103.453969,
+        102.095147,
+        101.087545,
+        100.06428,
+        98.43186,
+        100.156408,
+        98.918372,
+        97.953818,
+        98.2425,
+        97.233854,
+        98.953181,
+        98.334859,
+        98.825896,
+        99.478215,
+        98.91988,
+        99.73348,
+        98.551022,
+        99.236641,
+        98.119392,
+        99.607472,
+        100.0
+      ]
+    },
+    "returns_adjusted_pct": {
+      "20_trading_days": -3.338653,
+      "60_trading_days": -11.952184,
+      "120_trading_days": -10.522043
+    },
+    "risk_adjusted_pct": {
+      "annualized_volatility_last_120_returns": 20.76151,
+      "maximum_drawdown_last_120_prices": -19.397256,
+      "daily_return_observations": 120
+    },
+    "moving_averages_adjusted": {
+      "ma_5": 8541.174,
+      "ma_20": 8549.3,
+      "ma_60": 8986.392667,
+      "ma_120": 9344.428667
+    },
+    "latest_signal_close_vs_moving_averages": {
+      "ma_5": {
+        "latest_signal_close": 8618.49,
+        "moving_average": 8541.174,
+        "relation": "above",
+        "distance_pct": 0.905215
+      },
+      "ma_20": {
+        "latest_signal_close": 8618.49,
+        "moving_average": 8549.3,
+        "relation": "above",
+        "distance_pct": 0.809306
+      },
+      "ma_60": {
+        "latest_signal_close": 8618.49,
+        "moving_average": 8986.392667,
+        "relation": "below",
+        "distance_pct": -4.093997
+      },
+      "ma_120": {
+        "latest_signal_close": 8618.49,
+        "moving_average": 9344.428667,
+        "relation": "below",
+        "distance_pct": -7.768679
+      }
+    },
+    "raw_market_ranges": {
+      "20_trading_days": {
+        "high": 1264.68,
+        "low": 1151.01
+      },
+      "60_trading_days": {
+        "high": 1449.39,
+        "low": 1151.01
+      },
+      "120_trading_days": {
+        "high": 1539.98,
+        "low": 1151.01
+      }
+    },
+    "average_trading_amount": {
+      "20_trading_days": 5419924500.0,
+      "60_trading_days": 5891340000.0,
+      "120_trading_days": 6275432833.33
+    }
+  },
+  "financial_report": {
+    "symbol": "600519",
+    "as_of": "2026-07-13",
+    "annual_periods": 28,
+    "latest_year": 2025,
+    "metrics": {
+      "average_roe_10y_pct": 31.925,
+      "average_gross_margin_5y_pct": 91.696,
+      "average_net_margin_10y_pct": 51.141999999999996,
+      "interest_coverage": -13976.2501,
+      "average_ocf_to_profit_5y": 0.9032841913579851,
+      "cumulative_fcf_5y": 302164000000.0,
+      "latest_debt_ratio_pct": 16.42,
+      "latest_revenue_growth_pct": -1.2,
+      "latest_profit_growth_pct": -4.53
+    },
+    "cross_validation": [
+      {
+        "metric": "roe_pct",
+        "period": 2025,
+        "primary_value": 33.65,
+        "secondary_value": 32.53,
+        "relative_error": 0.033283803863298586,
+        "status": "warning",
+        "primary_source": "Sina via AkShare",
+        "secondary_source": "Tonghuashun via AkShare"
+      },
+      {
+        "metric": "net_margin_pct",
+        "period": 2025,
+        "primary_value": 50.5279,
+        "secondary_value": 50.53,
+        "relative_error": 4.15611968832795e-05,
+        "status": "consistent",
+        "primary_source": "Sina via AkShare",
+        "secondary_source": "Tonghuashun via AkShare"
+      },
+      {
+        "metric": "debt_ratio_pct",
+        "period": 2025,
+        "primary_value": 16.4154,
+        "secondary_value": 16.42,
+        "relative_error": 0.00028022466708090796,
+        "status": "consistent",
+        "primary_source": "Sina via AkShare",
+        "secondary_source": "Tonghuashun via AkShare"
+      },
+      {
+        "metric": "current_ratio",
+        "period": 2025,
+        "primary_value": 5.09,
+        "secondary_value": 5.09,
+        "relative_error": 0.0,
+        "status": "consistent",
+        "primary_source": "Sina via AkShare",
+        "secondary_source": "Tonghuashun via AkShare"
+      },
+      {
+        "metric": "revenue_growth_pct",
+        "period": 2025,
+        "primary_value": -1.206,
+        "secondary_value": -1.2,
+        "relative_error": 0.004975124378109457,
+        "status": "consistent",
+        "primary_source": "Sina via AkShare",
+        "secondary_source": "Tonghuashun via AkShare"
+      },
+      {
+        "metric": "profit_growth_pct",
+        "period": 2025,
+        "primary_value": -4.5049,
+        "secondary_value": -4.53,
+        "relative_error": 0.005571710803791454,
+        "status": "consistent",
+        "primary_source": "Sina via AkShare",
+        "secondary_source": "Tonghuashun via AkShare"
+      }
+    ],
+    "criteria": [
+      {
+        "name": "average_roe_10y",
+        "value": 31.925,
+        "threshold": ">= 8%",
+        "status": "pass",
+        "detail": "observed=31.93; required >= 8%"
+      },
+      {
+        "name": "cumulative_fcf_5y",
+        "value": 302164000000.0,
+        "threshold": "> 0",
+        "status": "pass",
+        "detail": "observed=3.022e+11; required > 0"
+      },
+      {
+        "name": "interest_coverage",
+        "value": -13976.2501,
+        "threshold": ">= 2x",
+        "status": "fail",
+        "detail": "observed=-1.398e+04; required >= 2x"
+      },
+      {
+        "name": "average_gross_margin_5y",
+        "value": 91.696,
+        "threshold": ">= 15%",
+        "status": "pass",
+        "detail": "observed=91.7; required >= 15%"
+      },
+      {
+        "name": "average_ocf_to_profit_5y",
+        "value": 0.9032841913579851,
+        "threshold": ">= 0.7",
+        "status": "pass",
+        "detail": "observed=0.9033; required >= 0.7"
+      },
+      {
+        "name": "average_net_margin_10y",
+        "value": 51.141999999999996,
+        "threshold": ">= 5%",
+        "status": "pass",
+        "detail": "observed=51.14; required >= 5%"
+      },
+      {
+        "name": "share_dilution_5y",
+        "value": null,
+        "threshold": "<= 20%",
+        "status": "unknown",
+        "detail": "historical total-share series unavailable from both selected free sources"
+      }
+    ],
+    "quality_score": 0.8333333333333334,
+    "hard_vetoes": [],
+    "warnings": [
+      "quality screen is incomplete; unknown criteria are not treated as passes"
+    ],
+    "sources": [
+      "Sina via AkShare",
+      "Tonghuashun via AkShare"
+    ]
+  },
+  "agent_reports": {
+    "quant": {
+      "stance": "bearish",
+      "confidence": 0.58,
+      "summary": "Momentum factor composite is negative, market regime is bear, and multi-timeframe consensus shows weak downtrend. Price is below 60- and 120-day moving averages, and recent returns are negative. However, some factors like volume asymmetry and RSI show mild bullish signals, preventing a fully bearish stance.",
+      "evidence": [
+        "Factor composite score = -0.118, target weight = 0.0",
+        "Market regime = bear with confidence 0.67",
+        "Multi-timeframe consensus = weak_downtrend (weekly -1, daily 0, monthly 0)",
+        "60-day return = -11.95%, 20-day return = -3.34%",
+        "Price below 60-day MA (8986.39) and 120-day MA (9344.43)",
+        "Momentum_20 score = -0.165 (short), momentum_60 score = -0.344 (short)",
+        "Price_position_60 score = -0.687 (short, near bottom of range)",
+        "Path_quality_60 score = -0.222 (short, choppy downtrend)"
+      ],
+      "risks": [
+        "Volume_asymmetry_20 score = +0.111 (long, higher volume on up days)",
+        "RSI_14 = 54.5, score = +0.150 (long, not oversold but neutral-bullish)",
+        "Return_skewness_60 score = +0.144 (long, positive skew)",
+        "Momentum_acceleration score = +0.106 (long, recent speed improving)",
+        "Price above 5-day and 20-day moving averages (short-term bullish)"
+      ],
+      "missing_data": [
+        "Fundamental data (e.g., earnings, P/E, revenue growth)",
+        "Analyst ratings or target prices",
+        "Sector or peer comparison data",
+        "News or sentiment data"
+      ]
+    },
+    "fundamental": {
+      "stance": "mixed",
+      "confidence": 0.64,
+      "summary": "Fundamental quality metrics supplied are exceptionally strong, but 2025 operating growth turned negative and the supplied interest-coverage criterion fails. The quality screen is also incomplete because share dilution is unknown, while ROE has a cross-source warning. No valuation conclusion can be drawn from the supplied raw price alone.",
+      "evidence": [
+        "Fact: The supplied 10-year average ROE is 31.925%, and the deterministic criterion marks it pass versus the >=8% threshold.",
+        "Fact: The supplied five-year average gross margin is 91.696%, five-year average operating-cash-flow-to-profit is 0.9033, and 10-year average net margin is 51.142%; each respective deterministic criterion is marked pass.",
+        "Fact: Supplied cumulative five-year free cash flow is 302.164 billion and is marked pass versus the >0 threshold.",
+        "Fact: Latest debt ratio is 16.42%. The 2025 debt-ratio cross-validation is consistent: 16.4154% from Sina via AkShare versus 16.42% from Tonghuashun via AkShare.",
+        "Fact: Latest revenue growth is -1.2% and latest profit growth is -4.53%. Both 2025 cross-validations are marked consistent across the two supplied sources.",
+        "Fact: Supplied interest coverage is -13,976.2501x, and the deterministic criterion marks it fail versus the >=2x requirement.",
+        "Fact: 2025 ROE is flagged with a cross-validation warning: 33.65% from Sina via AkShare versus 32.53% from Tonghuashun via AkShare.",
+        "Inference: The long-run profitability, margin, and cash-generation data support a strong underlying business-quality assessment, subject to the source warning on 2025 ROE.",
+        "Inference: The negative latest revenue and profit growth indicate a near-term deterioration relative to the otherwise strong historical profitability profile.",
+        "Inference: Because interest coverage is materially negative as supplied, it is a material balance-sheet/earnings-quality flag unless its calculation inputs establish that the result is non-economic or distorted."
+      ],
+      "risks": [
+        "The supplied interest-coverage metric fails the stated hard threshold, despite no hard veto being listed in the payload.",
+        "Latest revenue and profit growth are both negative.",
+        "Share dilution over five years is unknown; the supplied warning states that unknown criteria are not treated as passes.",
+        "The cross-source discrepancy in 2025 ROE reduces confidence in that point estimate.",
+        "The supplied quality score of 0.8333 reflects an incomplete screen and should not be interpreted as resolving the failed interest-coverage test.",
+        "The current raw price of 1210.99 cannot be assessed for attractiveness without valuation inputs."
+      ],
+      "missing_data": [
+        "Definition and underlying EBIT/finance-cost components for the supplied negative interest-coverage figure.",
+        "Five-year historical share-count series to evaluate dilution.",
+        "Valuation inputs relevant to the current raw price, such as earnings per share, free-cash-flow yield, enterprise value, or a stated valuation multiple/history.",
+        "More granular historical and interim revenue, profit, and cash-flow data to determine whether the 2025 contraction is temporary or persistent."
+      ]
+    },
+    "news": {
+      "stance": "neutral",
+      "confidence": 0.6,
+      "summary": "贵州茅台近期有分红方案调整、股东会决议、高管变动等公司治理事件，同时行业新闻显示白酒板块反弹、公司回购计划、资金流出及北向资金持仓等。分红方案调整（每股分红金额调整）和巨额分红（超500亿元）是积极信号，但资金流出和股价下跌（从1530元跌至1180元）构成压力。整体多空交织，缺乏明确方向。",
+      "evidence": [
+        "贵州茅台调整2025年年度利润分配方案每股分红金额（sentiment 0.7, impact 0.8）",
+        "贵州茅台2025年度股东会决议公告（分配方案决议）",
+        "贵州茅台2025年年度权益分派实施公告",
+        "贵州茅台推出大额回购计划，回购金额超10亿元（sentiment 1.0, impact 0.7）",
+        "2025年度实际累计分红金额超500亿元（sentiment 1.0, impact 0.9）",
+        "食品饮料行业资金流出榜显示贵州茅台等6股净流出资金超5000万元",
+        "白酒板块震荡反弹，贵州茅台一度涨超3%",
+        "北向资金二季度持仓中贵州茅台位列前列",
+        "贵州茅台股价从1530元左右跌至1180元左右，失去A股股王宝座"
+      ],
+      "risks": [
+        "股价持续下跌，从1530元跌至1180元，跌幅约23%",
+        "主力资金净流出，食品饮料行业资金流出榜显示净流出超5000万元",
+        "失去A股股王地位，市场信心可能受挫"
+      ],
+      "missing_data": [
+        "当前市盈率、市净率等估值指标",
+        "近期财务报告（如2026年一季报或半年报）",
+        "行业对比数据（如其他白酒股表现）",
+        "机构评级和目标价"
+      ]
+    },
+    "council": {
+      "tactical_score": -0.36391304347826087,
+      "strategic_score": 0.4245807259073842,
+      "combined_score": -0.08794022419328512,
+      "veto_triggered": false,
+      "veto_roles": [],
+      "momentum_tech_sync": true,
+      "market_regime": "bear",
+      "opinions": [
+        {
+          "role": "technical",
+          "perspective": "price structure and multi-timeframe trend",
+          "stance": "bearish",
+          "score": -0.3,
+          "confidence": 0.7,
+          "weight": 1.3,
+          "mode": "vote",
+          "veto": false,
+          "thesis": [
+            "Multi-timeframe consensus is weak_downtrend with weekly trend at -1, indicating persistent downward pressure.",
+            "Price is below the 60-day and 120-day moving averages, confirming intermediate and long-term bearish structure.",
+            "Momentum factors are negative over 20-day and 60-day horizons, with composite score -0.118 and factor momentum score -0.118."
+          ],
+          "evidence": [
+            "Multi-timeframe consensus: weak_downtrend (daily=0, weekly=-1, monthly=0) from quant_factors.",
+            "Latest adjusted close 8618.49 is below ma_60 (8986.39) and ma_120 (9344.43) per moving_averages_adjusted.",
+            "20-day return -3.34%, 60-day return -11.95%, 120-day return -10.52% from returns_adjusted_pct.",
+            "Factor momentum score -0.118, regime=bear, confidence 0.585 from strategy_signals."
+          ],
+          "risks": [
+            "Price is above 5-day and 20-day moving averages, suggesting short-term bounce potential.",
+            "Volume asymmetry (20-day) positive at 0.111, indicating higher volume on up days, which could support a reversal.",
+            "RSI_14 at 54.5 is neutral, not oversold, limiting immediate reversal conviction."
+          ],
+          "missing_data": [
+            "Spread, depth, order size, market impact, and price-limit data are not provided; execution risk is unassessed.",
+            "No cross-sectional factor data to compare relative strength within sector or market."
+          ]
+        },
+        {
+          "role": "momentum",
+          "perspective": "momentum quality and continuation",
+          "stance": "bearish",
+          "score": -0.3,
+          "confidence": 0.6,
+          "weight": 1.5,
+          "mode": "vote",
+          "veto": false,
+          "thesis": [
+            "Medium-term momentum is negative and path quality is poor, indicating weak trend structure.",
+            "Pullback-reversal conditions are not triggered, so no reversal signal is present.",
+            "Volume asymmetry is positive but insufficient to overcome the dominant downtrend."
+          ],
+          "evidence": [
+            "Momentum_60 score -0.344 (short direction) per quant_factors.",
+            "Path_quality_60 score -0.222 (short direction) per quant_factors.",
+            "Pullback_reversal triggered=false with strength=0.0 per quant_factors.",
+            "Multi-timeframe verdict='weak_downtrend' per quant_factors.",
+            "Price below MA_60 and MA_120 per moving_averages_adjusted."
+          ],
+          "risks": [
+            "Positive momentum acceleration (score 0.106) could signal early reversal.",
+            "Positive volume asymmetry (score 0.111) suggests buying pressure on up days.",
+            "RSI at 54.5 is neutral, not oversold, limiting reversal conviction."
+          ],
+          "missing_data": [
+            "Spread, depth, order size, market impact, and price-limit data are absent; execution risk is unassessed.",
+            "No cross-sectional factor data provided to assess relative momentum."
+          ]
+        },
+        {
+          "role": "value_veto",
+          "perspective": "extreme valuation and solvency veto",
+          "stance": "neutral",
+          "score": 0.0,
+          "confidence": 0.72,
+          "weight": 0.6,
+          "mode": "veto_only",
+          "veto": false,
+          "thesis": [
+            "No veto: supplied evidence does not establish a concrete solvency, fraud, permanent-loss, unbounded-liquidity, or execution risk.",
+            "Facts indicate strong historical economics and cash generation: 10-year average ROE was 31.925%, 10-year average net margin was 51.142%, five-year cumulative FCF was RMB302.164 billion, and five-year average operating cash flow to profit was 0.9033.",
+            "Balance-sheet indicators supplied do not demonstrate distress: the 2025 debt ratio was 16.42% and current ratio was 5.09.",
+            "Valuation and margin of safety cannot be determined from the supplied price alone. Absence of owner earnings per share, enterprise value, net cash, normalized earnings, and valuation multiples prevents a value conclusion but does not by itself trigger a veto."
+          ],
+          "evidence": [
+            "The fundamentals payload reports no hard vetoes and a quality score of 0.8333, with share dilution classified as unknown rather than passed.",
+            "2025 revenue growth was -1.2% and profit growth was -4.53%, showing contraction but not evidence of insolvency or permanent impairment on the supplied record.",
+            "The interest-coverage criterion reports -13,976.2501x and a failure. However, its underlying interest expense and calculation components are not supplied, while debt ratio and liquidity metrics remain strong; therefore the figure is anomalous but insufficient for a solvency veto.",
+            "Cash conversion passed the supplied threshold: five-year average OCF-to-profit was 0.9033 versus a required minimum of 0.7.",
+            "The latest executable raw close was RMB1,210.99. No deterministic intrinsic-value comparison or valuation ratio was provided."
+          ],
+          "risks": [
+            "Earnings risk: declining 2025 revenue and profit could reduce normalized owner earnings if contraction persists.",
+            "Data-interpretation risk: the extreme negative interest-coverage figure requires reconciliation; if it represents genuine financing stress rather than a sign or classification issue, permanent-loss risk could be materially higher.",
+            "Valuation risk is unquantified because no normalized owner-earnings yield, FCF yield, P/E, enterprise value, net-cash adjustment, or intrinsic-value range is supplied.",
+            "Dilution risk is unassessed because the five-year total-share series is unavailable.",
+            "Execution risk is unassessed, not absent: spread, order-book depth, intended order size, market impact, and price-limit conditions were not supplied.",
+            "Market evidence is weak: the supplied regime is bear, 60-day adjusted return is -11.952184%, and the latest signal close is explicitly below the 60-day and 120-day moving averages, though above the 5-day and 20-day averages. This is not independently a value veto."
+          ],
+          "missing_data": [
+            "Normalized owner earnings and owner earnings per share",
+            "Current and historical P/E, EV/EBIT, EV/FCF, FCF yield, and dividend yield",
+            "Shares outstanding, market capitalization, enterprise value, cash, debt, and net-cash position",
+            "Detailed cash-flow statements and maintenance-capex estimate needed to validate owner earnings",
+            "Intrinsic-value range and explicit margin-of-safety comparison against RMB1,210.99",
+            "Interest expense, interest income, EBIT, and methodology underlying the reported -13,976.2501x interest coverage",
+            "Five-year share-count history and dilution or buyback-adjusted per-share growth",
+            "Order size, bid-ask spread, market depth, expected market impact, and applicable price-limit information"
+          ]
+        },
+        {
+          "role": "risk",
+          "perspective": "capital preservation and trade feasibility",
+          "stance": "bearish",
+          "score": -0.65,
+          "confidence": 0.82,
+          "weight": 1.0,
+          "mode": "veto_only",
+          "veto": false,
+          "thesis": [
+            "Fact: The supplied strategy assigns a target weight of 0.0, with a composite score of -0.118 and a weak-downtrend verdict in a bear regime.",
+            "Fact: Adjusted returns are -3.34% over 20 trading days, -11.95% over 60 days, and -10.52% over 120 days. Maximum drawdown over the supplied 120-price window is -19.40%, with annualized volatility of 20.76%.",
+            "Fact: The latest signal close is above the supplied 5-day and 20-day moving averages but below the 60-day and 120-day moving averages.",
+            "Inference: Downside and drawdown risk remain elevated despite a short-term rebound; the evidence does not support initiating exposure for a momentum strategy.",
+            "No veto: The evidence does not establish a concrete solvency, fraud, permanent-loss, or unbounded-liquidity risk. Bearish price action alone is not grounds for veto."
+          ],
+          "evidence": [
+            "The deterministic regime field is bear with confidence 0.671; multi-timeframe consensus is -1 and the verdict is weak_downtrend.",
+            "The deterministic risk fields report annualized volatility of 20.76151% and maximum drawdown of -19.397256% over the last 120 prices.",
+            "The deterministic moving-average comparisons report the signal close 0.91% above MA5, 0.81% above MA20, 4.09% below MA60, and 7.77% below MA120.",
+            "The supplied 60-day momentum is -11.95%, path quality is negative, and the signal is positioned near the lower part of its 60-day range.",
+            "Average trading amount is approximately 5.42 billion over 20 trading days, 5.89 billion over 60 days, and 6.28 billion over 120 days; this suggests substantial headline turnover but does not establish executable liquidity for an unspecified order.",
+            "Fundamental evidence reports a 16.42% debt ratio, positive five-year cumulative free cash flow of 302.164 billion, and strong historical margins and ROE. The supplied fundamental screen lists no hard vetoes.",
+            "Revenue growth for 2025 is -1.2% and profit growth is -4.53%, indicating deterioration but not, by itself, a solvency or permanent-loss event."
+          ],
+          "risks": [
+            "Trend and drawdown risk: medium- and longer-horizon momentum remain negative, and the recent maximum drawdown is material.",
+            "Volatility risk: 20.76% annualized volatility can produce meaningful mark-to-market losses, particularly in a bear regime.",
+            "Fundamental deceleration: supplied 2025 revenue and profit growth are negative.",
+            "Data-consistency risk: reported interest coverage of -13,976.25x conflicts directionally with low leverage, strong free cash flow, and high profitability. Without its calculation components, this metric is not reliable enough to support either a solvency veto or a clean bill of health.",
+            "Execution risk is unassessed: no bid-ask spread, order-book depth, intended order size, participation rate, market-impact estimate, or applicable price-limit information is supplied.",
+            "Concentration risk is unassessed because portfolio value, existing position, proposed allocation, and correlated exposures are absent.",
+            "Event risk is incomplete: supplied news contains dividend, governance, block-trade, buyback, and fund-flow references, but no verified forward earnings calendar or complete event terms.",
+            "A risk-view invalidation would require evidence of sustained regime improvement and stronger medium/long-term trend relationships; a short-term move above MA5 and MA20 alone is insufficient."
+          ],
+          "missing_data": [
+            "Proposed trade direction, position size, portfolio weight, entry plan, maximum acceptable loss, stop or exit rule, and investment horizon.",
+            "Current portfolio concentration and correlated sector or factor exposures.",
+            "Bid-ask spread, order-book depth, order size, expected participation rate, market impact, settlement constraints, and price-limit risk.",
+            "Valuation measures and assumptions needed to assess permanent-loss risk from overpayment.",
+            "Forward earnings and corporate-event calendar, including any material regulatory or governance events.",
+            "Underlying numerator and denominator for the anomalous negative interest-coverage metric.",
+            "Five-year share-dilution history, which the supplied fundamental screen marks as unavailable.",
+            "Complete block-trade terms and verified company-specific fund-flow figures; several supplied news snippets are truncated."
+          ]
+        },
+        {
+          "role": "macro",
+          "perspective": "market regime and liquidity",
+          "stance": "bearish",
+          "score": -0.6,
+          "confidence": 0.7,
+          "weight": 0.7,
+          "mode": "vote",
+          "veto": false,
+          "thesis": [
+            "Bear regime with weak downtrend consensus supports bearish stance",
+            "Price below 60- and 120-day moving averages confirms medium-term downtrend",
+            "Negative momentum across 20- and 60-day horizons reinforces bearish bias"
+          ],
+          "evidence": [
+            "Market regime is 'bear' with regime_confidence 0.67",
+            "Multi-timeframe consensus is 'weak_downtrend' (verdict=-1)",
+            "Factor momentum score is -0.118, target weight 0.0",
+            "Price (adjusted close 8618.49) is below ma_60 (8986.39) and ma_120 (9344.43)",
+            "20-day return -3.34%, 60-day return -11.95%",
+            "Price position in 60-day range is low (score -0.687, direction short)",
+            "Path quality 60 is negative (-0.222, direction short)"
+          ],
+          "risks": [
+            "Price is above short-term ma_5 and ma_20, suggesting possible short-term bounce",
+            "Volume asymmetry positive (0.111) and RSI at 54.5 (neutral) could indicate buying interest",
+            "Fundamentals strong (ROE 33.65%, gross margin 91.7%) may limit downside",
+            "News sentiment mixed with positive dividend and buyback announcements"
+          ],
+          "missing_data": [
+            "Spread, depth, order size, market impact, and price-limit data not provided; execution risk unassessed",
+            "Share dilution data missing (fundamental screen incomplete)"
+          ]
+        },
+        {
+          "role": "buffett",
+          "perspective": "moat, owner earnings and management integrity",
+          "stance": "neutral",
+          "score": 0.63,
+          "confidence": 0.66,
+          "weight": 1.0,
+          "mode": "strategic",
+          "veto": false,
+          "thesis": [
+            "The supplied financial history supports an unusually high-quality business: 10-year average ROE is 31.925%, five-year average gross margin is 91.696%, and 10-year average net margin is 51.142%. These are facts consistent with a very strong economic moat and substantial pricing power.",
+            "Cash conversion is favorable but not perfect: five-year average operating-cash-flow-to-profit is 0.9033 and cumulative five-year FCF is ¥302.164 billion. This supports positive owner-earnings generation, although it does not establish current sustainable owner earnings or distributable cash flow.",
+            "The moat-quality case is stronger than the near-term operating trend. In 2025, reported revenue growth was -1.2% and profit growth was -4.53%; this is evidence of a current earnings contraction, not evidence by itself that the franchise has permanently weakened.",
+            "No margin-of-safety conclusion is possible from the supplied evidence. The raw executable close is ¥1,210.99, but there is no share count, market capitalization, earnings-per-share, current FCF, owner-earnings estimate, normalized capital-expenditure requirement, or intrinsic-value range.",
+            "Management integrity is not affirmatively established or disproved. The supplied notices show governance and compensation-related actions, a board-secretary appointment, dividend-plan adjustment/implementation, and reported sizable shareholder distributions, but provide no terms, capital-allocation record, related-party disclosures, insider transactions, or evidence on treatment of minority shareholders."
+          ],
+          "evidence": [
+            "Fundamentals report average ROE over 10 years of 31.925%, average gross margin over five years of 91.696%, and average net margin over 10 years of 51.142%.",
+            "Cumulative FCF over five years is reported at ¥302.164 billion; average OCF/profit over five years is 0.903284.",
+            "2025 debt ratio is 16.42% and current ratio is 5.09 according to the cross-validation data, supporting a conservatively financed balance-sheet profile on the supplied measures.",
+            "The reported 2025 net margin is 50.5279% in the primary source and 50.53% in the secondary source, marked consistent. Debt ratio, current ratio, revenue growth, and profit growth are also marked consistent; ROE has a 3.33% cross-source discrepancy and is flagged as a warning.",
+            "The 2025 revenue and profit growth figures are negative: -1.2% and -4.53%, respectively.",
+            "The fundamental screen reports interest coverage of -13,976.2501 and marks its >=2x criterion as failed. Without the underlying interest-income/expense and EBIT definitions, this anomalous figure cannot reliably be interpreted as conventional debt-service distress.",
+            "The supplied news/notices report a 2025 annual profit-distribution adjustment and implementation, and a news item states that the company was among six with 2025 actual cumulative dividends above ¥50 billion. These items suggest shareholder distributions but do not provide enough detail to judge capital-allocation quality."
+          ],
+          "risks": [
+            "A sustained volume, mix, or pricing deterioration could turn the currently modest revenue and profit declines into a more durable owner-earnings decline; the supplied data do not decompose the 2025 contraction.",
+            "The very high historical margins and returns can create valuation vulnerability if the market price already capitalizes those economics. Margin of safety is unassessed, rather than demonstrated.",
+            "The negative reported interest-coverage metric is a data or classification risk until reconciled. If it reflects a genuine inability to service interest rather than net interest income/accounting presentation, it would be material.",
+            "Management-integrity risk is unassessed because the supplied governance notices lack substantive terms and there is no evidence regarding related-party dealings, incentives, capital allocation, or minority-shareholder protections.",
+            "Execution risk is unassessed: average trading amounts are supplied, but bid-ask spread, order-book depth, intended order size, market impact, and price-limit constraints are not supplied."
+          ],
+          "missing_data": [
+            "Current and multi-year revenue, operating profit, net profit, operating cash flow, maintenance versus growth capex, changes in working capital, taxes, and a reproducible owner-earnings bridge.",
+            "Shares outstanding, market capitalization, current EPS/FCF yield, dividend per share and payout ratio, net cash/debt detail, and an intrinsic-value range to test margin of safety at ¥1,210.99.",
+            "Segment/product volume, price, channel inventory, customer concentration, competitive-position, and regulatory data needed to test moat durability and pricing power.",
+            "Full annual-report disclosures on executive remuneration, incentive design, insider ownership/trading, related-party transactions, audit qualifications, capital allocation, and board independence.",
+            "A reconciliation of the reported negative interest coverage and the underlying interest-income, interest-expense, and EBIT calculations."
+          ]
+        },
+        {
+          "role": "munger",
+          "perspective": "inversion, incentives and failure paths",
+          "stance": "bearish",
+          "score": 0.3,
+          "confidence": 0.72,
+          "weight": 1.0,
+          "mode": "strategic",
+          "veto": false,
+          "thesis": [
+            "An intelligent skeptic can refuse a new long position because the supplied evidence shows a deteriorating operating-growth backdrop alongside an established intermediate-term downtrend, while providing no valuation or normalized-demand evidence to establish a margin of safety.",
+            "This is not a balance-sheet-distress short thesis: the supplied fundamentals show low reported debt ratio, substantial historical free cash flow, and unusually high historical margins. The bearish conclusion is instead that quality history does not protect a buyer from a prolonged earnings, multiple, or sentiment derating.",
+            "No veto is applied. The evidence identifies credible loss paths but does not establish a concrete, irreversible impairment or an unbounded execution hazard."
+          ],
+          "evidence": [
+            "Fact: 2025 revenue growth was -1.2% and profit growth was -4.53%, according to the supplied fundamental dataset. A skeptic should treat the profit decline exceeding the revenue decline as a warning that margins, costs, mix, or other earnings drivers may be becoming less favorable; the supplied data does not identify which.",
+            "Fact: the factor composite is -0.118, the strategy target weight is 0.0, the regime is bear, and the multi-timeframe verdict is weak_downtrend.",
+            "Fact: adjusted returns were -3.34% over 20 trading days, -11.95% over 60 days, and -10.52% over 120 days. The latest signal close was above the supplied 5- and 20-day moving averages but below the 60- and 120-day moving averages, consistent with a short-term bounce inside a weaker medium-term trend.",
+            "Fact: the 120-observation maximum drawdown was -19.40%. This demonstrates that a historically high-quality franchise has still exposed holders to meaningful drawdowns in the supplied window.",
+            "Fact: historical quality metrics are strong—10-year average ROE of 31.925%, 5-year average gross margin of 91.696%, 10-year average net margin of 51.142%, and five-year cumulative FCF of 302.164 billion. Inference: these figures can anchor investor optimism and create a cognitive trap of extrapolating past economics through a period when current growth is negative.",
+            "Fact: the quality screen flags interest coverage of -13,976.2501 as a failure despite a reported debt ratio of 16.42% and current ratio of 5.09. This internally counterintuitive result requires reconciliation before using either the coverage statistic or the quality score as reliable evidence.",
+            "Fact: the data reports an annual-distribution adjustment and provider-supplied back-adjusted prices. Raw close of 1,210.99 is identified as the executable quote; adjusted prices are explicitly for returns and trend, not execution levels."
+          ],
+          "risks": [
+            "Permanent-loss path: if the reported revenue and profit contraction reflects a sustained normalization rather than a temporary fluctuation, the market may reset both earnings expectations and the valuation assigned to the franchise. High historical margins and ROE can magnify disappointment because they leave little room for investors assuming permanence of exceptional economics.",
+            "Demand/channel risk is unassessed. No data is supplied on volumes, realized prices, channel inventory, distributor economics, consumer demand, product mix, or competitive behavior. Without them, the committee cannot distinguish a benign one-year slowdown from deterioration in the economics that produced past margins.",
+            "Capital-allocation and governance incentives are not assessable from the supplied announcements. There are notices concerning executive appointments, director/management compensation rules, dividends, and media references to buybacks, but no disclosed terms, performance conditions, ownership alignment, repurchase pricing discipline, or capital-allocation framework in the payload.",
+            "Accounting/measurement risk: the interest-coverage result is anomalous relative to the reported low debt ratio and cannot be interpreted safely without the underlying interest-income, interest-expense, EBIT, and net-debt components. The 3.33% cross-source ROE discrepancy is flagged as a warning, although net margin, debt ratio, current ratio, and growth figures cross-validate closely.",
+            "Dividend and buyback headlines can induce yield/support anchoring. A distribution transfers cash to shareholders but does not by itself prove that future earnings power or intrinsic value is protected; the supplied evidence gives no payout sustainability analysis.",
+            "Execution risk is unassessed, not absent. Trading amounts are supplied, but bid-ask spread, order-book depth, intended order size, market impact, and price-limit constraints are not supplied. Raw and adjusted series must not be conflated when setting executable entry or exit levels.",
+            "Momentum reversal risk to a bearish view: short-term factors include positive momentum acceleration, volume asymmetry, return skewness, and RSI, while price is above the 5- and 20-day moving averages. These indicators could support a rally even if the medium-term trend remains weak."
+          ],
+          "missing_data": [
+            "Valuation evidence: market capitalization, enterprise value, P/E, free-cash-flow yield, dividend yield, historical valuation range, and an explicit estimate of normalized owner earnings.",
+            "Operating drivers: unit sales, pricing, channel inventory, distributor receivables/terms, product and geographic mix, production capacity, and competitor data.",
+            "Financial-statement components sufficient to reconcile the negative interest-coverage metric and test the quality of reported profit and cash flow, including EBIT, finance income/expense, cash, debt, working-capital movements, capex, and inventory.",
+            "Share-count history; the supplied quality screen marks five-year share dilution as unknown.",
+            "Governance and incentives: controlling-owner position, management equity ownership, compensation performance metrics, related-party transactions, capital-allocation policy, and details of the reported repurchase program.",
+            "Execution inputs: bid-ask spreads, depth, order size, expected market impact, and applicable price-limit information."
+          ]
+        },
+        {
+          "role": "graham",
+          "perspective": "financial strength and margin of safety",
+          "stance": "neutral",
+          "score": 0.42,
+          "confidence": 0.74,
+          "weight": 0.9,
+          "mode": "strategic",
+          "veto": false,
+          "thesis": [
+            "The supplied fundamentals indicate unusually strong historical profitability and balance-sheet liquidity, but they do not establish a conservative intrinsic value or a measurable margin of safety at the supplied raw close of 1,210.99.",
+            "A defensively oriented investor should not treat business quality as equivalent to value: 2025 revenue and profit both declined, share dilution is unknown, and no per-share earnings, book value, net-cash amount, share count, or valuation multiple is supplied.",
+            "Accordingly, the appropriate Graham vote is neutral/watchlist rather than an affirmative purchase recommendation."
+          ],
+          "evidence": [
+            "Fact: the latest debt ratio is 16.42% and the 2025 current ratio is 5.09; the latter was cross-validated as consistent across the two cited data sources.",
+            "Fact: average 10-year ROE is 31.925%, average 10-year net margin is 51.142%, average five-year gross margin is 91.696%, and cumulative five-year FCF is positive at 302.164 billion.",
+            "Fact: five-year average operating cash flow to profit is 0.9033, which supports substantial—but not complete—cash conversion of accounting earnings.",
+            "Fact: 2025 revenue growth was -1.2% and profit growth was -4.53%; this is a deterioration in the latest annual operating trend, notwithstanding the strong historical averages.",
+            "Fact: the supplied fundamentals screen marks interest coverage as -13,976.2501 and therefore fails its >=2x criterion. This result is inconsistent with the otherwise low debt ratio and requires reconciliation before relying on coverage as a leverage measure.",
+            "Fact: share dilution over five years is explicitly unknown because historical total-share data were unavailable.",
+            "Inference: with no supplied intrinsic-value estimate or inputs sufficient to derive one conservatively, the margin of safety versus the raw executable price cannot be demonstrated.",
+            "Fact: price/trend evidence is not a valuation input, but it is unsupportive of an immediate entry: adjusted 20-, 60-, and 120-trading-day returns were -3.34%, -11.95%, and -10.52%, respectively. The latest signal close was above the supplied 5- and 20-day averages but below the 60- and 120-day averages."
+          ],
+          "risks": [
+            "Valuation risk: absent normalized EPS/FCF per share, share count, dividend per share, net cash, and a conservative earnings-power estimate, a buyer could pay a price with no demonstrable downside buffer.",
+            "Earnings-power risk: the latest annual revenue and profit declines may prove more persistent than historical profitability averages imply; the supplied evidence does not explain the cause or reversibility.",
+            "Capital-allocation and dilution risk cannot be assessed because the five-year share-count history is unavailable.",
+            "Leverage/coverage interpretation risk: the negative interest-coverage result could signal a data-definition issue or unusual net-interest presentation; either way, it prevents a clean debt-service assessment until reconciled.",
+            "Execution risk is unassessed: trading amounts are supplied, but bid-ask spread, order-book depth, order size, market impact, and price-limit constraints are not supplied.",
+            "The supplied factor composite is -0.118 in a bear regime and the strategy target weight is 0.0; this does not determine intrinsic value, but it increases the risk that a valuation thesis would face adverse near-term market conditions."
+          ],
+          "missing_data": [
+            "Diluted shares outstanding and five-year share-count history; repurchases alone do not resolve dilution assessment.",
+            "Latest balance-sheet cash, total debt, lease liabilities, short-term investments, and net-debt/net-cash position.",
+            "Per-share EPS, normalized owner earnings or FCF per share, book value per share, dividend per share, and payout history.",
+            "A conservative intrinsic-value calculation or the inputs needed to construct one, including normalized earnings assumptions and an appropriate discount/capitalization rate.",
+            "Multi-year annual revenue, profit, FCF, and working-capital series needed to test earnings stability through adverse periods.",
+            "Clarification of the interest-coverage calculation and its underlying interest-income/expense definitions.",
+            "Execution inputs: spread, visible depth, proposed order size, estimated impact, and applicable price-limit conditions."
+          ]
+        },
+        {
+          "role": "fisher",
+          "perspective": "quality growth and management execution",
+          "stance": "neutral",
+          "score": 0.48,
+          "confidence": 0.62,
+          "weight": 0.9,
+          "mode": "strategic",
+          "veto": false,
+          "thesis": [
+            "The supplied record supports an unusually high-quality, cash-generative franchise, but does not yet support a durable-growth conclusion because 2025 revenue and profit both declined.",
+            "Margin durability appears strong on history: five-year average gross margin was 91.696%, ten-year average net margin was 51.142%, and 2025 net margin was 50.5279%. This is consistent with a resilient economic model, though it is not proof that future volume, pricing, or mix will recover.",
+            "The main underwriting question is whether the 2025 contraction is temporary or a sign of a more persistent demand, channel, or pricing issue. The supplied evidence does not disaggregate the decline, so that distinction cannot be made.",
+            "Management execution cannot be positively assessed from the notices alone. The June 2026 board, employee-director, and board-secretary appointments establish personnel changes, but provide no operating track records, succession context, or strategic KPIs."
+          ],
+          "evidence": [
+            "2025 revenue growth was -1.2% and profit growth was -4.53%, versus the stated long-term quality metrics.",
+            "Average 10-year ROE was 31.925%; cumulative five-year FCF was 302.164 billion; average five-year operating-cash-flow-to-profit was 0.9033.",
+            "Latest debt ratio was 16.42% and current ratio cross-validation was 5.09, indicating balance-sheet liquidity based on supplied metrics.",
+            "A 2025 annual profit-distribution adjustment and subsequent implementation were announced in June 2026; separate news coverage states the company was among firms with annual cumulative dividends above 50 billion yuan. This demonstrates shareholder distributions, but not insider alignment.",
+            "A news item reports a repurchase plan exceeding 1 billion yuan, but the supplied excerpt gives neither authorization terms nor completed repurchase amounts; it should not be treated as confirmed capital-allocation execution."
+          ],
+          "risks": [
+            "Growth deceleration risk: negative 2025 revenue and profit growth may indicate a more durable reset rather than a transient comparison effect; absent segment and channel data, the permanence cannot be determined.",
+            "Margin risk: historically exceptional margins can remain durable, but the payload supplies no pricing, product-mix, inventory, distributor, or competitive data with which to test that durability.",
+            "Execution and succession risk is unassessed: senior personnel changes occurred in June 2026, while management depth, incentives, ownership, and transition rationale are not supplied.",
+            "The reported interest-coverage figure of -13976.2501 conflicts economically with the low debt ratio and strong profitability/cash-generation profile. It is a data-quality concern requiring reconciliation, not evidence by itself of financial distress.",
+            "R&D productivity and the effectiveness of the sales organization are unassessed; no R&D spend, innovation pipeline, salesforce/channel productivity, inventory, or sell-through metrics are provided."
+          ],
+          "missing_data": [
+            "Multi-year revenue, volume, price, and mix by product/category; domestic and export growth; and a bridge explaining 2025 revenue and profit declines.",
+            "Distributor inventory, channel sell-through, wholesale/retail pricing, customer concentration, and evidence of sales-organization productivity.",
+            "R&D expenditure, project pipeline, commercialization outcomes, and returns on innovation investment.",
+            "Management biographies, tenure, succession plan, incentive design, board independence, insider ownership, and insider buying/selling.",
+            "Share-count history to resolve the fundamental screen's unknown five-year dilution criterion.",
+            "Reconciled debt, interest-income/expense, and interest-coverage calculations.",
+            "Valuation inputs and forward earnings/cash-flow expectations, which are necessary to turn franchise quality into an investable return judgment."
+          ]
+        },
+        {
+          "role": "lynch",
+          "perspective": "growth at a reasonable price",
+          "stance": "bearish",
+          "score": 0.3,
+          "confidence": 0.74,
+          "weight": 0.8,
+          "mode": "strategic",
+          "veto": false,
+          "thesis": [
+            "Company type: mature, high-margin consumer franchise is the best inference from its exceptionally high and sustained profitability; it is not presently demonstrating the earnings growth required for a GARP case.",
+            "Business quality and balance-sheet/cash-generation evidence are strong, but 2025 revenue declined 1.2% and profit declined 4.53%. This makes the current growth leg of the GARP framework fail.",
+            "Valuation cannot be tested because the supplied evidence contains no market capitalization, shares outstanding, EPS, P/E, free-cash-flow yield, or forward earnings estimates. A reasonable price conclusion therefore cannot be made.",
+            "The supplied factor signal assigns a zero target weight in a bear regime, with a -0.118 composite and a weak-downtrend multi-timeframe verdict. This reinforces waiting rather than initiating on the available evidence."
+          ],
+          "evidence": [
+            "Facts: 2025 ROE was 33.65% in the primary dataset (32.53% in the secondary dataset, flagged as a warning); 10-year average ROE was 31.925%.",
+            "Facts: average gross margin over five years was 91.696%, 10-year average net margin was 51.142%, and 2025 net margin was consistently reported near 50.53% across the two supplied sources.",
+            "Facts: latest debt ratio was 16.42% and the supplied cross-validation reports a current ratio of 5.09.",
+            "Facts: cumulative five-year free cash flow was 302.164 billion, while five-year average operating-cash-flow-to-profit was 0.9033. These support substantial cash conversion, although not a full reconciliation for the latest year.",
+            "Facts: adjusted-price returns were -3.34% over 20 trading days, -11.95% over 60 days, and -10.52% over 120 days. The latest adjusted signal close was above the supplied 5- and 20-day moving averages but below the 60- and 120-day averages.",
+            "Facts: factor_momentum score was -0.1179, its target weight was 0.0, and its multi-timeframe verdict was weak_downtrend in a bear regime."
+          ],
+          "risks": [
+            "Earnings-deceleration risk: the observed 2025 declines in both revenue and profit can persist or deepen. For a mature premium franchise, a sustained volume, pricing, or product-mix deterioration could impair earnings power and create permanent-loss risk if bought at an unsupported valuation.",
+            "Valuation risk is unbounded within this payload: without per-share earnings/cash flow and a valuation multiple or enterprise value, there is no evidence that the price of 1210.99 offers a margin of safety against declining earnings.",
+            "Cash-conversion risk: five-year average OCF/profit of 0.9033 is solid but below 1.0; the data provided do not explain the gap or show the most recent cash-flow statement.",
+            "The interest-coverage screen reports -13,976.2501x despite low leverage and a strong current ratio. This may reflect a metric-definition issue, but it cannot be treated as evidence of effortless debt servicing without underlying interest expense and operating-profit detail.",
+            "Execution risk is unassessed: trading amounts are supplied, but bid-ask spread, order-book depth, intended order size, market impact, and price-limit information are absent."
+          ],
+          "missing_data": [
+            "Market capitalization, shares outstanding, diluted EPS, trailing and forward P/E, enterprise value, and free-cash-flow yield.",
+            "Multi-year revenue, EPS, and free-cash-flow growth history; management guidance; and consensus forecasts needed to assess normalized versus cyclical earnings growth.",
+            "Latest detailed income statement, balance sheet, and cash-flow statement, including cash, gross debt, interest income/expense, capex, working-capital movements, and the reason for the anomalous interest-coverage result.",
+            "Share-count history and buyback terms/results; the supplied fundamental screen explicitly marks five-year dilution as unknown.",
+            "Operating drivers such as volume, realized pricing, inventory/channel data, competitive position, and segment/product mix.",
+            "Trade-execution inputs including spread, depth, order size, market impact, and price-limit constraints."
+          ]
+        },
+        {
+          "role": "financial_quality_gate",
+          "perspective": "deterministic financial quality screen",
+          "stance": "neutral",
+          "score": 0.0,
+          "confidence": 1.0,
+          "weight": 1.0,
+          "mode": "veto_only",
+          "veto": false,
+          "thesis": [
+            "deterministic quality criteria evaluated before LLM synthesis"
+          ],
+          "evidence": [
+            "quality_score=0.833"
+          ],
+          "risks": [],
+          "missing_data": [
+            "quality screen is incomplete; unknown criteria are not treated as passes"
+          ]
+        }
+      ],
+      "summary": "tactical=-0.364; strategic=0.4245807259073842; veto=none"
+    },
+    "bull": {
+      "stance": "bullish",
+      "confidence": 0.64,
+      "thesis": [
+        "The strongest long thesis is fundamentally driven, not trend driven. The supplied record describes an exceptional consumer franchise: 10-year average ROE of 31.925%, five-year average gross margin of 91.696%, and 10-year average net margin of 51.142%. Sustaining returns and margins at these levels over long periods is evidence consistent with powerful brand equity, pricing power, and a durable moat.",
+        "Cash generation supports the quality case. Five-year cumulative free cash flow was ¥302.164 billion, while five-year average operating-cash-flow-to-profit was 0.9033. The latter is not perfect conversion, but it is substantial cash realization relative to reported profit, rather than a purely accounting-based earnings profile.",
+        "Balance-sheet risk appears limited on the supplied facts: latest debt ratio was 16.42%, corroborated across two supplied sources. The value-veto review found no established solvency, fraud, permanent-loss, unbounded-liquidity, or execution-risk veto.",
+        "The business remained highly profitable even amid the reported 2025 slowdown: supplied 2025 net margin was 50.5279%. Thus, the -1.2% revenue growth and -4.53% profit growth indicate deceleration, but the provided data do not establish a collapse in franchise economics or margin structure.",
+        "Capital return is a potential downside cushion. The payload cites an annual cumulative dividend above ¥50 billion and a buyback plan above ¥1 billion. These actions do not prove undervaluation, but they demonstrate capacity to return capital alongside the historical free-cash-flow record.",
+        "The market setup allows a contrarian-quality interpretation. The raw close of ¥1,210.99 is near the low end of the supplied 120-trading-day range of ¥1,151.01–¥1,539.98, following a 19.40% maximum drawdown in the adjusted series. Meanwhile, price has moved back above both its 5-day and 20-day adjusted moving averages; RSI is 54.5, volume asymmetry is positive, return skewness is positive, and momentum acceleration is positive. These are not confirmation of a new uptrend, but they support the possibility that selling pressure is stabilizing rather than accelerating.",
+        "A bull should frame this as a selective, long-horizon quality opportunity contingent on valuation work—not as a claim that the current price is demonstrably cheap. If normalized earnings prove resilient and the current price offers a reasonable earnings/FCF or dividend yield, the combination of franchise durability, cash generation, capital returns, and depressed sentiment could create attractive asymmetric returns."
+      ],
+      "rebuttals": [
+        "Technical bear case: the adjusted price remains below the 60-day moving average by 4.09% and the 120-day moving average by 7.77%; returns were -3.34%, -11.95%, and -10.52% over 20, 60, and 120 trading days, respectively. This means the primary trend is still weak. Bull rebuttal: short-term trend repair is already visible above the 5- and 20-day averages, and positive volume asymmetry/momentum acceleration provide an early, though unconfirmed, reversal signal. A long should be phased or await a more decisive intermediate-trend confirmation rather than assume a bottom is established.",
+        "Fundamental bear case: 2025 revenue and profit growth were negative. Bull rebuttal: one year of modest contraction does not by itself invalidate a franchise with multi-year 50%+ net margins, 90%+ gross margins, large cumulative FCF, and low reported debt. The decisive missing question is whether the slowdown reflects temporary demand/channel normalization or structural erosion; the supplied facts do not prove the latter.",
+        "Valuation bear case: no P/E, EV/FCF, FCF yield, owner-earnings estimate, market capitalization, share count, or historical multiple range is provided. Bull rebuttal: this is the central limitation, and it prevents a categorical buy-at-any-price conclusion—not a reason to conclude the business lacks investment merit. The appropriate bull conclusion is conditional: complete a normalized per-share earnings and valuation analysis before setting size.",
+        "Interest-coverage bear case: the supplied metric fails its stated hard threshold. Bull rebuttal: this is a material data-quality issue, but it conflicts with the low debt ratio, strong historical cash generation, and absence of a solvency veto. Before treating it as financial stress, reconcile EBIT, finance cost, and whether net interest income or accounting classification caused the negative figure. Until then, it warrants caution rather than a fabricated distress conclusion.",
+        "Sentiment bear case: the payload references fund outflows, loss of the 'A-share king' status, and a decline from roughly ¥1,530 to ¥1,180. Bull rebuttal: these facts explain the derating and near-term volatility but can also create opportunity when they diverge from a still-extraordinary profitability and cash-generation base. Fund flows are tactical indicators, not proof of permanent impairment.",
+        "Governance and dilution bear case: share-count history is unavailable, and executive changes are not fully explained. Bull rebuttal: these gaps must be closed in diligence. Still, the supplied dividend and repurchase actions are at least directionally shareholder-return supportive; they should not be credited as a full offset until repurchase price discipline, payout policy, and dilution data are verified."
+      ]
+    },
+    "bear": {
+      "stance": "bearish",
+      "confidence": 0.73,
+      "thesis": [
+        "The dominant near-to-intermediate price structure is bearish. Adjusted returns are -3.34% over 20 trading days, -11.95% over 60 days, and -10.52% over 120 days; the stated regime is bear and the multi-timeframe verdict is weak_downtrend.",
+        "The latest adjusted close of 8,618.49 remains below the 60-day MA of 8,986.39 (-4.09%) and 120-day MA of 9,344.43 (-7.77%). The small move above the 5- and 20-day averages is more consistent with an unconfirmed short-term rebound inside a broader downtrend than a completed trend reversal.",
+        "Risk-adjusted evidence remains unfavorable: the trailing 120-observation maximum drawdown is -19.40% and annualized volatility is 20.76%. The raw-price range shows the stock is still close to its 120-day low of 1,151.01 versus a high of 1,539.98, despite recovering to 1,210.99.",
+        "The operating backdrop has weakened: supplied 2025 revenue growth is -1.2% and profit growth is -4.53%. Without volume, price, mix, channel-inventory, or distributor data, there is no evidence that this is merely a temporary slowdown rather than a normalization of earnings expectations.",
+        "The central bear case is not financial distress. Historical quality is outstanding, but quality alone cannot prevent further downside if earnings expectations and the valuation multiple reset together. This risk is especially important because no current P/E, FCF yield, EV-based multiple, normalized owner earnings, or intrinsic-value range is supplied to demonstrate a margin of safety.",
+        "Capital-return announcements—large dividends and a reported buyback plan—may support sentiment, but they do not resolve declining reported growth, the established downtrend, or the missing valuation evidence. The supplied news also notes share-price weakness and sector fund outflows."
+      ],
+      "rebuttals": [
+        "Bull case: exceptionally high historical profitability and cash generation—10-year average ROE of 31.925%, five-year average gross margin of 91.696%, 10-year average net margin of 51.142%, and five-year cumulative FCF of RMB302.164 billion—prove the franchise is durable. Rebuttal: these figures establish business quality, not purchase attractiveness at the current price. They do not quantify normalized per-share earnings, current cash-flow yield, or downside protection if growth remains negative.",
+        "Bull case: debt is low at about 16.42%, and dividends exceeding RMB50 billion plus a buyback indicate financial strength and shareholder returns. Rebuttal: low leverage reduces solvency risk but does not eliminate earnings, sentiment, or multiple-compression risk. The negative reported interest-coverage metric also needs reconciliation before treating the financial picture as fully de-risked.",
+        "Bull case: the price is above the 5- and 20-day moving averages, RSI is 54.5, volume asymmetry is positive, and momentum acceleration is positive—signs of an emerging reversal. Rebuttal: these are modest, short-horizon signals. RSI is neutral rather than oversold, no pullback-reversal condition was triggered, and price remains below both the 60- and 120-day averages amid negative 60- and 120-day returns.",
+        "Bull case: the stock has already fallen materially from the reported 1,530 area to roughly 1,211, so bad news may be priced in. Rebuttal: a prior decline is not evidence of value. Without an earnings-power estimate and valuation metrics, there is no factual basis to conclude the decline has created a margin of safety; continued earnings deceleration could justify further repricing.",
+        "Bull case: there is no value/solvency veto, so downside should be limited. Rebuttal: absence of a permanent-loss veto is not a positive catalyst and should not be interpreted as a long signal. The combined council score is still negative (-0.088), tactical score is negative (-0.364), and the systematic target weight is 0.0."
+      ]
+    },
+    "reviewer": {
+      "approved": false,
+      "status": "rejected",
+      "issues": [
+        "Material council-score inconsistency: the `munger` and `lynch` opinions are labeled bearish and contain bearish theses, but each has a positive score of `+0.30`. Elsewhere in the same council, bearish opinions use negative scores and bullish support uses positive scores. These role scores feed the reported `council_score` and therefore may have biased the aggregate composite upward.",
+        "The score-sign inconsistency can affect the policy action, not merely presentation. The reported composite is `-0.102234`, only about `0.0178` above the reduce threshold of `-0.12`; correcting materially inconsistent council inputs could cross that threshold. The deterministic arithmetic matches the supplied trace, but the trace's council component is not sufficiently reliable for approval.",
+        "The quant report incorrectly lists fundamental and news data as missing even though both are supplied and decision-calculation evidence coverage marks them available. This is a secondary internal reporting contradiction, though it is not independently the reason for rejection."
+      ],
+      "summary": "Rejected for a material consistency failure in council inputs that may change the aggregate decision classification. Based strictly on the supplied trace, the current `review_required` action is otherwise policy-consistent: conflict `0.91 > 0.80`, absolute composite `0.102234 < 0.12`, confidence is correctly calculated as `1.0 × (1 - 0.5 × 0.91) = 0.545`, and the non-buy target weight is correctly zero. Required evidence is present, risks are discussed, and no degraded sources are silently omitted. Rejection preserves human review and zero target weight under the supplied policy."
+    }
+  },
+  "forecasts": [
+    {
+      "symbol": "sh600519",
+      "as_of": "2026-07-13",
+      "horizon_days": 5,
+      "up_probability": 0.41,
+      "flat_probability": 0.24,
+      "down_probability": 0.35,
+      "expected_return_pct": 0.15,
+      "lower_return_pct": -3.8,
+      "upper_return_pct": 3.4,
+      "confidence": 0.57,
+      "drivers": [
+        "Short-term momentum has improved: the adjusted close is 0.91% above the 5-day moving average and 0.81% above the 20-day moving average.",
+        "The stock advanced on both 2026-07-10 and 2026-07-13; the stronger 2026-07-10 move occurred on above-recent-average turnover, providing limited confirmation of the rebound.",
+        "Positive 20-day volume asymmetry, positive momentum acceleration, and RSI-14 of 54.5 modestly favor continuation of the tactical bounce.",
+        "The bear regime and price remaining 4.09% below the 60-day average and 7.77% below the 120-day average create resistance and a wider downside tail, keeping expected return near zero despite the higher probability of an up outcome.",
+        "Annualized volatility of 20.76% implies meaningful five-session dispersion; the return interval reflects this rather than a high-conviction directional call."
+      ],
+      "counter_evidence": [
+        "Adjusted returns remain negative over 20, 60, and 120 trading days at -3.34%, -11.95%, and -10.52%, respectively.",
+        "The multi-timeframe assessment remains a weak downtrend, and no confirmed pullback-reversal signal has triggered.",
+        "Raw resistance is nearby around 1215, followed by approximately 1236-1265; failure to clear 1215 could turn the rebound into another lower high.",
+        "The latest trading amount was below the supplied 20-day average, so follow-through demand is not yet consistently strong.",
+        "Spread, order-book depth, market impact, price-limit conditions, and near-term event surprises are unavailable, reducing execution confidence."
+      ],
+      "invalidation_conditions": [
+        "A raw close below 1190, followed by a break below 1170 on expanding volume, would invalidate the modest bullish tilt and materially increase the probability of retesting the 1151.01 low.",
+        "Sustained raw closes above 1215 and then 1236 with trading amount above the 20-day average would invalidate the assumption that the move is merely a bear-market rebound and strengthen the upside case.",
+        "An unexpected earnings, regulatory, management, dividend, buyback, or sector-policy event with material price impact would invalidate this price-only five-day distribution.",
+        "Abnormal liquidity deterioration, a price-limit move, or materially wider execution costs would invalidate the stated return interval."
+      ],
+      "evidence_ids": [
+        "market_price_history.latest.2026-07-13",
+        "market_price_history.recent_raw_and_adjusted_bars_30",
+        "market_price_history.moving_averages_adjusted",
+        "market_price_history.latest_signal_close_vs_moving_averages",
+        "market_price_history.returns_adjusted_pct",
+        "market_price_history.risk_adjusted_pct",
+        "market_price_history.raw_market_ranges",
+        "analysts.quant",
+        "analysts.council",
+        "market_regime.bear"
+      ],
+      "model": "gpt-5.6-sol",
+      "model_provider": "openai",
+      "statistical_model_id": null,
+      "statistical_model_version": null,
+      "statistical_weight": 0.0,
+      "statistical_up_probability": null,
+      "statistical_flat_probability": null,
+      "statistical_down_probability": null,
+      "raw_llm_up_probability": 0.41,
+      "raw_llm_flat_probability": 0.24,
+      "raw_llm_down_probability": 0.35
+    },
+    {
+      "symbol": "sh600519",
+      "as_of": "2026-07-13",
+      "horizon_days": 20,
+      "up_probability": 0.29,
+      "flat_probability": 0.22,
+      "down_probability": 0.49,
+      "expected_return_pct": -2.0,
+      "lower_return_pct": -10.5,
+      "upper_return_pct": 7.0,
+      "confidence": 0.68,
+      "drivers": [
+        "Bear-market regime and weak-downtrend consensus increase the probability that the medium-term decline persists over the next 20 trading days.",
+        "Adjusted returns remain negative over 20, 60, and 120 trading days at -3.34%, -11.95%, and -10.52%, respectively.",
+        "The adjusted close is 4.09% below the 60-day moving average and 7.77% below the 120-day moving average, leaving the intermediate trend technically bearish.",
+        "Annualized volatility of 20.76% and a recent maximum drawdown of 19.40% justify a wide return interval; the interval is skewed toward downside because of the bear regime and negative medium-term momentum.",
+        "Negative 2025 revenue and profit growth add earnings and valuation-regime risk, while absent valuation data prevent concluding that the preceding decline provides a margin of safety."
+      ],
+      "counter_evidence": [
+        "The adjusted close is 0.91% above the 5-day average and 0.81% above the 20-day average, showing an early short-term repair that could develop into a broader recovery.",
+        "Positive momentum acceleration, positive 20-day volume asymmetry, and RSI of 54.5 indicate improving buying interest rather than an oversold or capitulation condition.",
+        "Exceptionally strong historical margins, returns on equity, free-cash-flow generation, and a low reported debt ratio may limit fundamental downside.",
+        "Large dividends and the reported buyback plan could provide valuation or sentiment support, although their impact cannot be quantified without per-share valuation metrics."
+      ],
+      "invalidation_conditions": [
+        "A sustained raw-price close above approximately CNY 1,265, followed by a successful move above the adjusted 60-day moving average near 8,986 on stronger-than-average turnover, would invalidate the mild-bearish trend-persistence thesis and shift probability toward upside.",
+        "A decisive break below the raw 120-day low near CNY 1,151 with expanding volume would invalidate the central expected-return estimate by indicating a more severe bearish continuation and greater downside-tail risk.",
+        "Evidence that 2025 operating contraction was temporary—such as renewed positive revenue and profit growth, improving channel demand, or materially stronger guidance—would weaken the bearish fundamental driver.",
+        "Conversely, further earnings deterioration, adverse channel-inventory evidence, or reconciliation of the reported interest-coverage anomaly as genuine financing stress would make the forecast insufficiently bearish.",
+        "A material market-regime transition from bear to neutral or bull, particularly if accompanied by sustained relative strength in the food-and-beverage sector, would invalidate the assumed regime-risk premium."
+      ],
+      "evidence_ids": [
+        "price_history.returns_adjusted_pct",
+        "price_history.moving_averages_adjusted",
+        "price_history.risk_adjusted_pct",
+        "price_history.raw_market_ranges",
+        "analysts.quant",
+        "analysts.fundamental",
+        "analysts.news",
+        "analysts.council",
+        "bull",
+        "bear"
+      ],
+      "model": "gpt-5.6-sol",
+      "model_provider": "openai",
+      "statistical_model_id": null,
+      "statistical_model_version": null,
+      "statistical_weight": 0.0,
+      "statistical_up_probability": null,
+      "statistical_flat_probability": null,
+      "statistical_down_probability": null,
+      "raw_llm_up_probability": 0.29,
+      "raw_llm_flat_probability": 0.22,
+      "raw_llm_down_probability": 0.49
+    }
+  ],
+  "decision": {
+    "symbol": "sh600519",
+    "as_of": "2026-07-13",
+    "action": "review_required",
+    "confidence": 0.5449999999999999,
+    "target_weight": 0.0,
+    "entry_price": 1210.99,
+    "stop_loss": null,
+    "target_1": null,
+    "target_2": null,
+    "reasons": [
+      "composite_score=-0.102",
+      "strategy_signal_score=-0.118",
+      "council_score=-0.088",
+      "forecast_score=-0.051",
+      "evidence_coverage=1.00",
+      "conflict=0.910",
+      "abs_composite=0.102",
+      "high_conflict_review_triggered=True",
+      "momentum_technical_sync=True",
+      "buy_requires_composite>0.35",
+      "review_required_when_high_conflict=conflict>0.80 and abs(composite)<0.12"
+    ],
+    "risks": [
+      "quant: Volume_asymmetry_20 score = +0.111 (long, higher volume on up days)",
+      "quant: RSI_14 = 54.5, score = +0.150 (long, not oversold but neutral-bullish)",
+      "quant: Return_skewness_60 score = +0.144 (long, positive skew)",
+      "fundamental: The supplied interest-coverage metric fails the stated hard threshold, despite no hard veto being listed in the payload.",
+      "fundamental: Latest revenue and profit growth are both negative.",
+      "fundamental: Share dilution over five years is unknown; the supplied warning states that unknown criteria are not treated as passes.",
+      "fundamental: The cross-source discrepancy in 2025 ROE reduces confidence in that point estimate.",
+      "news: 股价持续下跌，从1530元跌至1180元，跌幅约23%",
+      "news: 主力资金净流出，食品饮料行业资金流出榜显示净流出超5000万元",
+      "news: 失去A股股王地位，市场信心可能受挫",
+      "technical: Price is above 5-day and 20-day moving averages, suggesting short-term bounce potential.",
+      "momentum: Positive momentum acceleration (score 0.106) could signal early reversal.",
+      "value_veto: Earnings risk: declining 2025 revenue and profit could reduce normalized owner earnings if contraction persists.",
+      "risk: Trend and drawdown risk: medium- and longer-horizon momentum remain negative, and the recent maximum drawdown is material.",
+      "macro: Price is above short-term ma_5 and ma_20, suggesting possible short-term bounce",
+      "buffett: A sustained volume, mix, or pricing deterioration could turn the currently modest revenue and profit declines into a more durable owner-earnings decline; the supplied data do not decompose the 2025 contraction.",
+      "munger: Permanent-loss path: if the reported revenue and profit contraction reflects a sustained normalization rather than a temporary fluctuation, the market may reset both earnings expectations and the valuation assigned to the franchise. High historical margins and ROE can magnify disappointment because they leave little room for investors assuming permanence of exceptional economics.",
+      "graham: Valuation risk: absent normalized EPS/FCF per share, share count, dividend per share, net cash, and a conservative earnings-power estimate, a buyer could pay a price with no demonstrable downside buffer.",
+      "fisher: Growth deceleration risk: negative 2025 revenue and profit growth may indicate a more durable reset rather than a transient comparison effect; absent segment and channel data, the permanence cannot be determined.",
+      "lynch: Earnings-deceleration risk: the observed 2025 declines in both revenue and profit can persist or deepen. For a mature premium franchise, a sustained volume, pricing, or product-mix deterioration could impair earnings power and create permanent-loss risk if bought at an unsupported valuation.",
+      "Material council-score inconsistency: the `munger` and `lynch` opinions are labeled bearish and contain bearish theses, but each has a positive score of `+0.30`. Elsewhere in the same council, bearish opinions use negative scores and bullish support uses positive scores. These role scores feed the reported `council_score` and therefore may have biased the aggregate composite upward.",
+      "The score-sign inconsistency can affect the policy action, not merely presentation. The reported composite is `-0.102234`, only about `0.0178` above the reduce threshold of `-0.12`; correcting materially inconsistent council inputs could cross that threshold. The deterministic arithmetic matches the supplied trace, but the trace's council component is not sufficiently reliable for approval.",
+      "The quant report incorrectly lists fundamental and news data as missing even though both are supplied and decision-calculation evidence coverage marks them available. This is a secondary internal reporting contradiction, though it is not independently the reason for rejection."
+    ],
+    "degraded_sources": [],
+    "requires_human_review": true
+  },
+  "decision_trace": {
+    "formula": "sum(component_weight * component_value)",
+    "weights": {
+      "strategy_signal_score": 0.3,
+      "council_score": 0.3,
+      "forecast_score": 0.15,
+      "analyst_score": 0.1,
+      "debate_score": 0.15
+    },
+    "components": {
+      "strategy_signal_score": -0.11794613320797338,
+      "council_score": -0.08794022419328512,
+      "forecast_score": -0.05090000000000001,
+      "analyst_score": -0.19333333333333333,
+      "debate_score": -0.08999999999999997
+    },
+    "composite_score": -0.10223424055371087,
+    "council_diagnostics": {
+      "momentum_technical_sync": true,
+      "veto_triggered": false,
+      "veto_roles": [],
+      "market_regime": "bear"
+    },
+    "conflict": 0.91,
+    "high_conflict_review_triggered": true,
+    "confidence_formula": "evidence_coverage * (1 - 0.5 * conflict)",
+    "confidence": 0.5449999999999999,
+    "evidence_coverage": {
+      "asset_type": "stock",
+      "weights": {
+        "strategy_signal": 0.2,
+        "quant_factors": 0.15,
+        "price_history": 0.1,
+        "fundamentals": 0.4,
+        "news": 0.15
+      },
+      "availability": {
+        "strategy_signal": true,
+        "quant_factors": true,
+        "price_history": true,
+        "fundamentals": true,
+        "news": true
+      },
+      "contributions": {
+        "strategy_signal": 0.2,
+        "quant_factors": 0.15,
+        "price_history": 0.1,
+        "fundamentals": 0.4,
+        "news": 0.15
+      },
+      "raw": 1.0,
+      "data_quality": 1.0,
+      "adjusted": 1.0
+    }
+  },
+  "audit_log": [
+    {
+      "run_id": "8af15784-4d52-4788-9791-ddeb08734583",
+      "step": "start",
+      "status": "ok",
+      "detail": "analysis started for sh600519",
+      "created_at": "2026-07-13T18:00:11.823931Z"
+    },
+    {
+      "run_id": "8af15784-4d52-4788-9791-ddeb08734583",
+      "step": "analysts",
+      "status": "ok",
+      "detail": "independent analyst reports completed",
+      "created_at": "2026-07-13T18:00:31.130487Z"
+    },
+    {
+      "run_id": "8af15784-4d52-4788-9791-ddeb08734583",
+      "step": "council",
+      "status": "ok",
+      "detail": "11 specialist opinions; tactical=-0.364; strategic=0.4245807259073842; veto=none",
+      "created_at": "2026-07-13T18:01:47.138783Z"
+    },
+    {
+      "run_id": "8af15784-4d52-4788-9791-ddeb08734583",
+      "step": "debate",
+      "status": "ok",
+      "detail": "bull and bear cases completed",
+      "created_at": "2026-07-13T18:02:14.172183Z"
+    },
+    {
+      "run_id": "8af15784-4d52-4788-9791-ddeb08734583",
+      "step": "forecast",
+      "status": "ok",
+      "detail": "5-day and 20-day probability forecasts completed",
+      "created_at": "2026-07-13T18:02:52.624673Z"
+    },
+    {
+      "run_id": "8af15784-4d52-4788-9791-ddeb08734583",
+      "step": "review",
+      "status": "needs_review",
+      "detail": "Rejected for a material consistency failure in council inputs that may change the aggregate decision classification. Based strictly on the supplied trace, the current `review_required` action is otherwise policy-consistent: conflict `0.91 > 0.80`, absolute composite `0.102234 < 0.12`, confidence is correctly calculated as `1.0 × (1 - 0.5 × 0.91) = 0.545`, and the non-buy target weight is correctly zero. Required evidence is present, risks are discussed, and no degraded sources are silently omitted. Rejection preserves human review and zero target weight under the supplied policy.",
+      "created_at": "2026-07-13T18:03:42.483797Z"
+    }
+  ],
+  "llm_audit": {
+    "health": {
+      "provider": "router",
+      "model": "resilient-router",
+      "endpoints": [
+        {
+          "endpoint_id": "deepseek-1",
+          "provider": "deepseek",
+          "model": "deepseek-chat",
+          "failures": 0,
+          "status": "ready",
+          "cooldown_remaining_seconds": 0.0
+        },
+        {
+          "endpoint_id": "openai-1",
+          "provider": "openai",
+          "model": "gpt-5.6-terra",
+          "failures": 0,
+          "status": "ready",
+          "cooldown_remaining_seconds": 0.0
+        }
+      ],
+      "recent_calls": 18,
+      "recent_successes": 18,
+      "recent_total_tokens": 202631
+    },
+    "calls": [
+      {
+        "timestamp": "2026-07-13T18:00:16.839802+00:00",
+        "endpoint_id": "deepseek-1",
+        "provider": "deepseek",
+        "model": "deepseek-chat",
+        "reasoning_effort": null,
+        "schema": "AnalystReport",
+        "routing_key": "quant",
+        "status": "ok",
+        "latency_ms": 5010.47,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 6222,
+          "output_tokens": 438,
+          "total_tokens": 6660
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:00:17.769131+00:00",
+        "endpoint_id": "deepseek-1",
+        "provider": "deepseek",
+        "model": "deepseek-chat",
+        "reasoning_effort": null,
+        "schema": "AnalystReport",
+        "routing_key": "news",
+        "status": "ok",
+        "latency_ms": 5404.14,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 3645,
+          "output_tokens": 437,
+          "total_tokens": 4082
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:00:31.130487+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium",
+        "schema": "AnalystReport",
+        "routing_key": "fundamental",
+        "status": "ok",
+        "latency_ms": 18828.31,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 1648,
+          "output_tokens": 757,
+          "total_tokens": 2405,
+          "reasoning_tokens": 103
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:00:35.946812+00:00",
+        "endpoint_id": "deepseek-1",
+        "provider": "deepseek",
+        "model": "deepseek-chat",
+        "reasoning_effort": null,
+        "schema": "ExpertOpinion",
+        "routing_key": "momentum",
+        "status": "ok",
+        "latency_ms": 4815.97,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 10853,
+          "output_tokens": 347,
+          "total_tokens": 11200
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:00:36.837795+00:00",
+        "endpoint_id": "deepseek-1",
+        "provider": "deepseek",
+        "model": "deepseek-chat",
+        "reasoning_effort": null,
+        "schema": "ExpertOpinion",
+        "routing_key": "technical",
+        "status": "ok",
+        "latency_ms": 5704.47,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 10852,
+          "output_tokens": 435,
+          "total_tokens": 11287
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:00:37.350288+00:00",
+        "endpoint_id": "deepseek-1",
+        "provider": "deepseek",
+        "model": "deepseek-chat",
+        "reasoning_effort": null,
+        "schema": "ExpertOpinion",
+        "routing_key": "macro",
+        "status": "ok",
+        "latency_ms": 6208.09,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 10851,
+          "output_tokens": 420,
+          "total_tokens": 11271
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:00:56.293504+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "schema": "ExpertOpinion",
+        "routing_key": "value_veto",
+        "status": "ok",
+        "latency_ms": 25159.2,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 11169,
+          "output_tokens": 1128,
+          "total_tokens": 12297,
+          "reasoning_tokens": 340
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:00:58.027518+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium",
+        "schema": "ExpertOpinion",
+        "routing_key": "buffett",
+        "status": "ok",
+        "latency_ms": 26883.96,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 11108,
+          "output_tokens": 1190,
+          "total_tokens": 12298,
+          "reasoning_tokens": 141
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:01:02.231439+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "schema": "ExpertOpinion",
+        "routing_key": "risk",
+        "status": "ok",
+        "latency_ms": 31094.27,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 11165,
+          "output_tokens": 1368,
+          "total_tokens": 12533,
+          "reasoning_tokens": 421
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:01:22.885212+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium",
+        "schema": "ExpertOpinion",
+        "routing_key": "graham",
+        "status": "ok",
+        "latency_ms": 51744.67,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 11107,
+          "output_tokens": 1032,
+          "total_tokens": 12139,
+          "reasoning_tokens": 126
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:01:24.052003+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium",
+        "schema": "ExpertOpinion",
+        "routing_key": "fisher",
+        "status": "ok",
+        "latency_ms": 52905.36,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 11107,
+          "output_tokens": 893,
+          "total_tokens": 12000,
+          "reasoning_tokens": 104
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:01:29.108481+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high",
+        "schema": "ExpertOpinion",
+        "routing_key": "munger",
+        "status": "ok",
+        "latency_ms": 57961.05,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 11112,
+          "output_tokens": 1581,
+          "total_tokens": 12693,
+          "reasoning_tokens": 353
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:01:47.138783+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium",
+        "schema": "ExpertOpinion",
+        "routing_key": "lynch",
+        "status": "ok",
+        "latency_ms": 75989.66,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 11107,
+          "output_tokens": 1109,
+          "total_tokens": 12216,
+          "reasoning_tokens": 198
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:02:12.568884+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium",
+        "schema": "DebateReport",
+        "routing_key": "bear",
+        "status": "ok",
+        "latency_ms": 25427.7,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 9601,
+          "output_tokens": 907,
+          "total_tokens": 10508,
+          "cached_tokens": 9472,
+          "reasoning_tokens": 40
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:02:14.172183+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium",
+        "schema": "DebateReport",
+        "routing_key": "bull",
+        "status": "ok",
+        "latency_ms": 27036.35,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 9601,
+          "output_tokens": 1162,
+          "total_tokens": 10763,
+          "reasoning_tokens": 45
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:02:49.973960+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "schema": "Forecast",
+        "routing_key": "forecast",
+        "status": "ok",
+        "latency_ms": 35801.18,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 11521,
+          "output_tokens": 1571,
+          "total_tokens": 13092,
+          "reasoning_tokens": 820
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:02:52.621016+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "schema": "Forecast",
+        "routing_key": "forecast",
+        "status": "ok",
+        "latency_ms": 38439.61,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 11521,
+          "output_tokens": 1719,
+          "total_tokens": 13240,
+          "reasoning_tokens": 969
+        }
+      },
+      {
+        "timestamp": "2026-07-13T18:03:42.483797+00:00",
+        "endpoint_id": "openai-1",
+        "provider": "openai",
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "schema": "ReviewReport",
+        "routing_key": "review",
+        "status": "ok",
+        "latency_ms": 49864.0,
+        "error_type": null,
+        "usage": {
+          "input_tokens": 19626,
+          "output_tokens": 2321,
+          "total_tokens": 21947,
+          "reasoning_tokens": 1965
+        }
+      }
+    ],
+    "summary": {
+      "calls": 18,
+      "successes": 18,
+      "errors": 0,
+      "total_tokens": 202631,
+      "total_latency_ms": 544278.46
+    },
+    "secrets_exposed": false,
+    "prompts_persisted": false
+  },
+  "execution_boundary": "manual_orders_only",
+  "disclaimer": "本报告仅用于研究和辅助决策，不构成投资建议。历史数据、回测结果、统计模型与 LLM Agent 结论均不能保证未来收益；系统不会连接券商，任何交易必须由用户人工复核。"
+}

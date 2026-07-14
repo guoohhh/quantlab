@@ -1,0 +1,224 @@
+{
+  "method": "cross-replay decision-gate evidence scorecard",
+  "replay_ids": [
+    5,
+    7,
+    8,
+    9
+  ],
+  "replays": [
+    {
+      "replay_id": 5,
+      "range": "2018-01-01..2023-12-29",
+      "horizon_days": 20,
+      "episodes": 12,
+      "policy_version": "2026-07-14.v1",
+      "strategy_return": 0.013716200500000442,
+      "current_return": 0.0,
+      "calibrated_strategy_primary_return": null,
+      "veto_rate": 1.0,
+      "reviewer_reject_rate": 0.9166666666666666,
+      "live_llm_complete": true,
+      "degraded_sources": []
+    },
+    {
+      "replay_id": 7,
+      "range": "2015-01-01..2017-12-29",
+      "horizon_days": 20,
+      "episodes": 12,
+      "policy_version": "2026-07-14.v1",
+      "strategy_return": 0.045991935000000206,
+      "current_return": -0.015605885000000153,
+      "calibrated_strategy_primary_return": null,
+      "veto_rate": 0.0,
+      "reviewer_reject_rate": 0.16666666666666666,
+      "live_llm_complete": true,
+      "degraded_sources": []
+    },
+    {
+      "replay_id": 8,
+      "range": "2026-02-02..2026-05-29",
+      "horizon_days": 20,
+      "episodes": 4,
+      "policy_version": "2026-07-14.v2",
+      "strategy_return": 0.01981139349999994,
+      "current_return": 0.005623919000000033,
+      "calibrated_strategy_primary_return": 0.01981139349999994,
+      "veto_rate": 0.0,
+      "reviewer_reject_rate": 0.25,
+      "live_llm_complete": true,
+      "degraded_sources": []
+    },
+    {
+      "replay_id": 9,
+      "range": "2026-02-02..2026-05-29",
+      "horizon_days": 5,
+      "episodes": 11,
+      "policy_version": "2026-07-14.v2",
+      "strategy_return": -0.00021895499999979862,
+      "current_return": -0.008238260999999913,
+      "calibrated_strategy_primary_return": -0.00021895499999979862,
+      "veto_rate": 0.0,
+      "reviewer_reject_rate": 0.18181818181818182,
+      "live_llm_complete": true,
+      "degraded_sources": []
+    }
+  ],
+  "v1_failure_records": [
+    {
+      "replay_id": 5,
+      "policy": "etf_score_tiered_v1",
+      "total_return": 0.0,
+      "incremental_vs_strategy": -0.013716200500000442,
+      "screening_status": "retrospective_screen_fail"
+    },
+    {
+      "replay_id": 5,
+      "policy": "etf_forecast_confirmed_v1",
+      "total_return": 0.0,
+      "incremental_vs_strategy": -0.013716200500000442,
+      "screening_status": "retrospective_screen_fail"
+    },
+    {
+      "replay_id": 7,
+      "policy": "etf_score_tiered_v1",
+      "total_return": -0.01822949000000007,
+      "incremental_vs_strategy": -0.06422142500000028,
+      "screening_status": "retrospective_screen_fail"
+    },
+    {
+      "replay_id": 7,
+      "policy": "etf_forecast_confirmed_v1",
+      "total_return": -0.009356435000000052,
+      "incremental_vs_strategy": -0.05534837000000026,
+      "screening_status": "retrospective_screen_fail"
+    }
+  ],
+  "v2_horizon_challenges": {
+    "5": {
+      "episodes": 11,
+      "replay_ids": [
+        9
+      ],
+      "strategy": {
+        "episodes": 11,
+        "trades": 11,
+        "participation_rate": 1.0,
+        "total_return": -0.00021895500000002066,
+        "trade_win_rate": 0.36363636363636365,
+        "max_drawdown": -0.014860916909570254
+      },
+      "current_strict": {
+        "episodes": 11,
+        "trades": 5,
+        "participation_rate": 0.45454545454545453,
+        "total_return": -0.008238261000000136,
+        "trade_win_rate": 0.2,
+        "max_drawdown": -0.009762881065523143
+      },
+      "calibrated_strategy_primary_v1": {
+        "episodes": 11,
+        "trades": 11,
+        "participation_rate": 1.0,
+        "total_return": -0.00021895500000002066,
+        "trade_win_rate": 0.36363636363636365,
+        "max_drawdown": -0.014860916909570254
+      },
+      "forecast_ablation": {
+        "final_ensemble": {
+          "samples": 11,
+          "invalid_samples": 0,
+          "brier_score": 0.19601757826153723,
+          "log_loss": 0.9417652215900572,
+          "accuracy": 0.45454545454545453
+        },
+        "raw_llm": {
+          "samples": 11,
+          "invalid_samples": 0,
+          "brier_score": 0.2256848484848485,
+          "log_loss": 1.0681775501255517,
+          "accuracy": 0.2727272727272727
+        },
+        "point_in_time_statistical": {
+          "samples": 11,
+          "invalid_samples": 0,
+          "brier_score": 0.17126689165250697,
+          "log_loss": 0.8464866569788729,
+          "accuracy": 0.6363636363636364
+        }
+      },
+      "v2_tiers": {
+        "strategy_primary": 11
+      },
+      "v2_risk_reduction_count": 0
+    },
+    "20": {
+      "episodes": 4,
+      "replay_ids": [
+        8
+      ],
+      "strategy": {
+        "episodes": 4,
+        "trades": 4,
+        "participation_rate": 1.0,
+        "total_return": 0.01981139349999994,
+        "trade_win_rate": 0.75,
+        "max_drawdown": -0.011580800811178515
+      },
+      "current_strict": {
+        "episodes": 4,
+        "trades": 1,
+        "participation_rate": 0.25,
+        "total_return": 0.005623919000000033,
+        "trade_win_rate": 1.0,
+        "max_drawdown": 0.0
+      },
+      "calibrated_strategy_primary_v1": {
+        "episodes": 4,
+        "trades": 4,
+        "participation_rate": 1.0,
+        "total_return": 0.01981139349999994,
+        "trade_win_rate": 0.75,
+        "max_drawdown": -0.011580800811178515
+      },
+      "forecast_ablation": {
+        "final_ensemble": {
+          "samples": 4,
+          "invalid_samples": 0,
+          "brier_score": 0.16636157134723162,
+          "log_loss": 0.8102234540438957,
+          "accuracy": 0.5
+        },
+        "raw_llm": {
+          "samples": 4,
+          "invalid_samples": 0,
+          "brier_score": 0.15916666666666665,
+          "log_loss": 0.7904467144710186,
+          "accuracy": 0.5
+        },
+        "point_in_time_statistical": {
+          "samples": 4,
+          "invalid_samples": 0,
+          "brier_score": 0.17649366776560693,
+          "log_loss": 0.8418246731960357,
+          "accuracy": 0.75
+        }
+      },
+      "v2_tiers": {
+        "strategy_primary": 4
+      },
+      "v2_risk_reduction_count": 0
+    }
+  },
+  "v2_new_episodes": 15,
+  "v2_model_driven_risk_reductions": 0,
+  "promotion_checks": {
+    "at_least_12_new_episodes_in_one_horizon": false,
+    "at_least_one_model_driven_risk_reduction": false,
+    "all_required_live_roles_complete": true,
+    "clean_data_paths": true
+  },
+  "promotion_status": "insufficient_evidence_not_promoted",
+  "conclusion": "V1 LLM-first ETF gates are rejected. The V2 strategy-primary architecture prevents uncalibrated LLM and reviewer variance from suppressing the quantitative strategy. The statistical model improves short-horizon probability quality, but no frozen bearish threshold fired, so there is not yet evidence that the model improves trading profit.",
+  "claim_boundary": "historical blind replay and stitched short samples do not prove future profitability; V2 remains research-only until a frozen prospective shadow sample is sufficient"
+}

@@ -1,0 +1,253 @@
+[system]
+name = "QuantLab"
+timezone = "Asia/Shanghai"
+base_currency = "CNY"
+initial_capital = 100000.0
+data_dir = "data"
+database_path = "data/quantlab.db"
+
+[llm]
+provider = "auto"
+model = ""
+base_url = ""
+timeout_seconds = 60.0
+connect_timeout_seconds = 8.0
+max_retries = 2
+max_concurrency_per_endpoint = 3
+temperature = 0.1
+failure_threshold = 1
+failure_cooldown_seconds = 120.0
+allow_mock_fallback = true
+openai_model = "gpt-5.6-terra"
+openai_reasoning_effort = "medium"
+deepseek_model = "deepseek-chat"
+openai_base_url = "https://code-plan.site/v1"
+openai_enabled = true
+deepseek_enabled = true
+local_model = ""
+local_base_url = ""
+
+[llm.role_preferences]
+forecast = ["openai", "deepseek", "local"]
+review = ["openai", "deepseek", "local"]
+value_veto = ["openai", "deepseek", "local"]
+risk = ["openai", "deepseek", "local"]
+fundamental = ["openai", "deepseek", "local"]
+technical = ["deepseek", "local", "openai"]
+momentum = ["deepseek", "local", "openai"]
+news = ["deepseek", "local", "openai"]
+quant = ["deepseek", "local", "openai"]
+macro = ["deepseek", "local", "openai"]
+buffett = ["openai", "deepseek", "local"]
+munger = ["openai", "deepseek", "local"]
+graham = ["openai", "deepseek", "local"]
+fisher = ["openai", "deepseek", "local"]
+lynch = ["openai", "deepseek", "local"]
+bull = ["openai", "deepseek", "local"]
+bear = ["openai", "deepseek", "local"]
+
+[llm.openai_role_models]
+forecast = "gpt-5.6-sol"
+review = "gpt-5.6-sol"
+value_veto = "gpt-5.6-sol"
+risk = "gpt-5.6-sol"
+fundamental = "gpt-5.6-terra"
+buffett = "gpt-5.6-terra"
+munger = "gpt-5.6-terra"
+graham = "gpt-5.6-terra"
+fisher = "gpt-5.6-terra"
+lynch = "gpt-5.6-terra"
+bull = "gpt-5.6-terra"
+bear = "gpt-5.6-terra"
+technical = "gpt-5.6-luna"
+momentum = "gpt-5.6-luna"
+news = "gpt-5.6-luna"
+quant = "gpt-5.6-luna"
+macro = "gpt-5.6-luna"
+
+[llm.openai_role_reasoning_effort]
+forecast = "high"
+review = "high"
+value_veto = "high"
+risk = "high"
+fundamental = "medium"
+buffett = "medium"
+munger = "high"
+graham = "medium"
+fisher = "medium"
+lynch = "medium"
+bull = "medium"
+bear = "medium"
+technical = "low"
+momentum = "low"
+news = "low"
+quant = "low"
+macro = "low"
+
+[risk]
+max_total_exposure = 0.80
+max_single_position = 0.15
+max_industry_exposure = 0.30
+cash_reserve = 0.20
+fractional_kelly = 0.25
+max_fractional_kelly = 0.50
+max_portfolio_drawdown = 0.15
+default_risk_profile = "balanced"
+minimum_order_value = 1000.0
+
+[costs.stock]
+commission_rate = 0.00025
+minimum_commission = 5.0
+stamp_duty_rate = 0.0005
+transfer_fee_rate = 0.00001
+slippage_bps = 10.0
+stop_slippage_bps = 25.0
+trade_lot = 100
+
+[costs.etf]
+commission_rate = 0.0001
+minimum_commission = 5.0
+stamp_duty_rate = 0.0
+transfer_fee_rate = 0.0
+slippage_bps = 5.0
+stop_slippage_bps = 15.0
+trade_lot = 100
+
+[backtest]
+start_date = "2015-01-01"
+signal_at = "close"
+execute_at = "next_open"
+benchmark = "sh000300"
+walk_forward_train_days = 756
+walk_forward_test_days = 252
+walk_forward_embargo_days = 1
+bootstrap_simulations = 2000
+bootstrap_block_days = 20
+
+[calibration]
+flat_threshold_pct = 1.0
+minimum_samples = 30
+
+[learning]
+minimum_samples = 100
+minimum_validation_samples = 20
+validation_fraction = 0.20
+validation_folds = 3
+minimum_fold_pass_rate = 0.67
+historical_step_days = 5
+maximum_statistical_weight = 0.50
+minimum_online_samples = 30
+drift_recent_window = 50
+drift_degradation_factor = 1.25
+
+[strategies.etf_rotation]
+enabled = true
+min_weight = 0.20
+max_weight = 0.65
+lookbacks = [20, 60, 120]
+top_k = 2
+universe = ["sh510300", "sz159915", "sh510880", "sh518880", "sh513100", "sh511010"]
+defensive_symbol = "sh511010"
+
+[strategies.etf_core]
+min_weight = 0.45
+max_weight = 0.45
+target_exposure = 0.45
+rebalance_frequency = "semiannual"
+rebalance_tolerance_weight = 0.02
+
+[strategies.etf_adaptive_v1]
+lookbacks = [20, 60, 120]
+momentum_weights = [0.50, 0.30, 0.20]
+top_k = 3
+core_weight = 0.50
+breadth_threshold = 0.60
+risk_off_multiplier = 0.0
+target_volatility = 0.10
+volatility_lookback = 60
+trend_lookback = 120
+rank_buffer = 1
+
+[strategies.etf_adaptive_v2]
+lookbacks = [20, 60, 120]
+momentum_weights = [0.50, 0.30, 0.20]
+top_k = 3
+volatility_lookback = 60
+trend_lookback = 120
+covariance_lookback = 60
+covariance_shrinkage = 0.50
+correlation_penalty = 0.35
+maximum_satellite_weight = 0.60
+rank_buffer = 1
+target_volatility = 0.12
+breadth_risk_off = 0.25
+breadth_risk_on = 0.75
+regime_short_volatility_lookback = 20
+regime_long_volatility_lookback = 120
+volatility_stress_warning = 1.25
+volatility_stress_stop = 2.0
+drawdown_lookback = 60
+drawdown_warning = -0.05
+drawdown_stop = -0.15
+minimum_core_weight = 0.35
+maximum_core_weight = 0.75
+rebalance_tolerance_weight = 0.02
+
+[strategies.etf_adaptive_v3]
+lookbacks = [20, 60, 120]
+momentum_weights = [0.50, 0.30, 0.20]
+top_k = 3
+volatility_lookback = 60
+trend_lookback = 120
+covariance_lookback = 60
+covariance_shrinkage = 0.50
+correlation_penalty = 0.35
+correlation_penalty_threshold = 0.80
+maximum_satellite_weight = 0.60
+rank_buffer = 1
+target_volatility = 0.12
+breadth_risk_off = 0.25
+breadth_risk_on = 0.75
+regime_short_volatility_lookback = 20
+regime_long_volatility_lookback = 120
+volatility_stress_warning = 1.25
+volatility_stress_stop = 2.0
+drawdown_lookback = 60
+drawdown_warning = -0.05
+drawdown_stop = -0.15
+minimum_core_weight = 0.35
+maximum_core_weight = 0.75
+rebalance_tolerance_weight = 0.02
+
+[strategies.stock_reversal]
+enabled = true
+min_weight = 0.10
+max_weight = 0.55
+lookback_days = 60
+selection_count = 20
+minimum_listing_days = 180
+minimum_average_turnover = 50000000.0
+
+[strategies.stock_evidence]
+benchmark_symbol = "sh510300"
+default_universe = ["sh600519", "sz000858", "sz300750", "sh601318", "sh600036", "sz000333"]
+top_k = 3
+max_correlation = 0.85
+minimum_measured_episodes = 30
+daily_paper_enabled = true
+
+[strategies.stock_market_replay]
+benchmark_symbol = "sh000300"
+seed = "quantlab-a-share-pit-v1"
+sample_size = 60
+max_correlation = 0.85
+minimum_average_turnover = 50000000.0
+
+[strategies.convertible_bond_double_low]
+enabled = true
+min_weight = 0.05
+max_weight = 0.35
+selection_count = 10
+maximum_price = 115.0
+maximum_premium_pct = 30.0
+minimum_remaining_size = 100000000.0
