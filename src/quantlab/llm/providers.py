@@ -610,6 +610,8 @@ def build_provider(settings: dict[str, Any]) -> LLMProvider:
     if provider == "openai":
         keys = _api_keys("OPENAI_API_KEYS", "OPENAI_API_KEY")
         if not keys:
+            if bool(settings.get("allow_mock_fallback", False)):
+                return MockLLMProvider()
             raise ValueError("OPENAI_API_KEY is required")
         endpoints = [
             OpenAIProvider(
@@ -633,6 +635,8 @@ def build_provider(settings: dict[str, Any]) -> LLMProvider:
     if provider == "deepseek":
         keys = _api_keys("DEEPSEEK_API_KEYS", "DEEPSEEK_API_KEY")
         if not keys:
+            if bool(settings.get("allow_mock_fallback", False)):
+                return MockLLMProvider()
             raise ValueError("DEEPSEEK_API_KEY is required")
         endpoints = [
             CompatibleProvider(

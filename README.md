@@ -34,12 +34,12 @@ QuantLab 换了个思路 —— 把大模型关进笼子:
 
 ## 亮点
 
-- **五角色多 Agent 圆桌**:技术面、动量、宏观按权重投票,风险与价值角色拥有 **veto(否决)** 权;缺失估值数据不会被当成"通过"。
+- **多角色动态圆桌(5~10 角色)**:战术层固定 5 角色(技术面、动量、价值否决、风险否决、宏观)按权重投票;个股(有基本面)场景再叠加 5 位投资大师(巴菲特/芒格/格雷厄姆/费雪/林奇)最多到 10 席,ETF / 可转债精简为 4 席。风险与价值角色拥有 **veto(否决)** 权,缺失估值数据不会被当成"通过"。
 - **确定性风控引擎**:仓位上限、单票 / 行业集中度、组合回撤、ST 否决、人工复核标记等全部是**硬约束**,由代码而非 LLM 判定。
 - **决策闸门(Decision Gate)**:`human_review_required` 与 `council_veto` 会直接拦截下一步,AI 说服不了闸门。
 - **证据隔离与 fail-closed**:历史回测、隔离演示、用户模拟账户、正式前瞻实验四者互不污染;免费数据源缺失或陈旧时明确标记 `unavailable`,绝不编造。
 - **6 类量化策略 + 56 个业务工作流**:自适应 ETF(v1/v2/v3)、ETF 轮动、可转债、个股反转等,配套候选发现、资金流、证据构建、复盘等完整工作流。
-- **三分钟无 Key 隔离演示**:不需要 API Key 或外部行情,用隔离数据库跑通完整闭环。
+- **三分钟无 Key 隔离演示**:通过 `scripts/start-hackathon-demo.sh`(Mac/Linux)或 `.ps1`(Windows)一键启动,无需 API Key 或外部行情,用隔离数据库跑通完整闭环。
 
 ---
 
@@ -58,34 +58,53 @@ QuantLab 换了个思路 —— 把大模型关进笼子:
 
 ## 三分钟隔离演示
 
-无需 API Key、无需外部行情,直接跑通「候选 → 冻结研究 → 确定性风控 → 用户确认 → 模拟成交 → 盈亏与复盘」:
+无需 API Key、无需外部行情,一键跑通「候选 → 冻结研究 → 确定性风控 → 用户确认 → 模拟成交 → 盈亏与复盘」:
+
+```bash
+# macOS / Linux
+./scripts/start-hackathon-demo.sh
+```
 
 ```powershell
+# Windows
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-hackathon-demo.ps1
 ```
 
-演示使用隔离数据库,不会写入正式前瞻证据。
+脚本会自动注入隔离环境变量、校验冻结演示数据集并启动界面;演示使用隔离数据库,不会写入正式前瞻证据。加 `--check-only` 只做预检不启动服务。
 
 ---
 
 ## 从零启动
 
-```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
+```bash
+# macOS / Linux
+python3.11 -m venv .venv
+source .venv/bin/activate
 python -m pip install -e ".[dev,agents,ui,data,api]"
-Copy-Item .env.example .env
+cp .env.example .env
 
 quantlab doctor          # 环境自检
 quantlab llm-status      # 查看模型 Provider 状态
 streamlit run dashboard/app.py --server.port 8510
 ```
 
+```powershell
+# Windows
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev,agents,ui,data,api]"
+Copy-Item .env.example .env
+
+quantlab doctor
+quantlab llm-status
+streamlit run dashboard/app.py --server.port 8510
+```
+
 没有 API Key 时使用内置 Mock Provider 即可验证完整工程链路。配置真实模型请在设置页或 `.env` 中明确选择 DeepSeek / OpenAI 官方端点,不要把官方 Key 静默发往第三方网关。
 
-常用命令:
+常用命令(跨平台通用):
 
-```powershell
+```bash
 quantlab doctor            # 环境与依赖自检
 quantlab llm-status        # 模型 Provider 状态
 quantlab demo              # 命令行跑通一次决策演示
