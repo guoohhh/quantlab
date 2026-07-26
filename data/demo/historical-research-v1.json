@@ -1,0 +1,66 @@
+{
+  "dataset_version": "historical-research-demo-v1",
+  "mode": "historical_research_demo",
+  "research_only": true,
+  "training_eligible": false,
+  "forward_scorecard_eligible": false,
+  "source": "westock cached server observation",
+  "trust_level": "server_observed",
+  "license_status": "unverified_no_sla",
+  "source_cache_fingerprint_sha256": "8bb75995213cc313d1b87e1ace7f2c6e70fb8323d2e68aa2ec3a5055223c22f6",
+  "source_fetched_at": "2026-07-13T07:50:43.922088+00:00",
+  "signal_date": "2025-12-31",
+  "execution_date": "2026-01-05",
+  "calendar": [
+    {"trade_date": "2025-12-31", "is_open": true},
+    {"trade_date": "2026-01-01", "is_open": false},
+    {"trade_date": "2026-01-02", "is_open": false},
+    {"trade_date": "2026-01-03", "is_open": false},
+    {"trade_date": "2026-01-04", "is_open": false},
+    {"trade_date": "2026-01-05", "is_open": true}
+  ],
+  "candidates": [
+    {
+      "symbol": "sh510300",
+      "name": "沪深300ETF",
+      "category": "A股宽基",
+      "signal_close": 4.63,
+      "next_open": 4.66,
+      "next_close": 4.72,
+      "signal_amount": 3175880000.0,
+      "research_score": 78.0,
+      "suggested_action": "buy",
+      "supporting_evidence": ["宽基分散度高", "冻结样本中流动性充足", "次日成交价格可复算"],
+      "opposing_evidence": ["单日信号不能证明未来上涨", "免费数据源无服务等级保证"],
+      "invalidation_conditions": ["数据指纹不一致", "执行日停牌或价格不可用", "账户硬风控不通过"]
+    },
+    {
+      "symbol": "sh510880",
+      "name": "红利ETF",
+      "category": "A股红利",
+      "signal_close": 3.04,
+      "next_open": 3.04,
+      "next_close": 3.04,
+      "signal_amount": 337060000.0,
+      "research_score": 69.0,
+      "suggested_action": "observe",
+      "supporting_evidence": ["防御属性较强"],
+      "opposing_evidence": ["冻结窗口内相对动量有限"],
+      "invalidation_conditions": ["相对强弱继续恶化"]
+    },
+    {
+      "symbol": "sh518880",
+      "name": "黄金ETF",
+      "category": "黄金",
+      "signal_close": 9.30,
+      "next_open": 9.42,
+      "next_close": 9.50,
+      "signal_amount": 8255350000.0,
+      "research_score": 73.0,
+      "suggested_action": "observe",
+      "supporting_evidence": ["跨资产分散价值"],
+      "opposing_evidence": ["短期价格波动和跳空风险较高"],
+      "invalidation_conditions": ["风险预算不足"]
+    }
+  ]
+}

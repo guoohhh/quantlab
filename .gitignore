@@ -13,7 +13,10 @@ coverage.xml
 data/cache/
 data/backups/
 data/quantlab.db
-data/
+/data/*
+!/data/demo/
+/data/demo/*
+!/data/demo/historical-research-v1.json
 *.db
 *.sqlite
 *.sqlite3
