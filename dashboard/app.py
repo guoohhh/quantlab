@@ -8,6 +8,16 @@ import streamlit as st
 
 from dashboard.product_ui import render_product_app
 
+# A股涨跌配色约定：涨=红、跌=绿（与欧美相反）。
+# plotly 连续色阶按 [低值 -> 高值] 排列，故低值(跌)用绿、高值(涨)用红。
+CN_UPDOWN_SCALE = [
+    (0.0, "#0f8a4d"),   # 深绿：大跌
+    (0.25, "#5fbf82"),  # 浅绿：小跌
+    (0.5, "#f2efe7"),   # 中性：与米色主题呼应
+    (0.75, "#e08a6f"),  # 浅红：小涨
+    (1.0, "#c0392b"),   # 深红：大涨
+]
+
 from quantlab.config import Settings
 from quantlab.domain import ResearchProvenance
 from quantlab.demo import run_demo, run_live_demo
@@ -251,7 +261,7 @@ def render_radar(radar: dict) -> None:
         heat,
         text_auto=".1f",
         aspect="auto",
-        color_continuous_scale="RdYlGn",
+        color_continuous_scale=CN_UPDOWN_SCALE,
         color_continuous_midpoint=0,
         labels={"color": "收益率%"},
         title="跨资产动量热力图",
@@ -282,7 +292,7 @@ def render_radar(radar: dict) -> None:
             y="name",
             orientation="h",
             color="change_pct",
-            color_continuous_scale="RdYlGn",
+            color_continuous_scale=CN_UPDOWN_SCALE,
             title="行业热度（仅当前快照，不冒充历史信号）",
         )
         st.plotly_chart(sector_figure, width="stretch")
