@@ -78,10 +78,11 @@ def load_latest_trade_quote(
     quote_service: QuoteService | None = None,
 ) -> MarketQuote:
     resolved_asset_type = _asset_type(settings, symbol, asset_type)
+    resolved_as_of = as_of or _market_date(settings)
     return (quote_service or QuoteService.from_settings(settings)).get(
         symbol,
         asset_type=resolved_asset_type,
-        as_of=as_of,
+        as_of=resolved_as_of,
         require_authoritative=not bool(settings.get("system.test_mode", False)),
     )
 

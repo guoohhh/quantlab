@@ -610,6 +610,7 @@ def test_windows_autostart_manager_install_status_disable_remove_without_secrets
 
     monkeypatch.setattr(autostart_module, "_run_schtasks", fake_schtasks)
     manager = RuntimeAutostartManager(settings)
+    monkeypatch.setattr(manager, "_require_windows", lambda: None)
     installed = manager.install()
     launcher = Path(installed["launcher"])
     launcher_text = launcher.read_text(encoding="utf-8")
@@ -636,6 +637,7 @@ def test_windows_autostart_falls_back_to_user_startup_without_admin(
 
     monkeypatch.setattr(autostart_module, "_run_schtasks", denied_schtasks)
     manager = RuntimeAutostartManager(settings)
+    monkeypatch.setattr(manager, "_require_windows", lambda: None)
     installed = manager.install()
     status = manager.status()
     assert installed["status"] == "installed"

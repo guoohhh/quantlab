@@ -325,7 +325,7 @@ def test_pending_thesis_is_excluded_until_freeze_and_checks_keep_old_revision(tm
 
 def test_successful_check_advances_trading_schedule_and_failures_do_not(tmp_path):
     settings = _settings(tmp_path)
-    today = date.today()
+    today = datetime.now(UTC).astimezone(ZoneInfo("Asia/Shanghai")).date()
     _seed_calendar(settings, today - timedelta(days=1))
     pending = _pending_thesis(settings)
     thesis, _ = _freeze(
