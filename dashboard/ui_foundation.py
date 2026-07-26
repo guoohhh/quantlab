@@ -728,6 +728,10 @@ def apply_product_theme() -> None:
             --ql-blue-soft: #dde6ec;
             --ql-ai: #6b6487;
             --ql-ai-soft: #e7e2ef;
+            --ql-up: #c0392b;
+            --ql-up-soft: #f6e2df;
+            --ql-down: #2f7d54;
+            --ql-down-soft: #ddeee2;
             --ql-radius-sm: 10px;
             --ql-radius: 16px;
             --ql-radius-lg: 24px;
@@ -952,6 +956,38 @@ def apply_product_theme() -> None:
         .ql-demo-step span { overflow:hidden; font-size:.78rem; font-weight:700; text-overflow:ellipsis; white-space:nowrap; }
         .ql-demo-step-done { border-color:var(--ql-pine); color:var(--ql-pine); }
         .ql-demo-step-done b { border-color:var(--ql-pine); background:var(--ql-pine-soft); }
+        /* ---- 首屏英雄区（简介承诺的兑现现场） ---- */
+        .ql-hero { position:relative; overflow:hidden; margin:.1rem 0 1.1rem; padding:1.6rem 1.7rem; border:1px solid var(--ql-line); border-radius:var(--ql-radius-lg); background:linear-gradient(135deg,rgba(251,250,246,.96),rgba(244,239,229,.92)); box-shadow:var(--ql-shadow); }
+        .ql-hero:before { content:""; position:absolute; width:330px; height:330px; right:-90px; top:-160px; border:1px solid rgba(165,83,57,.16); border-radius:50%; }
+        .ql-hero:after { content:""; position:absolute; width:210px; height:210px; right:-30px; top:-70px; border:1px solid rgba(72,100,123,.14); border-radius:50%; }
+        .ql-hero span { position:relative; z-index:1; color:var(--ql-warm); font-size:.68rem; font-weight:850; letter-spacing:.14em; }
+        .ql-hero h1 { position:relative; z-index:1; margin:.4rem 0 .5rem; font-size:1.72rem !important; line-height:1.24; max-width:34ch; }
+        .ql-hero h1 em { font-style:normal; color:var(--ql-warm); }
+        .ql-hero p { position:relative; z-index:1; margin:0; max-width:56ch; color:var(--ql-ink-soft); font-size:.92rem; line-height:1.66; }
+        /* ---- 红线笼子（置顶主角） ---- */
+        .ql-cage { margin:0 0 1rem; padding:1.1rem 1.2rem 1.15rem; border:1px solid var(--ql-line); border-left:3px solid var(--ql-warm); border-radius:var(--ql-radius); background:var(--ql-surface); box-shadow:var(--ql-shadow); }
+        .ql-cage-head { display:flex; align-items:baseline; justify-content:space-between; gap:.8rem; margin-bottom:.9rem; }
+        .ql-cage-head span { color:var(--ql-warm); font-size:.66rem; font-weight:850; letter-spacing:.13em; }
+        .ql-cage-head strong { display:block; margin-top:.24rem; font-size:1.12rem; color:var(--ql-ink); }
+        .ql-cage-head small { flex:0 0 auto; color:var(--ql-muted); font-size:.72rem; letter-spacing:.04em; }
+        .ql-cage-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.6rem; }
+        .ql-guard { position:relative; padding:.72rem .8rem .78rem; border:1px solid var(--ql-line); border-radius:var(--ql-radius-sm); background:var(--ql-surface-soft); }
+        .ql-guard i { display:block; color:var(--ql-muted); font-size:.7rem; font-weight:800; font-style:normal; letter-spacing:.03em; }
+        .ql-guard b { display:block; margin:.22rem 0 .12rem; color:var(--ql-warm-dark); font:800 1.36rem/1 var(--ql-display); font-variant-numeric:tabular-nums; }
+        .ql-guard b.ql-guard-flag { font-size:.96rem; letter-spacing:.02em; }
+        .ql-guard em { display:block; color:var(--ql-muted); font-size:.68rem; font-style:normal; line-height:1.4; }
+        /* ---- 五角色圆桌预览（第二块） ---- */
+        .ql-council { margin:0 0 1rem; padding:1.1rem 1.2rem 1.15rem; border:1px solid var(--ql-line); border-left:3px solid var(--ql-pine); border-radius:var(--ql-radius); background:var(--ql-surface); box-shadow:var(--ql-shadow); }
+        .ql-council-head span { color:var(--ql-pine); font-size:.66rem; font-weight:850; letter-spacing:.13em; }
+        .ql-council-head strong { display:block; margin:.24rem 0 .9rem; font-size:1.12rem; color:var(--ql-ink); }
+        .ql-council-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.55rem; }
+        .ql-role { padding:.72rem .68rem .76rem; border:1px solid var(--ql-line); border-radius:var(--ql-radius-sm); background:var(--ql-surface-soft); text-align:center; }
+        .ql-role i { display:grid; place-items:center; width:34px; height:34px; margin:0 auto .42rem; border-radius:50%; font-size:1rem; font-style:normal; }
+        .ql-role b { display:block; font-size:.82rem; font-weight:800; color:var(--ql-ink); }
+        .ql-role em { display:block; margin-top:.16rem; color:var(--ql-muted); font-size:.66rem; font-style:normal; line-height:1.42; }
+        .ql-role-veto i { background:var(--ql-warm-soft); color:var(--ql-warm); }
+        .ql-role-support i { background:var(--ql-pine-soft); color:var(--ql-pine); }
+        .ql-role-macro i { background:var(--ql-blue-soft); color:var(--ql-blue); }
         /* The roundtable is a real workspace, not another long report section. */
         .ql-roundtable-stage { position:relative; min-height:480px; overflow:hidden; margin:.3rem 0 1rem; border:1px solid var(--ql-line); border-radius:var(--ql-radius-lg); background:#f8f5ee; box-shadow:var(--ql-shadow); isolation:isolate; }
         .ql-roundtable-stage:before { content:""; position:absolute; inset:18px; z-index:-1; border:1px dashed rgba(72,100,123,.14); border-radius:18px; pointer-events:none; }
@@ -1118,6 +1154,10 @@ def apply_product_theme() -> None:
             .st-key-historical_demo_entry { padding:.8rem 0; }
             .ql-demo-steps { grid-template-columns:repeat(2,minmax(0,1fr)); }
             .ql-demo-step span { white-space:normal; }
+            .ql-hero { padding:1.15rem 1.1rem; }
+            .ql-hero h1 { font-size:1.4rem !important; }
+            .ql-cage-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+            .ql-council-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
             [data-testid="stHorizontalBlock"] { flex-wrap:wrap; gap:.55rem; }
             [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
                 flex:1 1 100% !important; width:100% !important; min-width:0 !important;

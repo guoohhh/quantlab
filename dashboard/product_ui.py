@@ -1061,6 +1061,112 @@ def _render_evidence_context(context: dict[str, Any]) -> None:
         st.caption("报告已保存上下文指纹；当前摘要没有可展开的证据块。")
 
 
+def _render_home_hero(settings: Settings) -> None:
+    """首屏英雄区：把简介承诺（AI 关进笼子、代码说了算）前置为可见的第一屏。
+
+    纯呈现层：阈值只读自 settings 的 [risk] 配置，主 CTA 复用既有历史 demo
+    入口（HISTORICAL_DEMO_OPEN_KEY），圆桌预览点击走既有 _go_to，不新增逻辑。
+    """
+    st.markdown(
+        """
+        <section class="ql-hero">
+          <span>QUANTLAB · 把 AI 关进笼子</span>
+          <h1>研究由 AI 圆桌完成，<em>红线由代码强制执行</em>——AI 说了不算，代码说了算。</h1>
+          <p>技术面、动量、价值否决、风险否决、宏观五个角色组成多 Agent 圆桌，负责研究、比较与反证，形成操作草稿；而仓位、集中度、回撤、ST、T+1、涨跌停和交易成本这些红线，全部由确定性代码引擎强制拦截。</p>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    cta_run, cta_council = st.columns([1, 1])
+    with cta_run:
+        if st.button(
+            "▶ 一键跑通完整决策链路",
+            key="hero_open_historical_demo",
+            type="primary",
+            width="stretch",
+            help="用冻结历史数据与独立模拟账本，三分钟走完证据 → 圆桌 → 风控 → 成交 → 复盘。不连券商、不进正式实验。",
+        ):
+            st.session_state[HISTORICAL_DEMO_OPEN_KEY] = True
+            st.rerun()
+    with cta_council:
+        if st.button(
+            "查看五角色圆桌",
+            key="hero_go_research",
+            width="stretch",
+            help="进入研究台，发起一次多 Agent 圆桌，看五个角色如何研究、质疑与反证。",
+        ):
+            _go_to("研究台")
+
+    # 红线笼子（置顶主角）——阈值读真实 [risk] 配置，市场规则为引擎内联逻辑
+    risk = settings.get("risk") or {}
+
+    def _pct(key: str, fallback: float) -> str:
+        try:
+            value = float(risk.get(key, fallback))
+        except (TypeError, ValueError):
+            value = fallback
+        return f"{value * 100:.0f}%"
+
+    exposure = _pct("max_total_exposure", 0.80)
+    single = _pct("max_single_position", 0.15)
+    industry = _pct("max_industry_exposure", 0.30)
+    drawdown = _pct("max_portfolio_drawdown", 0.15)
+    guards = [
+        ("仓位上限", exposure, "总权益暴露不得超过", False),
+        ("单票集中度", single, "任一标的持仓上限", False),
+        ("行业集中度", industry, "单一行业暴露上限", False),
+        ("回撤约束", drawdown, "组合最大回撤触发", False),
+        ("ST 否决", "拦截", "ST/风险警示标的一律否决", True),
+        ("T+1", "强制", "当日买入不可当日卖出", True),
+        ("涨跌停", "拦截", "触及涨跌停不予撮合", True),
+        ("交易成本", "计入", "佣金 / 印花税 / 滑点全额计提", True),
+    ]
+    cells = "".join(
+        f'<div class="ql-guard"><i>{escape(name)}</i>'
+        f'<b class="{"ql-guard-flag" if is_flag else ""}">{escape(value)}</b>'
+        f"<em>{escape(desc)}</em></div>"
+        for name, value, desc, is_flag in guards
+    )
+    st.markdown(
+        f"""
+        <div class="ql-cage">
+          <div class="ql-cage-head">
+            <div><span>DETERMINISTIC GUARDRAILS · 代码说了算</span>
+            <strong>每一个操作草稿，都被这 8 条红线检查过</strong></div>
+            <small>阈值读自风控配置</small>
+          </div>
+          <div class="ql-cage-grid">{cells}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # 五角色圆桌预览（第二块）——把简介里的五个角色可视化
+    roles = [
+        ("技术面", "📈", "价格结构与形态", "support"),
+        ("动量", "🚀", "趋势强弱与资金", "support"),
+        ("价值否决", "⚖️", "估值过热则否决", "veto"),
+        ("风险否决", "🛑", "风险不可控则否决", "veto"),
+        ("宏观", "🌐", "环境与政策约束", "macro"),
+    ]
+    role_cells = "".join(
+        f'<div class="ql-role ql-role-{kind}"><i>{icon}</i>'
+        f"<b>{escape(name)}</b><em>{escape(desc)}</em></div>"
+        for name, icon, desc, kind in roles
+    )
+    st.markdown(
+        f"""
+        <div class="ql-council">
+          <div class="ql-council-head"><span>MULTI-AGENT COUNCIL · 圆桌研究</span>
+          <strong>五个角色负责研究、比较与反证，形成操作草稿</strong></div>
+          <div class="ql-council-grid">{role_cells}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def _render_historical_demo_entry() -> None:
     with st.container(key="historical_demo_entry", border=False):
         intro, action = st.columns([4, 1])
@@ -1286,7 +1392,7 @@ def render_home(settings: Settings) -> None:
     if st.session_state.get(HISTORICAL_DEMO_OPEN_KEY):
         _render_historical_demo_workspace(settings)
         return
-    _render_historical_demo_entry()
+    _render_home_hero(settings)
     path = settings.resolve(settings.get("system.database_path"))
     try:
         readiness = _ui_readiness_snapshot(settings)
