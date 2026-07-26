@@ -3,7 +3,11 @@ from __future__ import annotations
 import asyncio
 from typing import Any
 
-from quantlab.agents.roundtable import ExpertRoundtable, roundtable_participant_catalog
+from quantlab.agents.roundtable import (
+    ExpertRoundtable,
+    RoundtableProgressCallback,
+    roundtable_participant_catalog,
+)
 from quantlab.config import Settings
 from quantlab.llm import build_provider
 from quantlab.llm.providers import LLMProvider
@@ -20,6 +24,8 @@ def run_expert_roundtable(
     rounds: int = 2,
     save: bool = True,
     llm: LLMProvider | None = None,
+    session_id: str | None = None,
+    progress_callback: RoundtableProgressCallback | None = None,
 ) -> dict[str, Any]:
     database_path = settings.resolve(settings.get("system.database_path"))
     source_record = DecisionRepository(database_path).get(source_run_id)
@@ -37,6 +43,8 @@ def run_expert_roundtable(
                 participants=participants,
                 topic=topic,
                 rounds=rounds,
+                session_id=session_id,
+                progress_callback=progress_callback,
             )
         finally:
             if owns_provider:

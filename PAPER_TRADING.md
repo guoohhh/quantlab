@@ -1,5 +1,8 @@
 # 前瞻模拟盘与每日成绩单
 
+> **历史账户设计与实验快照**：账户名称、资金、样本和闸门状态可能已经变化。当前账户与正式
+> 证据必须查询目标数据库，并区分用户模拟、Historical Demo、影子、外部账本和 Primary。
+
 ## 决策闸门 V2 尚未进入前瞻账户
 
 `calibrated_strategy_primary_v1` 当前状态为 `insufficient_evidence_not_promoted`。20日只有4个新回合，5日只有11个，且统计模型驱动减仓0次；因此不会新增或改写正式模拟账户。现有 `adaptive_v2_shadow` 继续只验证确定性 Adaptive ETF V2.1，不能被当作决策闸门 V2 的前瞻成绩。

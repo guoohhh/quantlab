@@ -251,6 +251,9 @@ def run_stock_ranking_replay(
                         ),
                         "universe_hash": universe_hash,
                     },
+                    origin="demo_research",
+                    evidence_stage="historical_replay",
+                    training_eligible=False,
                 )
         rank_ic = _rank_information_coefficient(candidate_results)
         best = max(

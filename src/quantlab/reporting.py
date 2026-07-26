@@ -23,7 +23,7 @@ def build_research_audit_package(output: dict[str, Any]) -> dict[str, Any]:
     )
     return _sanitize_audit(
         {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "report_type": "quantlab_research_audit",
             "generated_at": datetime.now(UTC).isoformat(),
             "run_id": run.run_id,
@@ -34,6 +34,9 @@ def build_research_audit_package(output: dict[str, Any]) -> dict[str, Any]:
                 "bars": output.get("bars", 0),
                 "price": output.get("price"),
                 "effective_as_of": str(output.get("as_of", run.decision.as_of)),
+                "requested_as_of": (
+                    (output.get("price_history") or {}).get("requested_cutoff_date")
+                ),
                 "degraded_sources": list(
                     dict.fromkeys(
                         output.get("degraded_sources", [])
@@ -46,6 +49,16 @@ def build_research_audit_package(output: dict[str, Any]) -> dict[str, Any]:
             "factor_report": factor_report,
             "price_history": output.get("price_history", {}),
             "financial_report": financial_report,
+            "analysis_context_pack": (
+                output["analysis_context_pack"].model_dump(mode="json")
+                if hasattr(output.get("analysis_context_pack"), "model_dump")
+                else output.get("analysis_context_pack")
+            ),
+            "context_committee": (
+                output["context_committee"].model_dump(mode="json")
+                if hasattr(output.get("context_committee"), "model_dump")
+                else output.get("context_committee")
+            ),
             "agent_reports": {
                 name: report.model_dump(mode="json") for name, report in run.reports.items()
             },
@@ -57,6 +70,16 @@ def build_research_audit_package(output: dict[str, Any]) -> dict[str, Any]:
             "learning": {
                 "features": run.learning_features,
                 "context": run.learning_context,
+            },
+            "research_identity": {
+                "symbol": run.decision.symbol,
+                "requested_as_of": (
+                    (output.get("price_history") or {}).get("requested_cutoff_date")
+                ),
+                "effective_as_of": str(output.get("as_of", run.decision.as_of)),
+                "run_id": run.run_id,
+                "origin": "user_interactive_research",
+                "evidence_stage": "research_only",
             },
             "execution_boundary": "manual_orders_only",
             "disclaimer": DISCLAIMER,
@@ -77,8 +100,11 @@ def research_persistence_context(output: dict[str, Any]) -> dict[str, Any]:
                 "factor_report",
                 "price_history",
                 "financial_report",
+                "analysis_context_pack",
+                "context_committee",
                 "execution_boundary",
                 "disclaimer",
+                "research_identity",
             )
         }
     )
@@ -99,6 +125,8 @@ def build_stored_audit_package(record: dict[str, Any]) -> dict[str, Any]:
         "factor_report": context.get("factor_report"),
         "price_history": context.get("price_history", {}),
         "financial_report": context.get("financial_report"),
+        "analysis_context_pack": context.get("analysis_context_pack"),
+        "context_committee": context.get("context_committee"),
         "agent_reports": payload.get("reports", {}),
         "forecasts": payload.get("forecasts", []),
         "decision": decision,
@@ -107,6 +135,19 @@ def build_stored_audit_package(record: dict[str, Any]) -> dict[str, Any]:
         "llm_audit": _sanitize_audit(payload.get("llm_audit", {})),
         "execution_boundary": context.get("execution_boundary", "manual_orders_only"),
         "disclaimer": context.get("disclaimer", DISCLAIMER),
+        "research_identity": {
+            "symbol": record.get("symbol") or decision.get("symbol"),
+            "requested_as_of": record.get("requested_as_of"),
+            "effective_as_of": record.get("effective_as_of") or record.get("as_of"),
+            "run_id": record.get("run_id"),
+            "origin": record.get("origin") or "legacy_unclassified",
+            "evidence_stage": record.get("evidence_stage") or "unavailable",
+            "settlement_eligible": bool(record.get("settlement_eligible")),
+            "training_eligible": bool(record.get("training_eligible")),
+            "registration_id": record.get("registration_id"),
+            "context_id": record.get("context_id"),
+            "context_fingerprint": record.get("context_fingerprint"),
+        },
     }
 
 

@@ -472,6 +472,9 @@ def run_market_wide_stock_replay(
                         "historical_st_status_control": True,
                         "ranking_policy_hash": ranking_policy_hash,
                     },
+                    origin="historical_research",
+                    evidence_stage="point_in_time_training",
+                    training_eligible=snapshot_integrity,
                 )
         best = max(
             candidate_results,

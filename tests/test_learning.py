@@ -32,6 +32,9 @@ def test_chronological_model_training_activates_only_when_it_beats_baseline(tmp_
             outcome=outcome,
             realized_return_pct=signal * 2,
             evaluated_at=start + timedelta(days=index + 5),
+            origin="test_research",
+            evidence_stage="test_fixture",
+            training_eligible=True,
         )
 
     result = train_registered_model(repository, 5, "etf", minimum_samples=100)
@@ -265,6 +268,10 @@ def test_online_drift_monitor_deactivates_degraded_model(tmp_path):
                     "raw_llm": [0.7, 0.2, 0.1],
                 }
             },
+            origin="system_production_research",
+            evidence_stage="registered_forward",
+            settlement_eligible=True,
+            training_eligible=True,
         )
 
     result = monitor_active_model(repository, 5, "etf", minimum_online_samples=30)
@@ -300,6 +307,9 @@ def test_rolling_governance_deactivates_legacy_single_split_model_on_rejection(t
             outcome=("up", "flat", "down")[index % 3],
             realized_return_pct=0.0,
             evaluated_at=start + timedelta(days=index + 5),
+            origin="test_research",
+            evidence_stage="test_fixture",
+            training_eligible=True,
         )
 
     result = train_registered_model(
@@ -352,6 +362,9 @@ def test_challenger_must_beat_incumbent_on_prospective_holdout(tmp_path):
             outcome=outcome,
             realized_return_pct=signal * 2,
             evaluated_at=start + timedelta(days=index + 5),
+            origin="test_research",
+            evidence_stage="test_fixture",
+            training_eligible=True,
         )
 
     result = train_registered_model(repository, 5, "etf", minimum_samples=100, force=True)

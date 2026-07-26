@@ -7,7 +7,7 @@ data_dir = "data"
 database_path = "data/quantlab.db"
 
 [llm]
-provider = "auto"
+provider = "deepseek"
 model = ""
 base_url = ""
 timeout_seconds = 60.0
@@ -18,33 +18,71 @@ temperature = 0.1
 failure_threshold = 1
 failure_cooldown_seconds = 120.0
 allow_mock_fallback = true
+context_maximum_bytes = 48000
+maximum_committee_roles = 6
+maximum_committee_rounds = 1
+role_minimum_matured_samples = 30
+task_maximum_calls = 16
+task_token_budget = 100000
+task_cost_budget_usd = 8.0
+estimated_input_cost_per_million = 1.0
+estimated_output_cost_per_million = 4.0
 openai_model = "gpt-5.6-terra"
 openai_reasoning_effort = "medium"
 deepseek_model = "deepseek-chat"
-openai_base_url = "https://code-plan.site/v1"
-openai_enabled = true
+openai_base_url = ""
+openai_enabled = false
 deepseek_enabled = true
 local_model = ""
 local_base_url = ""
 
+[llm.phase_token_reservations]
+analysts = 22000
+council = 24000
+debate = 18000
+forecasts = 30000
+reviewer = 30000
+context_roles = 18000
+context_synthesis = 32000
+
+[llm.workflow_budgets.stock_full_research]
+maximum_calls = 32
+maximum_total_tokens = 650000
+maximum_cost_usd = 12.0
+
+[llm.workflow_budgets.etf_full_research]
+maximum_calls = 24
+maximum_total_tokens = 450000
+maximum_cost_usd = 10.0
+
+[llm.workflow_budgets.convertible_bond_full_research]
+maximum_calls = 24
+maximum_total_tokens = 450000
+maximum_cost_usd = 10.0
+
+[llm.workflow_budgets.context_committee]
+maximum_calls = 10
+maximum_total_tokens = 220000
+maximum_cost_usd = 6.0
+
 [llm.role_preferences]
-forecast = ["openai", "deepseek", "local"]
-review = ["openai", "deepseek", "local"]
-value_veto = ["openai", "deepseek", "local"]
-risk = ["openai", "deepseek", "local"]
-fundamental = ["openai", "deepseek", "local"]
-technical = ["deepseek", "local", "openai"]
-momentum = ["deepseek", "local", "openai"]
-news = ["deepseek", "local", "openai"]
-quant = ["deepseek", "local", "openai"]
-macro = ["deepseek", "local", "openai"]
-buffett = ["openai", "deepseek", "local"]
-munger = ["openai", "deepseek", "local"]
-graham = ["openai", "deepseek", "local"]
-fisher = ["openai", "deepseek", "local"]
-lynch = ["openai", "deepseek", "local"]
-bull = ["openai", "deepseek", "local"]
-bear = ["openai", "deepseek", "local"]
+forecast = ["deepseek", "local"]
+review = ["deepseek", "local"]
+value_veto = ["deepseek", "local"]
+risk = ["deepseek", "local"]
+fundamental = ["deepseek", "local"]
+technical = ["deepseek", "local"]
+momentum = ["deepseek", "local"]
+news = ["deepseek", "local"]
+quant = ["deepseek", "local"]
+macro = ["deepseek", "local"]
+buffett = ["deepseek", "local"]
+munger = ["deepseek", "local"]
+graham = ["deepseek", "local"]
+fisher = ["deepseek", "local"]
+lynch = ["deepseek", "local"]
+bull = ["deepseek", "local"]
+bear = ["deepseek", "local"]
 
 [llm.openai_role_models]
 forecast = "gpt-5.6-sol"
@@ -113,6 +151,15 @@ slippage_bps = 5.0
 stop_slippage_bps = 15.0
 trade_lot = 100
 
+[costs.convertible_bond]
+commission_rate = 0.0001
+minimum_commission = 0.0
+stamp_duty_rate = 0.0
+transfer_fee_rate = 0.0
+slippage_bps = 10.0
+stop_slippage_bps = 20.0
+trade_lot = 10
+
 [backtest]
 start_date = "2015-01-01"
 signal_at = "close"
@@ -139,6 +186,124 @@ maximum_statistical_weight = 0.50
 minimum_online_samples = 30
 drift_recent_window = 50
 drift_degradation_factor = 1.25
+reflection_minimum_mature_samples = 30
+memory_maximum_items = 6
+memory_maximum_bytes = 6000
+memory_lookback_days = 730
+
+[runtime]
+worker_maximum_running = 4
+job_max_attempts = 3
+default_job_timeout_seconds = 900
+research_job_timeout_seconds = 1800
+chat_job_timeout_seconds = 900
+per_user_chat_cost_budget_usd = 2.0
+api_requests_per_minute = 300
+maximum_execution_price_deviation_bps = 50.0
+maximum_execution_quote_age_seconds = 120
+paper_order_expiry_open_sessions = 5
+trusted_calendar_path = ""
+trusted_security_master_path = ""
+trusted_industry_path = ""
+trusted_pit_pool_path = ""
+trusted_data_auto_refresh_enabled = true
+trusted_data_default_level = "server_observed"
+trusted_data_license_status = "unverified_no_sla"
+trusted_data_minimum_field_coverage = 0.80
+trusted_calendar_minimum_records = 30
+trusted_security_master_minimum_records = 1000
+trusted_industry_minimum_records = 1000
+trusted_point_in_time_pool_minimum_records = 1000
+trusted_provider_timeout_seconds = 35.0
+trusted_provider_calendar_timeout_seconds = 45.0
+trusted_provider_security_master_timeout_seconds = 90.0
+trusted_provider_industry_timeout_seconds = 60.0
+trusted_provider_point_in_time_universe_timeout_seconds = 60.0
+trusted_provider_current_spot_timeout_seconds = 90.0
+trusted_provider_max_attempts = 2
+trusted_provider_failure_threshold = 3
+trusted_provider_cooldown_seconds = 300.0
+trusted_pool_required_fields = [
+  "symbol", "name", "exchange", "listing_date", "trade_date", "listed",
+  "is_st", "suspended", "trade_status", "amount", "turnover_rate",
+  "market_cap", "industry", "available_at", "source"
+]
+runtime_process_stale_after_seconds = 90
+runtime_health_maximum_age_seconds = 90
+quality_gate_maximum_age_hours = 168
+minimum_free_disk_gb = 1.0
+maximum_backup_age_hours = 48
+maximum_scheduler_delay_minutes = 20
+maximum_pending_forward_days = 10
+maximum_data_refresh_failures = 3
+maximum_llm_failure_rate = 0.25
+maximum_llm_daily_cost_usd = 10.0
+api_host = "127.0.0.1"
+api_port = 8000
+api_log_level = "info"
+worker_idle_poll_seconds = 1.0
+scheduler_poll_seconds = 30.0
+notification_poll_seconds = 5.0
+backup_directory = "data/backups"
+demo_directory = "data/demo"
+autostart_directory = "data/runtime"
+chat_retention_days = 365
+notification_retention_days = 365
+audit_retention_days = 365
+job_retention_days = 365
+
+[strategies.point_in_time_etf]
+protocol_version = "round3-pit-forward-v1"
+minimum_amount = 0.0
+minimum_fund_size = 0.0
+representative_rule = "log_amount_plus_log_size"
+
+[strategies.forward_primary]
+protocol_version = "primary-forward-v2"
+asset_scope = ["a_share"]
+daily_sampling_rule = "pit_representative_rank"
+candidate_count = 3
+initial_capital = 100000.0
+minimum_trust_level = "server_observed"
+simple_baseline_weight = 0.05
+
+[strategies.wide_forward]
+protocol_version = "wide-forward-stratified-v1"
+target_sample_size = 24
+minimum_sample_size = 20
+minimum_industries = 6
+initial_research_nav = 100.0
+maximum_llm_calls_per_batch = 240
+maximum_llm_tokens_per_batch = 3000000
+maximum_llm_cost_usd_per_batch = 40.0
+reserved_tokens_per_call = 8000
+reserved_cost_usd_per_call = 0.15
+
+[strategies.a_share_v4]
+protocol_version = "a-share-v4-pit-topk-v1"
+top_k = 8
+minimum_average_amount = 50000000.0
+maximum_industry_fraction = 0.25
+maximum_market_cap_bucket_fraction = 0.40
+maximum_pair_correlation = 0.85
+risk_on_exposure = 0.60
+risk_off_exposure = 0.0
+defensive_asset = "cash"
+
+[strategies.convertible_bond_pit]
+protocol_version = "convertible-bond-pit-shadow-v1"
+minimum_remaining_balance = 100000000.0
+minimum_amount = 10000000.0
+production_budget = 0.0
+
+[portfolio.smoothing]
+cash_reserve_weight = 0.20
+recovery_alpha = 0.25
+reduction_alpha = 0.60
+maximum_daily_weight_step = 0.05
+minimum_rebalance_weight = 0.01
+maximum_one_way_turnover = 0.15
+impact_bps = 10.0
 
 [strategies.etf_rotation]
 enabled = true

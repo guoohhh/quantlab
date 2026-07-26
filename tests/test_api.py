@@ -35,6 +35,107 @@ def test_health_discloses_manual_execution_boundary():
     assert response.json()["api_auth"] == "disabled_local_only"
 
 
+def test_decision_task_get_is_read_only(monkeypatch):
+    class ReadOnlyTaskRepository:
+        def __init__(self, path):
+            self.path = path
+
+        def decision_tasks(self, *, status=None, account_id=None):
+            return [
+                {
+                    "task_id": "existing-task",
+                    "status": status or "open",
+                    "account_id": account_id,
+                }
+            ]
+
+    monkeypatch.setattr(api_module, "Round9Repository", ReadOnlyTaskRepository)
+    response = _get("/api/decision-tasks?status=open&account_id=paper-account")
+
+    assert response.status_code == 200
+    assert response.json() == [
+        {
+            "task_id": "existing-task",
+            "status": "open",
+            "account_id": "paper-account",
+        }
+    ]
+
+
+def test_paid_multi_agent_analysis_cannot_run_through_get(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        api_module,
+        "analyze_symbol",
+        lambda *args, **kwargs: calls.append((args, kwargs)),
+    )
+
+    response = _get("/api/multi-agent/analyze?code=sh600001")
+
+    assert response.status_code == 405
+    assert calls == []
+    route = next(
+        item for item in app.routes if item.path == "/api/multi-agent/analyze"
+    )
+    assert route.methods == {"POST"}
+
+
+def test_point_in_time_universe_get_reads_stored_snapshot_only(monkeypatch):
+    captures = []
+
+    class ReadOnlyUniverseRepository:
+        def __init__(self, path):
+            self.path = path
+
+        def snapshot(self, snapshot_date):
+            return [
+                {
+                    "snapshot_date": snapshot_date.isoformat(),
+                    "symbol": "sh600001",
+                    "trade_status": True,
+                    "source": "stored-provider",
+                    "captured_at": "2026-07-19T10:00:00+00:00",
+                }
+            ]
+
+    monkeypatch.setattr(api_module, "AShareUniverseRepository", ReadOnlyUniverseRepository)
+    monkeypatch.setattr(
+        api_module,
+        "capture_point_in_time_universe",
+        lambda *args, **kwargs: captures.append((args, kwargs)),
+    )
+
+    response = _get("/api/stocks/universe/2026-07-18")
+
+    assert response.status_code == 200
+    assert response.json()["stored_only"] is True
+    assert response.json()["securities"] == 1
+    assert captures == []
+
+
+def test_point_in_time_universe_capture_requires_post(monkeypatch):
+    calls = []
+
+    def capture(settings, snapshot_date, *, force=False):
+        calls.append((snapshot_date, force))
+        return {
+            "snapshot_date": snapshot_date.isoformat(),
+            "source": "provider",
+            "records": [{"symbol": "sh600001"}],
+            "securities": 1,
+            "tradable": 1,
+        }
+
+    monkeypatch.setattr(api_module, "capture_point_in_time_universe", capture)
+
+    response = _post("/api/stocks/universe/2026-07-18?force=true", {})
+
+    assert response.status_code == 200
+    assert response.json()["securities"] == 1
+    assert "records" not in response.json()
+    assert calls and calls[0][1] is True
+
+
 def test_backtest_strategy_catalog_contains_three_core_strategies():
     response = _get("/api/backtest/strategies")
 
@@ -275,13 +376,17 @@ def test_historical_replay_api_allows_measured_scale_but_caps_abuse():
     assert "allow_large_run" in unconfirmed_large_run.json()["detail"]
 
 
-def test_optional_api_token_protects_all_api_routes(monkeypatch):
+def test_optional_api_token_protects_sensitive_api_routes_but_not_health(monkeypatch):
     monkeypatch.setenv("QUANTLAB_API_TOKEN", "test-secret-token")
 
-    rejected = _get("/api/health")
-    accepted = _get("/api/health", headers={"X-QuantLab-Token": "test-secret-token"})
+    health = _get("/api/health")
+    rejected = _get("/api/engine/status")
+    accepted = _get(
+        "/api/engine/status",
+        headers={"X-QuantLab-Token": "test-secret-token"},
+    )
 
+    assert health.status_code == 200
     assert rejected.status_code == 401
     assert accepted.status_code == 200
-    assert accepted.json()["api_auth"] == "required"
     assert "test-secret-token" not in accepted.text

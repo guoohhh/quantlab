@@ -59,6 +59,9 @@ def generate_historical_samples(
                         "training_eligible": training_eligible,
                         "universe_provenance": universe_provenance,
                     },
+                    origin="historical_research",
+                    evidence_stage="historical_training",
+                    training_eligible=training_eligible,
                 )
                 counts[horizon] += 1
     return {"generated": counts, "symbols": int(data.symbol.nunique()), "step": step}

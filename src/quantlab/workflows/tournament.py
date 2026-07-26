@@ -10,6 +10,7 @@ import pandas as pd
 from quantlab.config import Settings
 from quantlab.data import AkShareProvider, CachedProvider, FallbackProvider, WestockProvider
 from quantlab.domain.models import Bar
+from quantlab.domain import ResearchProvenance
 from quantlab.persistence import DecisionRepository, TerminalRepository
 from quantlab.reporting import research_persistence_context
 from quantlab.security import safe_error_detail
@@ -138,7 +139,13 @@ def run_candidate_tournament(
             )
             if save:
                 decision_repository.save(
-                    output["decision_run"], research_persistence_context(output)
+                    output["decision_run"],
+                    research_persistence_context(output),
+                    provenance=ResearchProvenance(
+                        origin="historical_research",
+                        requested_as_of=as_of,
+                        evidence_stage="candidate_tournament",
+                    ),
                 )
             research_rows.append(_candidate_record(output, radar_row))
         except Exception as exc:

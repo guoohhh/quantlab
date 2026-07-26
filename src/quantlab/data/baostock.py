@@ -91,6 +91,104 @@ class BaoStockProvider(DataProvider):
                 output[symbol] = item
         return sorted(output.values(), key=lambda item: item.symbol)
 
+    def trading_calendar(self, start: date, end: date) -> list[dict[str, Any]]:
+        """Fetch the provider's explicit exchange calendar; never infer holidays."""
+        if start > end:
+            raise ValueError("calendar start date must not be after end date")
+        with self._session():
+            result = self.client.query_trade_dates(
+                start_date=start.isoformat(),
+                end_date=end.isoformat(),
+            )
+            rows = self._collect(result, f"trading calendar {start} to {end}")
+        fields = {name: index for index, name in enumerate(result.fields)}
+        date_field = "calendar_date" if "calendar_date" in fields else "trade_date"
+        open_field = "is_trading_day" if "is_trading_day" in fields else "is_open"
+        output = []
+        for row in rows:
+            day_text = str(row[fields[date_field]])[:10]
+            if not day_text:
+                continue
+            output.append(
+                {
+                    "trade_date": date.fromisoformat(day_text).isoformat(),
+                    "is_open": str(row[fields[open_field]]).strip().lower()
+                    in {"1", "true", "yes", "open"},
+                }
+            )
+        return output
+
+    def security_master_records(self) -> list[dict[str, Any]]:
+        """Fetch listing and delisting dates without replacing unknown fields with guesses."""
+        with self._session():
+            result = self.client.query_stock_basic()
+            rows = self._collect(result, "A-share security master")
+        fields = {name: index for index, name in enumerate(result.fields)}
+        output = []
+        for row in rows:
+            source_symbol = _from_baostock_code(row[fields["code"]], canonicalize=False)
+            if source_symbol is None:
+                continue
+            symbol = canonical_a_share_symbol(source_symbol)
+            listing_text = str(row[fields.get("ipoDate", -1)]).strip() if "ipoDate" in fields else ""
+            if not listing_text:
+                continue
+            delisting_text = (
+                str(row[fields["outDate"]]).strip() if "outDate" in fields else ""
+            )
+            type_value = str(row[fields["type"]]).strip() if "type" in fields else "1"
+            if type_value not in {"1", ""}:
+                continue
+            output.append(
+                {
+                    "symbol": symbol,
+                    "source_symbol": source_symbol,
+                    "name": str(row[fields["code_name"]]).strip() or symbol,
+                    "exchange": "SH" if symbol.startswith("sh") else "SZ",
+                    "board": _board(symbol),
+                    "listing_date": listing_text[:10],
+                    "delisting_date": delisting_text[:10] or None,
+                    "status": str(row[fields["status"]]).strip()
+                    if "status" in fields
+                    else "unknown",
+                }
+            )
+        return sorted(output, key=lambda item: item["symbol"])
+
+    def industry_records(self, *, as_of: date | None = None) -> list[dict[str, Any]]:
+        """Fetch provider-published industry membership without inferring it from names."""
+
+        with self._session():
+            result = self.client.query_stock_industry()
+            rows = self._collect(result, "A-share industry membership")
+        fields = {name: index for index, name in enumerate(result.fields)}
+        output: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            source_symbol = _from_baostock_code(row[fields["code"]], canonicalize=False)
+            if source_symbol is None:
+                continue
+            symbol = canonical_a_share_symbol(source_symbol)
+            industry = str(row[fields["industry"]]).strip()
+            effective_text = str(row[fields["updateDate"]]).strip()[:10]
+            if not industry or not effective_text:
+                continue
+            effective_date = date.fromisoformat(effective_text)
+            if as_of is not None and effective_date > as_of:
+                continue
+            item = {
+                "symbol": symbol,
+                "name": str(row[fields["code_name"]]).strip() or symbol,
+                "industry": industry,
+                "classification": str(row[fields["industryClassification"]]).strip()
+                or "unknown",
+                "effective_date": effective_date.isoformat(),
+                "source_symbol": source_symbol,
+            }
+            existing = output.get(symbol)
+            if existing is None or item["effective_date"] >= existing["effective_date"]:
+                output[symbol] = item
+        return sorted(output.values(), key=lambda item: item["symbol"])
+
     def bars(self, symbols: list[str], start: date, end: date) -> list[Bar]:
         if start > end:
             raise ValueError("bar start date must not be after end date")

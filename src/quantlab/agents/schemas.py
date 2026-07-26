@@ -26,6 +26,10 @@ class ReviewReport(BaseModel):
     status: Literal["approved", "needs_review", "rejected"]
     issues: list[str] = Field(default_factory=list)
     summary: str
+    model_summary: str | None = None
+    policy_action: str | None = None
+    policy_trigger_codes: list[str] = Field(default_factory=list)
+    policy_version: str = "legacy-unversioned"
 
 
 class ExpertOpinion(BaseModel):

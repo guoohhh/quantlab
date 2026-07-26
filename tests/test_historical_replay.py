@@ -129,6 +129,9 @@ def test_point_in_time_predictor_excludes_labels_not_known_at_cutoff(tmp_path):
             realized_return_pct=2.0,
             evaluated_at=evaluated,
             context={"training_eligible": True},
+            origin="historical_research",
+            evidence_stage="historical_training",
+            training_eligible=True,
         )
 
     predictor, audit = build_point_in_time_predictor(

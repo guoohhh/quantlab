@@ -215,6 +215,22 @@ class DecisionCard(BaseModel):
     risks: list[str] = Field(default_factory=list)
     degraded_sources: list[str] = Field(default_factory=list)
     requires_human_review: bool = False
+    suggested_weight_min: float = Field(default=0.0, ge=0, le=1)
+    suggested_weight_max: float = Field(default=0.0, ge=0, le=1)
+    evidence_refs: list[str] = Field(default_factory=list)
+    counter_evidence_refs: list[str] = Field(default_factory=list)
+    invalidation_conditions: list[str] = Field(default_factory=list)
+    context_id: str | None = None
+    context_version: str | None = None
+    context_fingerprint: str | None = None
+    role_audit: list[dict[str, Any]] = Field(default_factory=list)
+    trigger_codes: list[str] = Field(default_factory=list)
+    policy_version: str = "legacy-unversioned"
+    review_state: Literal["not_evaluated", "approved", "required", "rejected"] = (
+        "not_evaluated"
+    )
+    signal_price_basis: str = "adjusted_close"
+    execution_price_basis: str = "raw_market_price"
 
 
 class AuditEvent(BaseModel):

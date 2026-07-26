@@ -1,372 +1,227 @@
-# 整体架构与数据流
+# 当前架构与数据流
 
-## 1. 架构的核心原则
+本文描述 QuantLab 当前稳定的边界和调用方向，不写死路由数、表数、迁移版本、Provider 状态或
+实验样本数。组件是否存在以当前代码、迁移注册表、API Schema 和测试为准；运行事实以目标数据库、
+Runtime 和匹配指纹的机器报告为准。
 
-QuantLab 不是把所有逻辑塞进一个大模型 Prompt，而是把系统拆成四个权力不同的平面：
+## 架构原则
 
-1. **数据与证据平面**：决定系统实际知道什么；
-2. **确定性量化与风控平面**：计算指标、策略、成本、仓位和硬约束；
-3. **LLM 研究与探索平面**：解释、反驳、发现问题和输出概率软信号；
-4. **人工执行与学习平面**：用户确认订单，未来结果回填并评估模型。
+QuantLab 把事实、建议、权限和证据拆开，避免一个 LLM Prompt 同时承担所有职责：
 
-最关键的权限原则是：
+1. 数据与证据层决定系统在某个截止时间实际知道什么；
+2. 确定性策略、执行和风控层计算指标、费用、仓位与硬约束；
+3. LLM 与多 Agent 层负责解释、反证、概率和研究草稿；
+4. 用户决定是否确认模拟操作或登记外部成交；
+5. Runtime 和持久化层保存任务、身份、审计、到期结果与恢复过程。
 
-> LLM 可以解释、质疑、否决或让系统更保守，但不能绕过确定性风险规则，也不能擅自放大仓位。
+LLM 不能伪造事实、修改历史快照、放宽硬风控、自动确认订单，或把研究/Demo 结果提升为正式证据。
 
-## 2. 总体架构图
+## 系统分层
 
 ```mermaid
 flowchart TB
-    U["用户：选股票、看推荐、选择模型、手工下单"] --> UI["交互入口：Streamlit / CLI / FastAPI"]
+    U["用户"] --> UI["Streamlit 产品界面"]
+    O["操作员 / 验收 AI"] --> CLI["Typer CLI"]
+    C["受控客户端"] --> API["FastAPI"]
 
-    UI --> WF["工作流编排层"]
+    UI --> WF["应用工作流"]
+    CLI --> WF
+    API --> WF
 
-    WF --> DATA["数据与证据层"]
-    DATA --> P1["westock"]
-    DATA --> P2["AkShare"]
-    DATA --> P3["BaoStock"]
-    DATA --> P4["本地缓存 / SQLite"]
-    DATA --> Q["质量、新鲜度、来源和降级检查"]
+    WF --> DATA["Data / Market / PIT evidence"]
+    WF --> DET["Factors / Strategies / Risk / Execution / Portfolio"]
+    WF --> AI["Agents / LLM governance"]
+    WF --> DB["Persistence / SQLite migrations"]
 
-    WF --> DET["确定性量化层"]
-    DET --> F["因子与市场状态"]
-    DET --> S["ETF / A股 / 可转债策略"]
-    DET --> BT["回测、Walk-forward、Bootstrap"]
-    DET --> R["硬风控与可交易性"]
-    DET --> PF["组合预算与整手订单"]
+    DATA --> DET
+    DATA --> AI
+    DET --> AI
+    AI --> WF
 
-    WF --> AI["LLM 与多 Agent 层"]
-    AI --> ROUTE["GPT / DeepSeek / 本地模型路由"]
-    AI --> COUNCIL["战术委员会与投资大师"]
-    AI --> DEBATE["Bull / Bear 对抗"]
-    AI --> FC["5日 / 20日概率预测"]
-    AI --> REVIEW["Reviewer 审核"]
+    RT["Runtime: API / Worker / Scheduler / Notification Worker"] --> WF
+    RT --> DB
+    DB --> RT
 
-    Q --> GATE["证据与权限闸门"]
-    BT --> GATE
-    R --> GATE
-    PF --> GATE
-    REVIEW --> GATE
-
-    GATE --> OUT["决策卡、研究报告、组合计划、手工清单"]
-    OUT --> DB["SQLite 审计、报告与账户状态"]
+    WF --> OUT["研究、模拟订单、论文、复盘、正式或研究成绩单"]
     OUT --> U
-
-    DB --> LEARN["结果结算、误差归因、模型训练、漂移监控"]
-    LEARN --> AI
-    LEARN --> GATE
+    OUT --> DB
 ```
 
-## 3. 每一层做什么
+### 交互层
 
-### 3.1 交互入口
+- `dashboard/app.py`：Streamlit 入口，以及从专业空间进入的工程审计界面；
+- `dashboard/product_ui.py`：五个一级决策工作区、工具入口和二级路由；
+- `dashboard/ui_foundation.py`：导航、响应式布局与原子页面上下文；
+- `src/quantlab/cli.py`：运维、研究、验收和批处理命令；
+- `src/quantlab/api/`：FastAPI 路由与公共请求/响应 Schema。
 
-系统有三种入口：
+界面只提交用户意图。价格、费用、订单状态、仓位、权限和证据准入仍由服务器侧领域代码决定。
 
-- Streamlit：给普通用户使用的图形前端；
-- Typer CLI：给开发、回测、批处理和验收使用；
-- FastAPI：给未来 Web、插件、Agent Gateway 或其他程序调用。
+### 应用工作流层
 
-三种入口尽量复用同一批工作流，不应该各自实现一套金融逻辑。
+`src/quantlab/workflows/` 编排研究、市场发现、ContextPack、Chat、圆桌、模拟交易、投资论文、
+Reflection、通知、前瞻实验和宽样本研究。工作流决定调用顺序和失败传播，但不能偷偷改变金融规则。
 
-### 3.2 工作流编排层
+耗时或可重试操作应提交到 Job/Worker。同步页面读取不应顺带启动正式实验、补写样本或执行 Scheduler。
 
-工作流层负责把多个步骤串起来，例如：
+### 数据与市场层
 
-- 获取行情；
-- 计算因子；
-- 调用多 Agent；
-- 运行概率预测；
-- 经过 Reviewer；
-- 生成组合计划；
-- 保存数据库和报告。
+- `src/quantlab/data/`：Provider、适配、缓存、质量、来源和 fallback；
+- `src/quantlab/market/`：交易日历、行情语义和执行报价；
+- `src/quantlab/domain/data_governance.py`：数据可信等级和 namespace 约束；
+- 点时池、manifest、selection 和字段时间共同定义一次可审计的数据身份。
 
-主要代码位于 `src/quantlab/workflows/`。
+免费 Provider 没有 SLA。fallback 必须记录实际选择、市场日期、缺失字段和降级原因，不能把不同语义
+的数据静默拼接，也不能用最近成功数据冒充当日成功。
 
-工作流层本身不应偷偷改变金融规则。它负责“按什么顺序调用”，而策略、成本和风险规则由更底层模块决定。
+### 确定性金融层
 
-### 3.3 数据与证据层
+- `src/quantlab/factors/`、`strategies/`：可复算因子和策略候选；
+- `src/quantlab/backtest/`：历史回测、时间切分、费用与统计；
+- `src/quantlab/risk/`：数据、标的、组合和永久损失硬约束；
+- `src/quantlab/execution/`：A 股整手、T+1、涨跌停、费用、滑点和订单规则；
+- `src/quantlab/portfolio/`：预算、集中度、现金、平滑调仓与策略准入。
 
-数据层包含：
+策略输出候选、分数或目标权重，不直接拥有成交权限。历史研究通过也不自动获得正式组合预算。
 
-- westock 适配器；
-- AkShare 行情、财务、行业和新闻接口；
-- BaoStock A 股证券主数据和历史状态；
-- Parquet/本地缓存；
-- SQLite 元数据、研究、模拟盘和审计记录；
-- 数据源 fallback；
-- 新鲜度、完整性和价格语义检查。
+### LLM 与多 Agent 层
 
-#### 为什么有多个数据源
+- `src/quantlab/agents/`：角色、委员会、圆桌、决策政策与结构化 Schema；
+- `src/quantlab/llm/`：Provider、能力路由、调用审计、预算和治理；
+- `PROMPT_GOVERNANCE.md`：结构化输出、敏感信息、降级与拒绝规则。
 
-免费数据源不稳定，可能超时、字段改变或缺少某只证券。系统会按优先级尝试备用源，但不能把不同语义的数据悄悄拼接。
+系统支持可配置的 DeepSeek、OpenAI 官方端点、用户确认的 OpenAI-compatible 端点和 Mock Provider。
+“配置存在”“探针成功”“某次调用成功”和“模型提高投资收益”是四个不同结论。
 
-例如：
+### 持久化层
 
-- 成交必须用原始价格；
-- 技术指标可以用后复权价格；
-- 备用源如果无法提供同样的价格语义，就不能直接补上。
+QuantLab 使用本机 SQLite 作为单机权威状态。`src/quantlab/persistence/migrations.py` 维护有序、带校验
+和的组件迁移；当前组件覆盖决策学习、模拟账户、Chat、通知、证据、策略证据、Job、后续领域扩展和
+宽样本研究。迁移版本号不得从本文推断，应读取代码和目标数据库的 registry。
 
-#### 显式降级
+重要仓储包括：
 
-如果首选数据源失败，系统会记录：
+- 用户模拟账户、订单、成交、持仓、净值与复盘；
+- Chat、动作草稿、确认和会话上下文；
+- Job、事件、attempt、lease、结果与取消；
+- 投资论文、revision、检查、Reflection 与 Decision Run；
+- 数据 manifest、PIT 池、Provider selection 和 readiness；
+- 正式前瞻、影子账户、宽样本研究和相互隔离的成绩单。
 
-- 实际使用了哪个来源；
-- 哪些标的缺失；
-- 数据是否陈旧；
-- 是否允许继续研究；
-- 是否禁止生成订单。
+迁移使用临时副本验证后发布。生产升级前仍需在线备份、checksum、integrity/foreign-key 检查和恢复
+dry-run；不能依赖旧 API 进程隐式升级活跃数据库。
 
-### 3.4 因子与市场状态
+### Runtime 层
 
-因子引擎负责计算确定性数值，例如：
+`src/quantlab/runtime/` 包含单机进程主管、Worker、Scheduler、通知投递、readiness、Soak、备份和
+Windows 自启动支持。稳定部署形态是同一主机上的 API、一个或多个 Worker、Scheduler、通知 Worker
+与本地 SQLite WAL。
 
-- 20/60 日动量；
-- 动量加速度；
-- 路径质量；
-- 量价非对称；
-- 收益偏度；
-- RSI；
-- 均线乖离；
-- 日、周、月趋势共识；
-- 回撤反转条件。
+```mermaid
+flowchart LR
+    S["用户 / API / Scheduler 提交意图"] --> J["Job + source identity"]
+    J --> W["Worker claim + lease + attempt"]
+    W --> C["checkpoint / progress / events"]
+    C --> R{"业务结果"}
+    R -->|成功| P["持久化结果和下游实体"]
+    R -->|失败或阻断| F["failed / blocked / unavailable"]
+    R -->|取消| X["cancelled + audit event"]
+    P --> N["通知 outbox / 后续 schedule"]
+```
 
-市场状态模块将市场粗分为趋势、震荡、风险关闭或高波动等状态，用于调整研究上下文和风险预算。
+Job `completed` 只证明 Worker 正常返回；还要检查 result payload、attempt、来源、指纹、下游实体和
+业务特定的 readiness。Scheduler tick 必须幂等，显式 backfill 不能补造 Primary 正式样本。
 
-这些数字由 Python 计算，不交给 LLM 心算。
+## 核心业务数据流
 
-### 3.5 策略层
-
-策略层目前有：
-
-- ETF 主动轮动；
-- 冻结六 ETF 等权核心；
-- Adaptive ETF V1/V2/V3 研究候选；
-- A 股反转和市场状态策略 V1/V2/V3；
-- 可转债双低。
-
-策略输出候选、分数或目标权重，不直接拥有下单权限。
-
-### 3.6 回测与证据层
-
-回测引擎负责：
-
-- T 日收盘形成信号；
-- T+1 开盘成交；
-- 股票 T+1 可卖规则；
-- 停牌和涨跌停；
-- 100 股整手；
-- 佣金、最低佣金、印花税、过户费和滑点；
-- 连续资金曲线；
-- 基准对照；
-- Walk-forward；
-- 参数敏感性；
-- Bootstrap 统计。
-
-策略验证和预测模型验证是两套不同系统：
-
-- 策略验证看收益、Sharpe、回撤、成本和基准；
-- 预测模型验证看 Brier、Log Loss、校准和前瞻挑战。
-
-一个概率模型更准，不能直接冒充策略收益已通过。
-
-### 3.7 多 Agent 与 LLM 层
-
-这一层负责处理难以仅靠固定公式完成的问题：
-
-- 基本面解释；
-- 新闻风险；
-- 技术与动量证据的语言总结；
-- Buffett、Munger 等长期投资视角；
-- Bull/Bear 相互反驳；
-- 未来 5/20 日概率预测；
-- Reviewer 检查文本和决策是否冲突；
-- 专家圆桌。
-
-LLM 层使用结构化 Schema 输出，不接受一段无法稳定解析的随意文章作为内部数据契约。
-
-### 3.8 风控与组合层
-
-风险层处理：
-
-- 总暴露上限；
-- 单标的上限；
-- 行业集中度；
-- 现金储备；
-- 数据新鲜度；
-- ST、退市、停牌、涨跌停；
-- 质押、解禁、诉讼和监管风险；
-- 财务永久损失风险；
-- 可转债评级、规模和强赎风险。
-
-组合规划器再把目标权重转换成可执行整手，并处理：
-
-- 买不起一手；
-- 最低交易金额；
-- 卖单优先；
-- 退出历史目标；
-- 现金不足；
-- 研究策略零预算。
-
-### 3.9 持久化与审计
-
-SQLite 保存的对象包括：
-
-- 决策与 Agent 报告；
-- LLM 调用审计；
-- 预测和真实结果；
-- 模型版本与挑战状态；
-- 策略验证；
-- 历史盲测；
-- A 股股票池快照；
-- 自选池；
-- 信号和预警；
-- 手工交易账本；
-- 组合计划；
-- ETF/A 股模拟盘；
-- 专家圆桌。
-
-Markdown 和 JSON 报告用于给人阅读和给其他 AI 审查。导出时会递归删除敏感字段，并扫描 Key、Bearer、Secret 等文本。
-
-## 4. 用户自选股票后的完整数据流
+### 市场发现到冻结研究
 
 ```mermaid
 sequenceDiagram
     participant User as 用户
-    participant UI as Streamlit
-    participant Data as 数据层
-    participant Quant as 确定性量化
-    participant Agents as 多Agent
-    participant Gate as 决策与风控
-    participant DB as SQLite/报告
+    participant UI as 产品界面
+    participant Data as 数据/PIT
+    participant Quant as 确定性计算
+    participant AI as Agent/LLM
+    participant Store as SQLite
 
-    User->>UI: 输入股票名称或代码
-    UI->>Data: 搜索证券主数据
-    Data-->>UI: 返回标准代码与名称
-    User->>UI: 加入自选或选择深度会诊
-    UI->>Data: 获取截止日行情、财务、新闻
-    Data-->>UI: 数据、来源、新鲜度、缺失项
-    UI->>Quant: 计算因子、估值、市场状态、交易约束
-    Quant-->>Agents: 只提供当时可见的结构化证据
-    Agents->>Agents: 分析、委员会、Bull/Bear、5/20日预测
-    Agents-->>Gate: 结构化结论、否决、概率和Reviewer意见
-    Quant-->>Gate: 策略分数、硬风险、目标上限
-    Gate-->>UI: 决策卡、证据缺口、人工复核状态
-    Gate->>DB: 保存完整审计包
-    UI-->>User: 展示报告并允许下载
+    User->>UI: 搜索或选择候选
+    UI->>Data: 请求截止日证据与来源
+    Data-->>UI: 数据、市场日、新鲜度、缺失和身份
+    User->>UI: 发起研究
+    UI->>Store: 创建 Job / 研究身份
+    Store->>Data: 构建冻结 ContextPack
+    Data->>Quant: 可复算特征、策略与硬风险
+    Quant->>AI: 仅传入当时可见的结构化证据
+    AI-->>Store: 支持、反对、概率、引用和未解决问题
+    Store-->>UI: run_id 对应的冻结报告
 ```
 
-如果该股票要进入组合，还必须再经过策略准入和组合预算。深度会诊得到“看多”，并不自动获得买入预算。
+研究身份至少需要标的、请求日期、有效数据日和 `run_id`；上下文不匹配时旧报告不能自动复用。
 
-## 5. 系统推荐股票的数据流
-
-系统推荐分成便宜和昂贵两层：
-
-1. **快速发现层，不调用 LLM**
-   - 从股票池或点时市场样本获取行情和财务快照；
-   - 分别按趋势质量、价值质量、成长质量、回撤修复和高股息发现候选；
-   - 统一重排并做相关性去重；
-   - 输出“优先研究候选”。
-
-2. **深度会诊层，调用 LLM**
-   - 只有用户明确选中的最多 5 只股票进入；
-   - 逐只运行财务双源验证、战术委员会、投资大师、Bull/Bear、预测和 Reviewer；
-   - 保存报告和调用审计。
-
-这样可以避免全市场每只股票都调用昂贵 LLM，也避免把快速分数误当成买入建议。
-
-## 6. 从研究到手工订单的数据流
+### 研究到用户确认的模拟订单
 
 ```mermaid
 flowchart LR
-    A["策略候选"] --> B["策略是否已准入"]
-    B -->|否| C["研究 / 影子，订单预算=0"]
-    B -->|是| D["市场状态与策略预算"]
-    D --> E["标的级硬风险"]
-    E -->|触发| F["blocked 或 review_required"]
-    E -->|通过| G["Agent 单向软闸门"]
-    G --> H["总暴露、单标的和现金约束"]
-    H --> I["100股整手与最低金额"]
-    I --> J["数据新鲜度最终检查"]
-    J -->|陈旧| F
-    J -->|新鲜| K["actionable 手工下单清单"]
+    A["用户选择账户、标的、方向和数量"] --> B["服务器获取可操作行情"]
+    B --> C["确定性交易前检查"]
+    C -->|缺失 / 陈旧 / 违规| D["blocked / unavailable"]
+    C -->|通过| E["费用、现金、仓位、风险与证据预览"]
+    E --> F["用户明确确认"]
+    F --> G["pending / partial / filled / rejected / expired"]
+    G --> H["成交、持仓、净值、论文与复盘"]
 ```
 
-Agent 单向软闸门意味着：
+任何账户、标的、方向、数量、行情或研究身份变化都会使旧检查失效。AI 只能生成草稿，不能代替用户
+确认；已成交订单不能被前端伪装为撤销。
 
-- Agent 可以把买入变成观望、减仓或复核；
-- Agent 可以限制策略目标上限；
-- Agent 不能把未准入策略变成可执行；
-- Agent 不能突破总暴露和单标的上限。
+### 正式数据与自然前瞻
 
-## 7. 学习闭环数据流
-
-```mermaid
-flowchart TD
-    A["预测日 T：冻结特征和原始概率"] --> B["保存 5/20 日预测"]
-    B --> C["等待对应交易日到期"]
-    C --> D["读取真实未来收益"]
-    D --> E["计算类别、Brier、Log Loss和命中率"]
-    D --> F["收集期间新闻、财报、监管事件"]
-    E --> G["生成误差诊断"]
-    F --> G
-    G --> H["加入按资产域隔离的学习样本"]
-    H --> I["时间滚动训练候选模型"]
-    I --> J["与类别基线和现役冠军比较"]
-    J -->|证据不足| K["rejected / challenge_pending"]
-    J -->|前瞻挑战通过| L["promoted"]
-    L --> M["小权重概率集成，仍不能越过风控"]
-    M --> N["线上漂移监控"]
-    N -->|恶化| O["自动停用并保留审计"]
+```text
+server-controlled source
+  -> Provider selection + trusted manifest
+  -> production calendar / industry / exact-day PIT pool
+  -> readiness（质量指纹、字段、时间、进程、LLM 等）
+  -> 真实交易日的自然 Scheduler provenance
+  -> frozen primary cohort / variants / isolated shadow accounts
+  -> 5/20 交易日自然到期
+  -> 含成本成绩单、基准、区间和消融
 ```
 
-这个闭环不是让大模型自己修改代码，而是训练一个透明的概率模型，并严格控制它何时能影响系统。
+恢复链可以留下有效的恢复证据，但不能改写为首次自然窗口成功。`available_at` 晚于 cutoff 的字段不能
+进入该快照，后续补齐的数据也不能回填原样本。
 
-## 8. 策略准入状态流
+## 身份与账户隔离
 
-```mermaid
-stateDiagram-v2
-    [*] --> Research: 设计并预注册
-    Research --> DevelopmentFailed: 开发门槛失败
-    Research --> ValidationLocked: 开发门槛通过
-    ValidationLocked --> ValidationFailed: 冻结验证失败
-    ValidationLocked --> HoldoutLocked: 冻结验证通过
-    HoldoutLocked --> ShadowOnly: 锁定留出通过
-    ShadowOnly --> ProductionCandidate: 足量前瞻样本通过
-    ProductionCandidate --> Production: 风险和组合政策批准
+| 空间 | 用途 | 是否可进入正式成绩 |
+|---|---|---|
+| 用户模拟账户 | 用户自由买卖和产品体验 | 否 |
+| Historical Demo | 冻结数据上的隔离演示 | 否，固定 `research_only/test_only` |
+| 系统影子账户 | 冻结变体的自然前瞻执行 | 仅进入绑定协议的影子成绩 |
+| 外部真实组合 | 用户手工/CSV 维护的只读账本 | 否，不冒充券商连接 |
+| Primary 正式前瞻 | 预注册协议的自然样本 | 满足全部 provenance 与 PIT 门槛后才可 |
+| 宽样本研究 | 独立协议的横截面研究 | 与 Primary、用户模拟和训练隔离 |
 
-    DevelopmentFailed --> [*]
-    ValidationFailed --> [*]
-```
+产品使用事件、用户采纳、Demo、恢复测试和人工导入不得污染正式训练或 forward scorecard。
 
-历史测试通过通常也只允许进入影子账户，不自动等于真钱生产。
+## 配置与安全
 
-## 9. 配置如何控制系统
+- `config/default.toml` 保存无密钥默认配置；本机覆盖和 `.env` 保存用户选择与秘密；
+- API Key 不得进入 TOML、数据库业务 payload、报告、截图或命令行参数；
+- 自定义兼容端点必须由用户明确配置，不能把官方 Key 静默发送到第三方；
+- API 若未配置令牌，只应绑定回环地址；公网、多租户和券商自动交易不在当前范围；
+- 导出和日志需要脱敏，但脱敏报告不等于可以公开再分发第三方数据。
 
-主要配置在 `config/default.toml`，包括：
+## 阅读代码的最短路径
 
-- 初始资金：100,000 元；
-- 总暴露上限：80%；
-- 单标的上限：15%；
-- 行业上限：30%；
-- 现金储备：20%；
-- 默认四分之一凯利；
-- 最大组合回撤限制：15%；
-- 股票和 ETF 各自的费用与滑点；
-- Walk-forward 训练/测试长度；
-- LLM Provider、角色模型和推理强度；
-- ETF、A 股和可转债策略参数。
+1. `dashboard/ui_foundation.py` 和 `dashboard/product_ui.py`：产品导航与用户流程；
+2. `src/quantlab/workflows/product.py`、`research_identity.py`、`simulator.py`：产品编排；
+3. `src/quantlab/domain/`：Context、Job、研究、论文和交易对象；
+4. `src/quantlab/runtime/`：Scheduler、Worker、readiness 与运行主管；
+5. `src/quantlab/persistence/migrations.py` 及相关仓储：Schema 与事务边界；
+6. `src/quantlab/agents/`、`src/quantlab/llm/`：模型权限与路由；
+7. `src/quantlab/api/app.py`、`src/quantlab/cli.py`：外部入口；
+8. 对应 `tests/`：正常路径、失败路径和信任边界。
 
-配置是默认值，不代表所有策略都拥有使用这些上限的资格。证据门槛可以把实际预算降为 0。
-
-## 10. 架构边界
-
-当前架构仍有这些平台级缺口：
-
-- 长任务多为同步执行，尚未统一成后台 job + 进度 + 取消；
-- 免费数据源没有服务等级保证；
-- 行业资金流、北向、宏观数据仍不完整；
-- 没有操作系统级通用任务平台，只有脚本和安装计划任务入口；
-- 没有自动盯市真实持仓；
-- 没有通知中心和受限工具型自由 Chat；
-- 没有券商连接，这是当前有意保留的产品边界。
+第一版决策形成过程保留在根目录 `ARCHITECTURE.md`；Round 演进保留在 `docs/BACKEND_ROUND*.md`。
+它们用于追溯，不覆盖本文和当前实现。

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from datetime import date
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from rich.console import Console
 from rich.table import Table
 
 from quantlab.config import Settings
+from quantlab.domain import ResearchProvenance
 from quantlab.data import WestockProvider
 from quantlab.demo import run_demo
 from quantlab.learning import LearningRepository
@@ -28,6 +30,18 @@ from quantlab.reporting import (
     research_persistence_context,
 )
 from quantlab.stock_reporting import render_stock_ranking_replay_markdown
+from quantlab.runtime.operations import (
+    backup_database,
+    restore_database,
+    restore_database_dry_run,
+    verify_database_backup,
+)
+from quantlab.runtime.autostart import RuntimeAutostartManager
+from quantlab.persistence.migrations import initialize_or_upgrade_database
+from quantlab.runtime.scheduler import RuntimeScheduler
+from quantlab.runtime.service import RuntimeServiceController, run_runtime_component
+from quantlab.runtime.soak import capture_soak_observation, soak_report
+from quantlab.runtime.worker import JobWorker
 from quantlab.workflows import (
     STOCK_DISCOVERY_STYLES,
     ADAPTIVE_ETF_CANDIDATES,
@@ -167,7 +181,12 @@ def demo(config: Path | None = None, save: bool = True):
     console.print_json(data=run.decision.model_dump(mode="json"))
     if save:
         repository = DecisionRepository(settings.resolve(settings.get("system.database_path")))
-        repository.save(run)
+        repository.save(
+            run,
+            provenance=ResearchProvenance(
+                origin="demo_research", evidence_stage="demo"
+            ),
+        )
         console.print(f"Saved run {run.run_id}")
 
 
@@ -254,7 +273,14 @@ def etf_backtest(
     if run:
         console.print_json(data=run.decision.model_dump(mode="json"))
         if save:
-            DecisionRepository(settings.resolve(settings.get("system.database_path"))).save(run)
+            DecisionRepository(settings.resolve(settings.get("system.database_path"))).save(
+                run,
+                provenance=ResearchProvenance(
+                    origin="historical_research",
+                    requested_as_of=end or date.today(),
+                    evidence_stage="historical_replay",
+                ),
+            )
 
 
 @app.command("etf-walk-forward")
@@ -897,7 +923,15 @@ def analyze_symbol_command(
     console.print_json(data=run.decision.model_dump(mode="json"))
     if save:
         repository = DecisionRepository(settings.resolve(settings.get("system.database_path")))
-        repository.save(run, research_persistence_context(output))
+        repository.save(
+            run,
+            research_persistence_context(output),
+            provenance=ResearchProvenance(
+                origin="user_interactive_research",
+                requested_as_of=as_of or date.today(),
+                evidence_stage="research_only",
+            ),
+        )
         console.print(f"Saved run {run.run_id}")
 
 
@@ -1327,6 +1361,218 @@ def learning_cycle(as_of: str | None = None, config: Path | None = None):
     settings = Settings.load(config)
     console.print_json(
         data=run_learning_cycle(settings, date.fromisoformat(as_of) if as_of else None)
+    )
+
+
+@app.command("worker")
+def worker_command(
+    worker_id: str = "quantlab-worker-1",
+    once: bool = False,
+    maximum_jobs: int = 100,
+    poll_seconds: float = 1.0,
+    config: Path | None = None,
+):
+    """Run the durable background worker with heartbeat, retry and crash recovery."""
+    settings = Settings.load(config)
+    worker = JobWorker(settings, worker_id=worker_id)
+    if once:
+        console.print_json(data={"jobs": worker.run_until_empty(maximum_jobs)})
+        return
+    console.print(f"QuantLab worker {worker_id} started; Ctrl+C to stop.")
+    try:
+        while True:
+            result = worker.run_once()
+            if result is not None:
+                console.print_json(
+                    data={
+                        "job_id": result["job_id"],
+                        "job_type": result["job_type"],
+                        "status": result["status"],
+                    }
+                )
+            else:
+                time.sleep(max(0.1, min(30.0, poll_seconds)))
+    except KeyboardInterrupt:
+        console.print("Worker stopped.")
+
+
+@app.command("scheduler-run")
+def scheduler_run_command(
+    run_date: str | None = None,
+    backfill: bool = False,
+    config: Path | None = None,
+):
+    """Submit the idempotent daily dependency graph."""
+    settings = Settings.load(config)
+    scheduler = RuntimeScheduler(settings)
+    resolved_date = date.fromisoformat(run_date) if run_date else None
+    output = (
+        scheduler.backfill(resolved_date)
+        if backfill and resolved_date
+        else scheduler.tick(run_date=resolved_date)
+    )
+    console.print_json(data=output)
+
+
+@app.command("runtime-component", hidden=True)
+def runtime_component_command(
+    component: str,
+    config: Path | None = None,
+):
+    """Run one managed API/Worker/Scheduler/notification component."""
+    console.print_json(
+        data=run_runtime_component(Settings.load(config), component)
+    )
+
+
+@app.command("runtime-start")
+def runtime_start_command(config: Path | None = None):
+    """Start the four duplicate-safe local Windows runtime processes."""
+    settings = Settings.load(config)
+    console.print_json(
+        data=RuntimeServiceController(settings, config_path=config).start()
+    )
+
+
+@app.command("runtime-stop")
+def runtime_stop_command(
+    grace_seconds: float = 15.0,
+    config: Path | None = None,
+):
+    """Request cooperative shutdown, then signal processes that exceed the grace period."""
+    settings = Settings.load(config)
+    console.print_json(
+        data=RuntimeServiceController(settings, config_path=config).stop(
+            grace_seconds=grace_seconds
+        )
+    )
+
+
+@app.command("runtime-status")
+def runtime_status_command(config: Path | None = None):
+    """Report database, data, process, schedule, notification, backup and experiment health."""
+    settings = Settings.load(config)
+    console.print_json(
+        data=RuntimeServiceController(settings, config_path=config).status()
+    )
+
+
+@app.command("runtime-autostart-install")
+def runtime_autostart_install_command(config: Path | None = None):
+    """Explicitly install the per-user Windows Task Scheduler startup entry."""
+    settings = Settings.load(config)
+    console.print_json(
+        data=RuntimeAutostartManager(settings, config_path=config).install()
+    )
+
+
+@app.command("runtime-autostart-status")
+def runtime_autostart_status_command(config: Path | None = None):
+    """Query the Windows Task Scheduler startup entry without changing it."""
+    settings = Settings.load(config)
+    console.print_json(
+        data=RuntimeAutostartManager(settings, config_path=config).status()
+    )
+
+
+@app.command("runtime-autostart-disable")
+def runtime_autostart_disable_command(config: Path | None = None):
+    """Disable the Windows Task Scheduler startup entry."""
+    settings = Settings.load(config)
+    console.print_json(
+        data=RuntimeAutostartManager(settings, config_path=config).disable()
+    )
+
+
+@app.command("runtime-autostart-remove")
+def runtime_autostart_remove_command(config: Path | None = None):
+    """Remove the Windows Task Scheduler startup entry and generated launcher."""
+    settings = Settings.load(config)
+    console.print_json(
+        data=RuntimeAutostartManager(settings, config_path=config).remove()
+    )
+
+
+@app.command("runtime-soak-observe")
+def runtime_soak_observe_command(config: Path | None = None):
+    """Persist one bounded continuous-runtime observation."""
+    console.print_json(data=capture_soak_observation(Settings.load(config), source="cli"))
+
+
+@app.command("runtime-soak-report")
+def runtime_soak_report_command(config: Path | None = None):
+    """Report only the actual stored continuous-runtime observation interval."""
+    console.print_json(data=soak_report(Settings.load(config)))
+
+
+@app.command("database-backup")
+def database_backup_command(
+    label: str = "manual",
+    config: Path | None = None,
+):
+    """Create an integrity-checkable SQLite online backup."""
+    console.print_json(data=backup_database(Settings.load(config), label=label))
+
+
+@app.command("database-migrate")
+def database_migrate_command(config: Path | None = None):
+    """Initialize a new database or apply registered component upgrades in order."""
+    settings = Settings.load(config)
+    console.print_json(
+        data=initialize_or_upgrade_database(
+            settings.resolve(settings.get("system.database_path"))
+        )
+    )
+
+
+@app.command("database-backup-verify")
+def database_backup_verify_command(
+    backup_path: Path,
+    expected_sha256: str | None = None,
+    config: Path | None = None,
+):
+    """Verify checksum and SQLite integrity without modifying any database."""
+    console.print_json(
+        data=verify_database_backup(
+            Settings.load(config),
+            backup_path=backup_path,
+            expected_sha256=expected_sha256,
+        )
+    )
+
+
+@app.command("database-restore-dry-run")
+def database_restore_dry_run_command(
+    backup_path: Path,
+    expected_sha256: str | None = None,
+    config: Path | None = None,
+):
+    """Validate restore and migrations against a disposable database copy."""
+    console.print_json(
+        data=restore_database_dry_run(
+            Settings.load(config),
+            backup_path=backup_path,
+            expected_sha256=expected_sha256,
+        )
+    )
+
+
+@app.command("database-restore")
+def database_restore_command(
+    backup_path: Path,
+    expected_sha256: str,
+    confirm: bool = False,
+    config: Path | None = None,
+):
+    """Restore a verified backup while Workers are stopped in maintenance mode."""
+    console.print_json(
+        data=restore_database(
+            Settings.load(config),
+            backup_path=backup_path,
+            expected_sha256=expected_sha256,
+            confirm=confirm,
+            maintenance_mode=True,
+        )
     )
 
 

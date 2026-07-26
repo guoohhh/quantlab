@@ -14,6 +14,7 @@ from quantlab.data import AkShareProvider, CachedProvider, FallbackProvider, Wes
 from quantlab.data.westock_data import WestockDataProvider
 from quantlab.data.westock_tool import WestockToolProvider
 from quantlab.domain.models import Bar
+from quantlab.domain import ResearchProvenance
 from quantlab.factors import MomentumFactorEngine
 from quantlab.learning.cross_section import cross_sectional_features
 from quantlab.learning.features import factor_report_features
@@ -400,6 +401,11 @@ def run_stock_research_batch(
                 repository.save(
                     research["decision_run"],
                     research_persistence_context(research),
+                    provenance=ResearchProvenance(
+                        origin="user_interactive_research",
+                        requested_as_of=requested_as_of,
+                        evidence_stage="research_only",
+                    ),
                 )
             analyses.append(package)
             compact.append(

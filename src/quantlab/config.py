@@ -34,6 +34,13 @@ class Settings:
         if path:
             with Path(path).open("rb") as fh:
                 values = _merge(values, tomllib.load(fh))
+        system = values.setdefault("system", {})
+        system["database_path"] = os.getenv(
+            "QUANTLAB_DATABASE_PATH", system.get("database_path", "data/quantlab.db")
+        )
+        system["data_dir"] = os.getenv(
+            "QUANTLAB_DATA_DIR", system.get("data_dir", "data")
+        )
         llm = values.setdefault("llm", {})
         llm["provider"] = os.getenv("QUANTLAB_LLM_PROVIDER", llm.get("provider", "mock"))
         llm["model"] = os.getenv("QUANTLAB_LLM_MODEL", llm.get("model", ""))
@@ -61,6 +68,11 @@ class Settings:
         )
         llm["deepseek_enabled"] = _env_bool(
             "QUANTLAB_DEEPSEEK_ENABLED", bool(llm.get("deepseek_enabled", True))
+        )
+        runtime = values.setdefault("runtime", {})
+        runtime["trusted_data_auto_refresh_enabled"] = _env_bool(
+            "QUANTLAB_TRUSTED_DATA_AUTO_REFRESH",
+            bool(runtime.get("trusted_data_auto_refresh_enabled", True)),
         )
         return cls(values=values, root=root)
 

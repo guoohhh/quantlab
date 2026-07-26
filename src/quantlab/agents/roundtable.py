@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
 import uuid
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any, Literal
@@ -11,6 +13,9 @@ from pydantic import BaseModel, Field
 
 from quantlab.llm.providers import LLMProvider
 from quantlab.security import sanitize_for_export
+
+
+RoundtableProgressCallback = Callable[[dict[str, Any]], Awaitable[None] | None]
 
 
 @dataclass(frozen=True)
@@ -191,6 +196,8 @@ class ExpertRoundtable:
         participants: list[str],
         topic: str,
         rounds: int,
+        session_id: str | None = None,
+        progress_callback: RoundtableProgressCallback | None = None,
     ) -> RoundtableResult:
         participant_keys = normalize_roundtable_participants(participants)
         if not 1 <= rounds <= 3:
@@ -205,11 +212,33 @@ class ExpertRoundtable:
         turns: list[RoundtableTurn] = []
         audit_log: list[dict[str, Any]] = []
         degraded = False
+        total_turns = len(participant_keys) * rounds
+        completed_turns = 0
+
+        await self._notify(
+            progress_callback,
+            {
+                "kind": "started",
+                "progress": 0.05,
+                "message": "正在校验冻结报告并邀请专家入席",
+                "participants": participant_keys,
+                "rounds": rounds,
+            },
+        )
 
         for round_number in range(1, rounds + 1):
             prior_turns = [turn.model_dump(mode="json") for turn in turns]
-            results = await asyncio.gather(
-                *[
+            await self._notify(
+                progress_callback,
+                {
+                    "kind": "round_started",
+                    "round": round_number,
+                    "progress": min(0.86, 0.05 + 0.80 * completed_turns / total_turns),
+                    "message": f"第 {round_number} 轮讨论开始，专家正在阅读彼此的观点",
+                },
+            )
+            tasks = [
+                asyncio.create_task(
                     self._participant_turn(
                         ROUNDTABLE_PARTICIPANTS[key],
                         round_number,
@@ -217,39 +246,62 @@ class ExpertRoundtable:
                         source_snapshot,
                         prior_turns,
                     )
-                    for key in participant_keys
-                ]
-            )
-            for turn, status, error_type in results:
+                )
+                for key in participant_keys
+            ]
+            for task in asyncio.as_completed(tasks):
+                turn, status, error_type = await task
                 turns.append(turn)
                 degraded = degraded or status != "ok"
-                audit_log.append(
+                completed_turns += 1
+                event = {
+                    "timestamp": datetime.now(UTC).isoformat(),
+                    "step": "roundtable_turn",
+                    "round": round_number,
+                    "participant": turn.participant,
+                    "status": status,
+                    "error_type": error_type,
+                }
+                audit_log.append(event)
+                await self._notify(
+                    progress_callback,
                     {
-                        "timestamp": datetime.now(UTC).isoformat(),
-                        "step": "roundtable_turn",
+                        "kind": "turn_completed",
                         "round": round_number,
                         "participant": turn.participant,
-                        "status": status,
-                        "error_type": error_type,
-                    }
+                        "turn": turn.model_dump(mode="json"),
+                        "audit_event": event,
+                        "progress": min(
+                            0.90,
+                            0.05 + 0.80 * completed_turns / total_turns,
+                        ),
+                        "message": f"{turn.participant_label} 已完成第 {round_number} 轮发言",
+                    },
                 )
 
+        await self._notify(
+            progress_callback,
+            {
+                "kind": "synthesis_started",
+                "progress": 0.92,
+                "message": "主持人正在整理共识、分歧与待验证证据",
+            },
+        )
         synthesis, synthesis_status, synthesis_error = await self._moderate(
             topic,
             source_snapshot,
             turns,
         )
         degraded = degraded or synthesis_status != "ok"
-        audit_log.append(
-            {
-                "timestamp": datetime.now(UTC).isoformat(),
-                "step": "roundtable_synthesis",
-                "status": synthesis_status,
-                "error_type": synthesis_error,
-            }
-        )
-        return RoundtableResult(
-            session_id=uuid.uuid4().hex,
+        synthesis_event = {
+            "timestamp": datetime.now(UTC).isoformat(),
+            "step": "roundtable_synthesis",
+            "status": synthesis_status,
+            "error_type": synthesis_error,
+        }
+        audit_log.append(synthesis_event)
+        result = RoundtableResult(
+            session_id=session_id or uuid.uuid4().hex,
             source_run_id=source_run_id,
             symbol=str(source_record.get("symbol") or "unknown"),
             as_of=str(source_record.get("as_of") or "unknown"),
@@ -266,6 +318,36 @@ class ExpertRoundtable:
             audit_log=audit_log,
             llm_audit=_llm_audit_snapshot(self.llm),
         )
+        await self._notify(
+            progress_callback,
+            {
+                "kind": "completed",
+                "progress": 1.0,
+                "message": "圆桌讨论已完成",
+                "synthesis": result.synthesis.model_dump(mode="json"),
+                "audit_event": synthesis_event,
+            },
+        )
+        return result
+
+    @staticmethod
+    async def _notify(
+        callback: RoundtableProgressCallback | None,
+        event: dict[str, Any],
+    ) -> None:
+        """Report presentation progress without letting it change the research run."""
+
+        if callback is None:
+            return
+        try:
+            result = callback(event)
+            if inspect.isawaitable(result):
+                await result
+        except Exception:
+            # Progress is a user-experience concern.  A display/persistence
+            # outage must not make the frozen research computation silently
+            # produce a different conclusion.
+            return
 
     async def _participant_turn(
         self,

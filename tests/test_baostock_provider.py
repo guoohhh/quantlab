@@ -49,6 +49,47 @@ class FakeBaoStock:
             ],
         )
 
+    def query_trade_dates(self, start_date, end_date):
+        assert start_date == "2024-04-24"
+        assert end_date == "2024-04-26"
+        return FakeResult(
+            ["calendar_date", "is_trading_day"],
+            [
+                ["2024-04-24", "1"],
+                ["2024-04-25", "1"],
+                ["2024-04-26", "0"],
+            ],
+        )
+
+    def query_stock_basic(self):
+        return FakeResult(
+            ["code", "code_name", "ipoDate", "outDate", "type", "status"],
+            [
+                ["sh.600000", "浦发银行", "1999-11-10", "", "1", "1"],
+                ["sz.300750", "宁德时代", "2018-06-11", "", "1", "1"],
+                ["sh.000001", "上证指数", "", "", "2", "1"],
+            ],
+        )
+
+    def query_stock_industry(self):
+        return FakeResult(
+            [
+                "code",
+                "code_name",
+                "industry",
+                "industryClassification",
+                "updateDate",
+            ],
+            [
+                ["sh.600000", "浦发银行", "银行", "申万一级", "2024-01-02"],
+                ["sh.600000", "浦发银行", "金融", "旧分类", "2023-01-02"],
+                ["sz.300114", "中航电测", "软件服务", "", "2024-02-01"],
+                ["sh.000001", "上证指数", "指数", "申万一级", "2024-01-02"],
+                ["sh.688001", "华兴源创", "", "申万一级", "2024-01-02"],
+                ["sz.300750", "宁德时代", "电池", "申万一级", "2025-01-02"],
+            ],
+        )
+
     def query_history_k_data_plus(self, code, fields, start_date, end_date, frequency, adjustflag):
         assert code == "sz.000005"
         assert frequency == "d"
@@ -124,6 +165,55 @@ def test_baostock_point_in_time_universe_filters_non_a_share_codes():
     assert output[1].trade_status is False
     assert output[-1].board == "chinext"
     assert client.logout_calls == 1
+
+
+def test_baostock_explicit_calendar_and_security_master():
+    client = FakeBaoStock()
+    provider = BaoStockProvider(client)
+
+    calendar = provider.trading_calendar(date(2024, 4, 24), date(2024, 4, 26))
+    master = provider.security_master_records()
+
+    assert calendar[-1] == {"trade_date": "2024-04-26", "is_open": False}
+    assert [item["symbol"] for item in master] == ["sh600000", "sz300750"]
+    assert master[0]["listing_date"] == "1999-11-10"
+    assert master[0]["delisting_date"] is None
+    assert client.logout_calls == 2
+
+
+def test_baostock_industry_membership_is_point_in_time_and_keeps_latest_record():
+    client = FakeBaoStock()
+    provider = BaoStockProvider(client)
+
+    records = provider.industry_records(as_of=date(2024, 12, 31))
+
+    assert records == [
+        {
+            "symbol": "sh600000",
+            "name": "浦发银行",
+            "industry": "银行",
+            "classification": "申万一级",
+            "effective_date": "2024-01-02",
+            "source_symbol": "sh600000",
+        },
+        {
+            "symbol": "sz302132",
+            "name": "中航电测",
+            "industry": "软件服务",
+            "classification": "unknown",
+            "effective_date": "2024-02-01",
+            "source_symbol": "sz300114",
+        },
+    ]
+    assert provider.instruments() == []
+    assert client.logout_calls == 1
+
+
+def test_baostock_calendar_rejects_reversed_range():
+    with pytest.raises(ValueError, match="start date"):
+        BaoStockProvider(FakeBaoStock()).trading_calendar(
+            date(2024, 4, 26), date(2024, 4, 24)
+        )
 
 
 def test_baostock_history_preserves_raw_adjusted_st_and_suspension_state():

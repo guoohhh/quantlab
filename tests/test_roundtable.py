@@ -28,7 +28,7 @@ def _seed_research_run(settings, run_id: str = "a" * 32) -> str:
             "price_history": {"evidence_id": "price_history", "bars": 252},
             "fundamentals": {"roe": 0.28, "free_cash_flow": 100.0},
             "news": [{"title": "sample disclosed event", "source": "fixture"}],
-            "api_key": "sk-this-must-never-reach-the-roundtable",
+            "api_key": "TEST_SECRET_MUST_NOT_REACH_THE_ROUNDTABLE",
             "data_quality": 1.0,
             "degraded_sources": [],
         },

@@ -25,6 +25,8 @@ class PaperTradingRepository:
             db.executescript("""
                 CREATE TABLE IF NOT EXISTS paper_accounts (
                     account_id TEXT PRIMARY KEY,
+                    account_type TEXT NOT NULL DEFAULT 'system_shadow',
+                    evidence_eligible INTEGER NOT NULL DEFAULT 1,
                     label TEXT NOT NULL,
                     policy TEXT NOT NULL,
                     initial_capital REAL NOT NULL,
@@ -89,6 +91,29 @@ class PaperTradingRepository:
                 CREATE INDEX IF NOT EXISTS idx_paper_trades_account
                   ON paper_trades(account_id,trade_date,id);
             """)
+            self._ensure_column(
+                db,
+                "paper_accounts",
+                "account_type",
+                "TEXT NOT NULL DEFAULT 'system_shadow'",
+            )
+            self._ensure_column(
+                db,
+                "paper_accounts",
+                "evidence_eligible",
+                "INTEGER NOT NULL DEFAULT 1",
+            )
+
+    @staticmethod
+    def _ensure_column(
+        db: sqlite3.Connection,
+        table: str,
+        column: str,
+        declaration: str,
+    ) -> None:
+        columns = {row["name"] for row in db.execute(f"PRAGMA table_info({table})")}
+        if column not in columns:
+            db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {declaration}")
 
     def ensure_account(
         self,
@@ -100,9 +125,12 @@ class PaperTradingRepository:
         with self.connect() as db:
             db.execute(
                 """
-                INSERT INTO paper_accounts(account_id,label,policy,initial_capital)
-                VALUES(?,?,?,?)
+                INSERT INTO paper_accounts(
+                    account_id,account_type,evidence_eligible,label,policy,initial_capital
+                )
+                VALUES(?,'system_shadow',1,?,?,?)
                 ON CONFLICT(account_id) DO UPDATE SET
+                    account_type='system_shadow',evidence_eligible=1,
                     label=excluded.label,policy=excluded.policy,updated_at=CURRENT_TIMESTAMP
                 """,
                 (account_id, label, policy, initial_capital),
@@ -115,7 +143,14 @@ class PaperTradingRepository:
     def accounts(self) -> list[dict[str, Any]]:
         with self.connect() as db:
             rows = db.execute("SELECT * FROM paper_accounts ORDER BY account_id").fetchall()
-        return [dict(row) for row in rows]
+        return [
+            {
+                **dict(row),
+                "account_type": "system_shadow",
+                "evidence_eligible": True,
+            }
+            for row in rows
+        ]
 
     def queue_order(
         self,

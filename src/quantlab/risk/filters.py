@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from typing import Any
 
 from quantlab.domain.models import AssetType
@@ -35,7 +35,12 @@ def assess_instrument_risk(
         if market_data_as_of is None:
             vetoes.append("market data date is unavailable for a tradeable signal")
         else:
-            age = _business_day_age(market_data_as_of, as_of)
+            supplied_age = meta.get("market_data_business_day_age")
+            age = (
+                max(0, int(supplied_age))
+                if supplied_age is not None
+                else _business_day_age(market_data_as_of, as_of)
+            )
             checks.append(
                 f"market_data_as_of={market_data_as_of.isoformat()},business_day_age={age}"
             )
@@ -208,21 +213,9 @@ def _date(value: Any) -> date | None:
 
 
 def _business_day_age(observed: date, as_of: date) -> int:
-    """Count weekdays after the observation through the requested decision date.
+    """Conservative non-formal fallback; formal flows inject exchange-calendar age."""
 
-    This is intentionally conservative when a full exchange calendar is unavailable: a
-    false-positive block around a long holiday is safer than issuing an order on stale data.
-    """
-
-    if observed >= as_of:
-        return 0
-    current = observed + timedelta(days=1)
-    age = 0
-    while current <= as_of:
-        if current.weekday() < 5:
-            age += 1
-        current += timedelta(days=1)
-    return age
+    return max(0, (as_of - observed).days)
 
 
 def _rating(value: Any) -> str | None:

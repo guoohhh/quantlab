@@ -52,6 +52,10 @@ def test_probability_ablation_compares_only_matured_live_forecasts(tmp_path):
                     "statistical": statistical,
                 }
             },
+            origin="system_production_research",
+            evidence_stage="registered_forward",
+            settlement_eligible=True,
+            training_eligible=True,
         )
 
     result = evaluate_probability_ablation(settings, "etf", 5)[0]

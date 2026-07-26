@@ -66,10 +66,11 @@ def test_mock_multi_agent_run_is_structured():
         "risk",
         "macro",
     }
-    assert any(item.startswith("conflict=") for item in run.decision.reasons)
-    assert any(item.startswith("abs_composite=") for item in run.decision.reasons)
-    assert any(item.startswith("high_conflict_review_triggered=") for item in run.decision.reasons)
-    assert any("review_required_when_high_conflict" in item for item in run.decision.reasons)
+    assert run.decision.trigger_codes
+    assert all(item.startswith("trigger:") for item in run.decision.reasons)
+    assert not any("review_required_when_high_conflict" in item for item in run.decision.reasons)
+    assert run.reports["reviewer"].policy_action == run.decision.action
+    assert run.reports["reviewer"].policy_trigger_codes == run.decision.trigger_codes
     assert run.decision_trace["high_conflict_review_triggered"] == (
         run.decision_trace["conflict"] > 0.8 and abs(run.decision_trace["composite_score"]) < 0.12
     )

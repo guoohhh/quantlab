@@ -178,6 +178,53 @@ class MockLLMProvider(LLMProvider):
                 "research_only": True,
                 "formal_decision_changed": False,
             },
+            "CommitteeRoleOpinion": {
+                "role": "unassigned",
+                "stance": "neutral",
+                "confidence": 0.2,
+                "importance": 0.5,
+                "summary": common,
+                "evidence_refs": [],
+                "counter_evidence_refs": [],
+                "contradictions": [],
+                "invalidation_conditions": [],
+                "suggested_weight": 0.0,
+                "missing_data": ["live LLM analysis"],
+            },
+            "CommitteeDecision": {
+                "action": "review_required",
+                "confidence": 0.2,
+                "suggested_weight_min": 0.0,
+                "suggested_weight_max": 0.0,
+                "deterministic_max_weight": 0.0,
+                "bull_scenario": [],
+                "bear_scenario": [],
+                "evidence_refs": [],
+                "counter_evidence_refs": [],
+                "contradictions": [],
+                "invalidation_conditions": [],
+                "missing_data": ["live LLM analysis"],
+                "requires_user_review": True,
+                "context_id": "mock",
+                "context_version": "2.0",
+                "context_fingerprint": "mock",
+                "role_audit": [],
+                "degraded_roles": [],
+            },
+            "ChatEvidenceAnswer": {
+                "answer": common,
+                "facts": [],
+                "quantitative_results": [],
+                "llm_judgments": ["mock LLM is active"],
+                "user_assumptions": [],
+                "evidence_refs": [],
+                "missing_data": ["live LLM analysis"],
+                "suggested_action": "review_required",
+                "suggested_weight_min": 0.0,
+                "suggested_weight_max": 0.0,
+                "invalidation_conditions": [],
+                "requires_user_review": True,
+            },
         }
         if schema.__name__ not in fixtures:
             raise ValueError(f"mock fixture not defined for {schema.__name__}")
@@ -494,6 +541,7 @@ class ResilientLLMProvider(LLMProvider):
                 for item in self.call_log
                 if item["status"] == "ok"
             ),
+            "recent_call_log": list(self.call_log),
         }
 
     def _ordered_candidates(self, routing_key: str):
@@ -605,7 +653,15 @@ def build_provider(settings: dict[str, Any]) -> LLMProvider:
         ]
         return _maybe_router(endpoints, settings)
     if provider in {"openai_compatible", "local", "ollama", "vllm"}:
-        key = os.getenv("QUANTLAB_LOCAL_API_KEY") or os.getenv("QUANTLAB_LLM_API_KEY") or "EMPTY"
+        # A user-selected OpenAI-compatible endpoint must not silently borrow
+        # a secret configured for a separate local runtime.  Local runtimes
+        # retain their existing precedence; the explicit compatible provider
+        # uses only its own local setting.
+        key = (
+            os.getenv("QUANTLAB_LLM_API_KEY")
+            if provider == "openai_compatible"
+            else os.getenv("QUANTLAB_LOCAL_API_KEY") or os.getenv("QUANTLAB_LLM_API_KEY")
+        ) or "EMPTY"
         base_url = str(settings.get("base_url") or settings.get("local_base_url") or "")
         compatible_model = model or str(settings.get("local_model") or "")
         if not base_url or not compatible_model:

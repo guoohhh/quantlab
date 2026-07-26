@@ -10,6 +10,7 @@ import numpy as np
 
 from quantlab.domain.models import Bar, Fill, Instrument, OrderRequest, Position, Side
 from quantlab.execution.costs import CostModel
+from quantlab.execution.rules import PortfolioExecutionState, TradeRuleService
 
 
 @dataclass
@@ -117,20 +118,40 @@ class BacktestEngine:
         return BacktestResult(self.initial_capital, final_equity, curve, fills, rejected, metrics)
 
     def _reject_reason(self, order: OrderRequest, bar: Bar | None, account: Account) -> str | None:
-        if bar is None or bar.suspended:
+        if bar is None:
             return "suspended_or_missing"
-        if order.side == Side.BUY and bar.limit_up:
-            return "limit_up"
-        if order.side == Side.SELL and bar.limit_down:
-            return "limit_down"
         instrument = self.instruments[order.symbol]
-        if order.quantity % instrument.trade_lot != 0 and order.side == Side.BUY:
-            return "invalid_trade_lot"
-        if order.side == Side.SELL:
-            position = account.positions.get(order.symbol)
-            if position is None or order.quantity > position.sellable_quantity:
-                return "t_plus_one_or_insufficient_position"
-        return None
+        position = account.positions.get(order.symbol)
+        quote = TradeRuleService.quote_from_bar(
+            instrument,
+            raw_price=bar.open,
+            trade_date=bar.date,
+            suspended=bar.suspended,
+            limit_up=bar.limit_up,
+            limit_down=bar.limit_down,
+            is_st=bar.is_st,
+            source=bar.source,
+        )
+        result = TradeRuleService().validate(
+            order,
+            quote,
+            PortfolioExecutionState(
+                cash=account.cash,
+                equity=max(account.equity(), 0.01),
+                market_value=sum(item.market_value for item in account.positions.values()),
+                symbol_market_value=position.market_value if position else 0.0,
+                industry_market_value=sum(
+                    item.market_value
+                    for item in account.positions.values()
+                    if item.industry == instrument.industry
+                ),
+                position_quantity=position.quantity if position else 0,
+                sellable_quantity=position.sellable_quantity if position else 0,
+            ),
+            request_date=bar.date,
+            apply_instrument_risk=False,
+        )
+        return result.hard_failures[0] if result.hard_failures else None
 
     @staticmethod
     def _metrics(curve: list[tuple[date, float]], fills: list[Fill]) -> dict[str, float]:

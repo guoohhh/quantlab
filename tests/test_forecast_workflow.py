@@ -46,6 +46,19 @@ def test_settle_forecasts_uses_trading_bar_horizon(settings, monkeypatch):
     )
     repository = DecisionRepository(settings.resolve(settings.get("system.database_path")))
     repository.save(run)
+    with repository.connect() as db:
+        db.execute(
+            "UPDATE forecast_predictions SET settlement_eligible=1,training_eligible=1,"
+            "origin='registered_forward_research',evidence_stage='registered_forward' "
+            "WHERE run_id=?",
+            (run.run_id,),
+        )
+        db.execute(
+            "UPDATE learning_samples SET settlement_eligible=1,training_eligible=1,"
+            "origin='registered_forward_research',evidence_stage='registered_forward' "
+            "WHERE run_id=?",
+            (run.run_id,),
+        )
     monkeypatch.setattr(forecast_workflow, "FallbackProvider", FakeProvider)
     monkeypatch.setattr(forecast_workflow, "CachedProvider", PassthroughCache)
 

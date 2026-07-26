@@ -9,6 +9,7 @@ import pandas as pd
 from quantlab.config import Settings
 from quantlab.data import AkShareProvider, CachedProvider, FallbackProvider, WestockProvider
 from quantlab.domain.models import Bar, OrderRequest, Side
+from quantlab.domain import ResearchProvenance
 from quantlab.execution import CostModel
 from quantlab.persistence import DecisionRepository, PaperTradingRepository
 from quantlab.reporting import research_persistence_context
@@ -113,7 +114,15 @@ def run_paper_cycle(
                 asset_type="etf",
                 include_events=False,
             )
-            decisions.save(output["decision_run"], research_persistence_context(output))
+            decisions.save(
+                output["decision_run"],
+                research_persistence_context(output),
+                provenance=ResearchProvenance(
+                    origin="strategy_shadow_research",
+                    requested_as_of=effective_as_of,
+                    evidence_stage="shadow_only",
+                ),
+            )
             research_runs.append(output["decision_run"].run_id)
 
     symbols = list(settings.get("strategies.etf_rotation.universe"))
@@ -317,7 +326,15 @@ def run_stock_paper_cycle(
                 asset_type="stock",
                 include_events=True,
             )
-            decisions.save(output["decision_run"], research_persistence_context(output))
+            decisions.save(
+                output["decision_run"],
+                research_persistence_context(output),
+                provenance=ResearchProvenance(
+                    origin="strategy_shadow_research",
+                    requested_as_of=effective_as_of,
+                    evidence_stage="shadow_only",
+                ),
+            )
             research_runs.append(output["decision_run"].run_id)
 
     exposure = float(settings.get("risk.max_total_exposure"))

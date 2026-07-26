@@ -6,7 +6,10 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from dashboard.product_ui import render_product_app
+
 from quantlab.config import Settings
+from quantlab.domain import ResearchProvenance
 from quantlab.demo import run_demo, run_live_demo
 from quantlab.llm import (
     LLM_PROFILES,
@@ -27,6 +30,7 @@ from quantlab.persistence import (
     StockRankingReplayRepository,
     TerminalRepository,
 )
+from quantlab.persistence.migrations import ensure_database_initialized
 from quantlab.reporting import (
     audit_package_json,
     build_research_audit_package,
@@ -68,55 +72,127 @@ from quantlab.workflows import (
 from quantlab.workflows.radar import ETF_METADATA
 
 
-st.set_page_config(page_title="QuantLab", page_icon="📈", layout="wide")
-st.title("QuantLab 多 Agent 量化决策系统")
-st.caption("真实数据 · 多模型路由 · 概率预测 · 确定性风控 · 手工下单 · 全链路审计")
-
+st.set_page_config(
+    page_title="QuantLab",
+    page_icon="📈",
+    layout="wide",
+    # The product owns its expanded and compact navigation states.  Starting
+    # with Streamlit's native sidebar collapsed strands the icon rail off-screen.
+    initial_sidebar_state="expanded",
+)
+st.markdown(
+    """
+    <style>
+    .main .block-container {
+        max-width: 1600px;
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+    }
+    [data-testid="stDataFrame"], [data-testid="stTable"] {
+        overflow-x: auto;
+    }
+    @media (max-width: 900px) {
+        .main .block-container {
+            max-width: 100%;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        [data-testid="stHorizontalBlock"] {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        [data-testid="column"] {
+            flex: 1 1 100% !important;
+            width: 100% !important;
+            min-width: 0 !important;
+        }
+        .stButton > button, .stDownloadButton > button {
+            width: 100%;
+        }
+        [data-baseweb="tab-list"] {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 base_settings = Settings.load()
+experience_mode = st.session_state.get("quantlab_experience_mode", "product")
+
+# The product workspace owns its navigation, settings, and lightweight read
+# paths.  Branch before the legacy audit sidebar is built: rendering that
+# sidebar first created a second brand/navigation layer and initialized audit
+# configuration on every ordinary product-page rerun.
+if experience_mode == "product":
+    render_product_app(base_settings)
+    st.stop()
+
 with st.sidebar:
-    st.header("LLM 运行配置")
-    profile_name = st.selectbox("配置预设", list(LLM_PROFILES), index=1)
+    st.markdown(
+        """
+        <div class="ql-brand">
+          <div class="ql-brand-mark" aria-hidden="true"><i></i><b></b><span></span></div>
+          <div><strong>QuantLab</strong><small>Evidence-led investing</small></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    profile_name = "平衡"
     profile = llm_profile(profile_name)
-    default_model = st.selectbox(
-        "默认 GPT 模型",
-        OPENAI_MODEL_OPTIONS,
-        index=OPENAI_MODEL_OPTIONS.index(profile["default_model"]),
-        key=f"default_model_{profile_name}",
-    )
-    default_effort = st.selectbox(
-        "默认推理强度",
-        REASONING_EFFORT_OPTIONS,
-        index=REASONING_EFFORT_OPTIONS.index(profile["default_effort"]),
-        key=f"default_effort_{profile_name}",
-    )
-    custom_model = st.text_input("自定义模型名（可选）", key=f"custom_model_{profile_name}")
-    if custom_model.strip():
-        default_model = custom_model.strip()
+    default_model = profile["default_model"]
+    default_effort = profile["default_effort"]
     role_models = dict(profile["role_models"])
     role_efforts = dict(profile["role_efforts"])
-    advanced = st.toggle("按 Agent 高级配置", value=False)
-    if advanced:
-        with st.expander("逐角色模型与推理强度", expanded=True):
-            for role in OPENAI_ROLE_KEYS:
-                st.caption(ROLE_LABELS[role])
-                model_col, effort_col = st.columns(2)
-                role_models[role] = model_col.selectbox(
-                    "模型",
-                    OPENAI_MODEL_OPTIONS,
-                    index=OPENAI_MODEL_OPTIONS.index(role_models[role]),
-                    key=f"role_model_{profile_name}_{role}",
-                    label_visibility="collapsed",
-                )
-                role_efforts[role] = effort_col.selectbox(
-                    "推理强度",
-                    REASONING_EFFORT_OPTIONS,
-                    index=REASONING_EFFORT_OPTIONS.index(role_efforts[role]),
-                    key=f"role_effort_{profile_name}_{role}",
-                    label_visibility="collapsed",
-                )
-    st.divider()
-    st.caption("API Key 仅从本地 .env 读取，前端不会显示、回传或写入报告。")
-    st.warning("系统仅生成研究与手工下单建议，不连接券商，也不承诺收益。")
+    if experience_mode == "audit":
+        st.caption("工程审计视图 · 从专业空间进入")
+        if st.button("返回投资工作区", key="return_to_product_workspace", width="stretch"):
+            st.session_state["quantlab_experience_mode"] = "product"
+            st.rerun()
+        st.header("LLM 运行配置")
+        profile_name = st.selectbox("配置预设", list(LLM_PROFILES), index=1)
+        profile = llm_profile(profile_name)
+        default_model = st.selectbox(
+            "默认 GPT 模型",
+            OPENAI_MODEL_OPTIONS,
+            index=OPENAI_MODEL_OPTIONS.index(profile["default_model"]),
+            key=f"default_model_{profile_name}",
+        )
+        default_effort = st.selectbox(
+            "默认推理强度",
+            REASONING_EFFORT_OPTIONS,
+            index=REASONING_EFFORT_OPTIONS.index(profile["default_effort"]),
+            key=f"default_effort_{profile_name}",
+        )
+        custom_model = st.text_input("自定义模型名（可选）", key=f"custom_model_{profile_name}")
+        if custom_model.strip():
+            default_model = custom_model.strip()
+        role_models = dict(profile["role_models"])
+        role_efforts = dict(profile["role_efforts"])
+        advanced = st.toggle("按 Agent 高级配置", value=False)
+        if advanced:
+            with st.expander("逐角色模型与推理强度", expanded=True):
+                for role in OPENAI_ROLE_KEYS:
+                    st.caption(ROLE_LABELS[role])
+                    model_col, effort_col = st.columns(2)
+                    role_models[role] = model_col.selectbox(
+                        "模型",
+                        OPENAI_MODEL_OPTIONS,
+                        index=OPENAI_MODEL_OPTIONS.index(role_models[role]),
+                        key=f"role_model_{profile_name}_{role}",
+                        label_visibility="collapsed",
+                    )
+                    role_efforts[role] = effort_col.selectbox(
+                        "推理强度",
+                        REASONING_EFFORT_OPTIONS,
+                        index=REASONING_EFFORT_OPTIONS.index(role_efforts[role]),
+                        key=f"role_effort_{profile_name}_{role}",
+                        label_visibility="collapsed",
+                    )
+        st.divider()
+        st.caption("API Key 仅从本地 .env 读取，前端不会显示、回传或写入报告。")
+        st.warning("系统仅生成研究与手工下单建议，不连接券商，也不承诺收益。")
 
 settings = apply_openai_runtime_config(
     base_settings,
@@ -126,6 +202,7 @@ settings = apply_openai_runtime_config(
     role_efforts=role_efforts,
 )
 database_path = settings.resolve(settings.get("system.database_path"))
+ensure_database_initialized(database_path)
 terminal = TerminalRepository(database_path)
 decision_repository = DecisionRepository(database_path)
 replay_repository = HistoricalReplayRepository(database_path)
@@ -1062,6 +1139,10 @@ def render_historical_replay(replay: dict, key_prefix: str) -> None:
         key=f"{key_prefix}_replay_json",
     )
 
+st.title("QuantLab")
+st.caption("Evidence Trace · 高级工程与审计工作区")
+st.subheader("工程审计视图")
+st.caption("面向模型、实验、证据评分、Worker 与调试检查；日常投资能力统一留在“专业空间”。")
 
 (
     today_tab,
@@ -1705,6 +1786,11 @@ with research_tab:
                 decision_repository.save(
                     research_output["decision_run"],
                     research_persistence_context(research_output),
+                    provenance=ResearchProvenance(
+                        origin="user_interactive_research",
+                        requested_as_of=research_as_of,
+                        evidence_stage="research_only",
+                    ),
                 )
                 st.session_state["research_package"] = build_research_audit_package(research_output)
         except Exception as exc:

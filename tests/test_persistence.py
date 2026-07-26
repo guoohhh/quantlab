@@ -1,4 +1,5 @@
 import asyncio
+import sqlite3
 from datetime import date
 
 import pytest
@@ -7,6 +8,23 @@ from quantlab.agents import MultiAgentDecisionSystem, ResearchContext
 from quantlab.llm import MockLLMProvider
 from quantlab.learning import LearningRepository
 from quantlab.persistence import DecisionRepository, HistoricalReplayRepository
+
+
+def test_decision_repository_installs_research_index_pagination_indexes(tmp_path):
+    database_path = tmp_path / "quantlab.db"
+    DecisionRepository(database_path)
+
+    with sqlite3.connect(database_path) as database:
+        indexes = {
+            str(row[1])
+            for row in database.execute("PRAGMA index_list(decision_runs)").fetchall()
+        }
+
+    assert {
+        "idx_decision_runs_created_at",
+        "idx_decision_runs_action_created_at",
+        "idx_decision_runs_evidence_stage_created_at",
+    }.issubset(indexes)
 
 
 def test_forecast_outcome_and_calibration(tmp_path):
@@ -18,19 +36,15 @@ def test_forecast_outcome_and_calibration(tmp_path):
     repository = DecisionRepository(tmp_path / "quantlab.db")
     repository.save(run)
 
-    outcome = repository.record_forecast_outcome(
-        run.run_id, 5, 2.5, "2026-01-09", flat_threshold_pct=1.0
-    )
+    with pytest.raises(ValueError, match="not eligible"):
+        repository.record_forecast_outcome(
+            run.run_id, 5, 2.5, "2026-01-09", flat_threshold_pct=1.0
+        )
     report = repository.calibration_report(horizon_days=5, minimum_samples=2)
     learning = LearningRepository(tmp_path / "quantlab.db")
 
-    assert outcome.outcome == "up"
-    assert report.samples == 1
-    assert report.brier_score == pytest.approx((0.6**2 + 0.3**2 + 0.3**2) / 3)
-    assert report.accuracy == 1.0
-    assert report.calibrated is False
-    assert learning.sample_counts()["stock:5d:live_decision"]["completed"] == 1
-    assert learning.attributions()[0]["attribution"]["unresolved"] is True
+    assert report.samples == 0
+    assert learning.sample_counts()["stock:5d:historical_research"]["completed"] == 0
 
 
 def test_missing_forecast_cannot_receive_outcome(tmp_path):

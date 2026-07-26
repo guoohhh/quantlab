@@ -1,0 +1,70 @@
+[
+  {
+    "source_run_id": "b84ef704-b297-4339-87a5-88cb9c843b9e",
+    "symbol_alias": "STOCK_1",
+    "composite_score": 0.4430628337,
+    "confidence": 0.24345,
+    "evidence_coverage": 0.4869,
+    "conflict": 1.0,
+    "council_veto": false,
+    "veto_roles": [],
+    "reviewer_approved": true,
+    "context_action": "observe",
+    "context_requires_review": false,
+    "expected_action": "review_required",
+    "expected_triggers": ["buy_composite_band", "low_confidence"],
+    "forbidden_triggers": ["high_conflict", "council_veto"]
+  },
+  {
+    "source_run_id": "7410e5e5-ecee-49b7-91fe-cb42117bdac6",
+    "symbol_alias": "STOCK_2",
+    "composite_score": 0.2685463738,
+    "confidence": 0.0,
+    "evidence_coverage": 0.8765,
+    "conflict": 0.9,
+    "council_veto": true,
+    "veto_roles": ["VETO_ROLE_1"],
+    "reviewer_approved": true,
+    "context_action": "observe",
+    "context_requires_review": false,
+    "expected_action": "review_required",
+    "expected_triggers": ["watch_composite_band", "council_veto", "low_confidence"],
+    "forbidden_triggers": ["high_conflict"]
+  },
+  {
+    "source_run_id": "4104750a-214c-4c10-a9d1-02731410d043",
+    "symbol_alias": "STOCK_3",
+    "composite_score": -0.106252433,
+    "confidence": 0.5259,
+    "evidence_coverage": 0.8765,
+    "conflict": 0.8,
+    "council_veto": true,
+    "veto_roles": ["VETO_ROLE_1", "VETO_ROLE_2", "VETO_ROLE_3"],
+    "reviewer_approved": true,
+    "context_action": "avoid",
+    "context_requires_review": true,
+    "expected_action": "review_required",
+    "expected_triggers": [
+      "hold_composite_band",
+      "council_veto",
+      "context_committee_review_required"
+    ],
+    "forbidden_triggers": ["high_conflict"]
+  },
+  {
+    "source_run_id": "297ac5ca-a383-483b-9444-7813c790dfa7",
+    "symbol_alias": "STOCK_4",
+    "composite_score": 0.3203912791,
+    "confidence": 0.2556225,
+    "evidence_coverage": 0.4869,
+    "conflict": 0.95,
+    "council_veto": true,
+    "veto_roles": ["VETO_ROLE_1"],
+    "reviewer_approved": true,
+    "context_action": "observe",
+    "context_requires_review": false,
+    "expected_action": "review_required",
+    "expected_triggers": ["watch_composite_band", "council_veto"],
+    "forbidden_triggers": ["high_conflict", "low_confidence"]
+  }
+]

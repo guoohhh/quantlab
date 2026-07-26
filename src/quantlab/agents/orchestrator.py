@@ -10,6 +10,12 @@ from typing import Any, Callable
 from langgraph.graph import END, START, StateGraph
 from typing_extensions import TypedDict
 
+from quantlab.agents.decision_policy import (
+    DECISION_POLICY,
+    align_reviewer_report,
+    apply_policy_result,
+    evaluate_decision_policy,
+)
 from quantlab.agents.roles import AgentRoleSpec, aggregate_council, route_roles
 from quantlab.agents.schemas import (
     AnalystReport,
@@ -21,24 +27,6 @@ from quantlab.agents.schemas import (
 from quantlab.domain.models import AuditEvent, DecisionCard, Forecast, StrategySignal
 from quantlab.llm.providers import LLMProvider
 from quantlab.learning.features import extract_learning_features, with_forecast_features
-
-
-DECISION_POLICY = {
-    "minimum_confidence_for_provisional_decision": 0.25,
-    "buy_composite_threshold": 0.35,
-    "watch_composite_threshold": 0.12,
-    "reduce_composite_threshold": -0.12,
-    "sell_composite_threshold": -0.35,
-    "high_conflict_threshold": 0.80,
-    "high_conflict_neutral_composite_band": 0.12,
-    "council_veto_forces_review_required": True,
-    "strategy_signal_target_weight_is_advisory": True,
-    "only_buy_action_may_have_nonzero_target_weight": True,
-    "maximum_buy_target_weight": 0.15,
-    "non_buy_target_weight": 0.0,
-    "review_rejection_forces_human_review": True,
-    "review_rejection_forces_zero_target_weight": True,
-}
 
 
 @dataclass
@@ -62,6 +50,13 @@ class ResearchContext:
     data_quality: float = 1.0
     degraded_sources: list[str] = field(default_factory=list)
     hard_vetoes: list[str] = field(default_factory=list)
+    analysis_context_pack: dict[str, Any] = field(default_factory=dict)
+    context_id: str | None = None
+    context_version: str | None = None
+    context_fingerprint: str | None = None
+    capital_flow: dict[str, Any] = field(default_factory=dict)
+    macro: dict[str, Any] = field(default_factory=dict)
+    portfolio: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -129,6 +124,9 @@ class MultiAgentDecisionSystem:
                 "cross_section_factors": context.cross_section_factors,
                 "degraded_sources": context.degraded_sources,
                 "hard_vetoes": context.hard_vetoes,
+                "context_id": context.context_id,
+                "context_version": context.context_version,
+                "context_fingerprint": context.context_fingerprint,
             },
             llm_audit=self._llm_audit_snapshot(),
         )
@@ -149,6 +147,24 @@ class MultiAgentDecisionSystem:
     @classmethod
     def expected_llm_role_outputs(cls, context: ResearchContext) -> int:
         return len(cls.expected_llm_role_keys(context))
+
+    @classmethod
+    def expected_llm_phase_roles(cls, context: ResearchContext) -> dict[str, list[str]]:
+        analysts = ["quant"]
+        if context.fundamentals:
+            analysts.append("fundamental")
+        if context.news:
+            analysts.append("news")
+        return {
+            "analysts": analysts,
+            "council": [
+                spec.name
+                for spec in route_roles(cls._asset_type(context), bool(context.fundamentals))
+            ],
+            "debate": ["bull", "bear"],
+            "forecasts": ["forecast_5d", "forecast_20d"],
+            "reviewer": ["reviewer"],
+        }
 
     def _build_graph(self):
         workflow = StateGraph(AgentGraphState)
@@ -344,10 +360,15 @@ class MultiAgentDecisionSystem:
             state["decision_trace"],
         )
         reports["reviewer"] = review
+        policy_result = self._policy_result(
+            context,
+            state["decision_trace"],
+            reports["council"],
+            reviewer=review,
+        )
+        apply_policy_result(decision, policy_result)
+        align_reviewer_report(review, policy_result)
         if not review.approved:
-            decision.action = "review_required"
-            decision.requires_human_review = True
-            decision.target_weight = 0.0
             decision.risks = list(dict.fromkeys(decision.risks + review.issues))
         status = "ok" if review.approved else "needs_review"
         audit = list(state["audit_log"])
@@ -377,7 +398,11 @@ class MultiAgentDecisionSystem:
                     "quant_factors": bool(context.quant_factors),
                     "fundamentals": bool(context.fundamentals),
                     "news": bool(context.news),
+                    "capital_flow": bool(context.capital_flow),
+                    "macro": bool(context.macro),
+                    "portfolio": bool(context.portfolio),
                 },
+                "analysis_context_pack": self._bounded_payload(context.analysis_context_pack),
                 "payload": self._bounded_payload(payload),
             },
             ensure_ascii=False,
@@ -438,6 +463,11 @@ class MultiAgentDecisionSystem:
                 "cross_section_factors": context.cross_section_factors,
                 "fundamentals": self._bounded_payload(context.fundamentals),
                 "news": self._bounded_payload(context.news),
+                "capital_flow": self._bounded_payload(context.capital_flow),
+                "macro": self._bounded_payload(context.macro),
+                "portfolio": self._bounded_payload(context.portfolio),
+                "context_id": context.context_id,
+                "context_version": context.context_version,
                 "data_quality": context.data_quality,
                 "degraded_sources": context.degraded_sources,
             },
@@ -508,6 +538,8 @@ class MultiAgentDecisionSystem:
                 "maximum_final_weight": context.maximum_final_weight,
                 "market_regime": context.market_regime,
                 "price_history": self._bounded_payload(context.price_history),
+                "capital_flow": self._bounded_payload(context.capital_flow),
+                "macro": self._bounded_payload(context.macro),
                 "analysts": analyst_context,
                 "bull": self._compact_report(bull),
                 "bear": self._compact_report(bear),
@@ -576,9 +608,9 @@ class MultiAgentDecisionSystem:
             "You are the final audit reviewer. Reject outputs with invented evidence, missing risk discussion, "
             "contradictory probabilities, silent degraded data, or unjustified confidence. Judge missing data "
             "against the supplied required_evidence list; do not reject an ETF solely because company "
-            "fundamentals or news are absent when they are marked optional. Apply the supplied decision_policy "
-            "exactly and do not invent a generic or 'typical' confidence threshold. The decision under review "
-            "is provisional; your rejection is what converts it to review_required and zero target weight. "
+            "fundamentals or news are absent when they are marked optional. Validate the supplied deterministic "
+            "policy_result exactly; do not reinterpret action thresholds or invent a generic confidence rule. "
+            "Your approval reports audit quality only. The server policy function owns action and target weight. "
             "Raw strategy target weights are advisory inputs, not final allocations. A non-buy decision must "
             "have zero target weight under the supplied policy. A bullish raw signal does not require a buy: "
             "the final action follows the aggregate composite thresholds. Distinguish material safety or "
@@ -596,6 +628,16 @@ class MultiAgentDecisionSystem:
                 "context": self._bounded_payload(context.__dict__),
                 "required_evidence": self._required_evidence(context),
                 "decision_policy": DECISION_POLICY,
+                "policy_result": {
+                    "action": decision.action,
+                    "target_weight": decision.target_weight,
+                    "trigger_codes": decision.trigger_codes,
+                    "reasons": decision.reasons,
+                    "policy_version": decision.policy_version,
+                    "review_state": decision.review_state,
+                    "signal_price_basis": decision.signal_price_basis,
+                    "execution_price_basis": decision.execution_price_basis,
+                },
                 "decision_calculation": decision_trace,
                 "reports": self._compact_reports(reports),
                 "forecasts": [f.model_dump(mode="json") for f in forecasts],
@@ -708,65 +750,62 @@ class MultiAgentDecisionSystem:
         trace = decision_trace or MultiAgentDecisionSystem._decision_trace(
             context, quant, fundamental, news, bull, bear, forecasts, council
         )
-        components = trace["components"]
-        quant_score = components["strategy_signal_score"]
-        forecast_score = components["forecast_score"]
         composite = trace["composite_score"]
         conflict = trace["conflict"]
         coverage = trace["evidence_coverage"]["adjusted"]
         confidence = trace["confidence"]
-        if (
-            DECISION_POLICY["council_veto_forces_review_required"]
-            and council.veto_triggered
-        ):
-            action = "review_required"
-        elif confidence < DECISION_POLICY["minimum_confidence_for_provisional_decision"]:
-            action = "review_required"
-        elif trace["high_conflict_review_triggered"]:
-            action = "review_required"
-        elif composite > DECISION_POLICY["buy_composite_threshold"]:
-            action = "buy"
-        elif composite > DECISION_POLICY["watch_composite_threshold"]:
-            action = "watch"
-        elif composite < DECISION_POLICY["sell_composite_threshold"]:
-            action = "sell"
-        elif composite < DECISION_POLICY["reduce_composite_threshold"]:
-            action = "reduce"
-        else:
-            action = "hold"
-        target = (
-            max(0.0, min(0.15, composite * 0.25))
-            if action == "buy" and not council.veto_triggered
-            else 0.0
+        policy_result = evaluate_decision_policy(
+            composite_score=composite,
+            confidence=confidence,
+            evidence_coverage=coverage,
+            conflict=conflict,
+            council_veto=council.veto_triggered,
+            veto_roles=council.veto_roles,
+            maximum_final_weight=context.maximum_final_weight,
+            price_is_executable=context.price_is_executable,
         )
         return DecisionCard(
             symbol=context.symbol,
             as_of=context.as_of,
-            action=action,
+            action=policy_result.action,
             confidence=confidence,
-            target_weight=target,
+            target_weight=policy_result.target_weight,
             entry_price=context.price if context.price_is_executable else None,
-            reasons=[
-                f"composite_score={composite:.3f}",
-                f"strategy_signal_score={quant_score:.3f}",
-                f"council_score={council.combined_score:.3f}",
-                f"forecast_score={forecast_score:.3f}",
-                f"evidence_coverage={coverage:.2f}",
-                f"conflict={conflict:.3f}",
-                f"abs_composite={abs(composite):.3f}",
-                f"high_conflict_review_triggered={trace['high_conflict_review_triggered']}",
-                f"momentum_technical_sync={council.momentum_tech_sync}",
-                f"buy_requires_composite>{DECISION_POLICY['buy_composite_threshold']:.2f}",
-                (
-                    "review_required_when_high_conflict="
-                    f"conflict>{DECISION_POLICY['high_conflict_threshold']:.2f} and "
-                    "abs(composite)<"
-                    f"{DECISION_POLICY['high_conflict_neutral_composite_band']:.2f}"
-                ),
-            ],
+            reasons=list(policy_result.reasons),
             risks=MultiAgentDecisionSystem._decision_risks(quant, fundamental, news, council),
             degraded_sources=context.degraded_sources,
-            requires_human_review=action == "review_required" or council.veto_triggered,
+            requires_human_review=policy_result.requires_human_review,
+            suggested_weight_min=policy_result.suggested_weight_min,
+            suggested_weight_max=policy_result.suggested_weight_max,
+            context_id=context.context_id,
+            context_version=context.context_version,
+            context_fingerprint=context.context_fingerprint,
+            trigger_codes=list(policy_result.trigger_codes),
+            policy_version=policy_result.policy_version,
+            review_state=policy_result.review_state,
+            signal_price_basis=policy_result.signal_price_basis,
+            execution_price_basis=policy_result.execution_price_basis,
+        )
+
+    @staticmethod
+    def _policy_result(
+        context: ResearchContext,
+        trace: dict[str, Any],
+        council: CouncilReport,
+        *,
+        reviewer: ReviewReport | None = None,
+    ):
+        return evaluate_decision_policy(
+            composite_score=trace["composite_score"],
+            confidence=trace["confidence"],
+            evidence_coverage=trace["evidence_coverage"]["adjusted"],
+            conflict=trace["conflict"],
+            council_veto=council.veto_triggered,
+            veto_roles=council.veto_roles,
+            maximum_final_weight=context.maximum_final_weight,
+            reviewer_approved=reviewer.approved if reviewer is not None else None,
+            reviewer_issues=reviewer.issues if reviewer is not None else (),
+            price_is_executable=context.price_is_executable,
         )
 
     @staticmethod
@@ -926,7 +965,7 @@ class MultiAgentDecisionSystem:
         if asset_type == "etf":
             return {
                 "required": ["price history", "quant factors", "strategy signal", "market regime"],
-                "optional": ["company fundamentals", "news"],
+                "optional": ["company fundamentals", "news", "capital flow", "macro", "portfolio"],
             }
         if asset_type == "convertible_bond":
             return {
@@ -936,11 +975,11 @@ class MultiAgentDecisionSystem:
                     "redemption risk",
                     "strategy signal",
                 ],
-                "optional": ["news"],
+                "optional": ["news", "capital flow", "macro", "portfolio"],
             }
         return {
             "required": ["price history", "quant factors", "financial quality", "risk events"],
-            "optional": ["news"],
+            "optional": ["news", "capital flow", "macro", "portfolio"],
         }
 
     @staticmethod

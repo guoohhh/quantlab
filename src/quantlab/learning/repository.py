@@ -8,17 +8,43 @@ from collections import Counter
 from datetime import date
 from pathlib import Path
 
-
 class LearningRepository:
     def __init__(self, path: str | Path):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        fresh = not self.path.exists() or self.path.stat().st_size == 0
+        if not fresh and not self._provenance_schema_ready():
+            raise RuntimeError(
+                "database requires the unified decision-learning migration before repository use"
+            )
         self._init_schema()
 
     def connect(self):
         connection = sqlite3.connect(self.path)
         connection.row_factory = sqlite3.Row
         return connection
+
+    def _provenance_schema_ready(self) -> bool:
+        with self.connect() as db:
+            tables = {
+                str(row[0])
+                for row in db.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table'"
+                ).fetchall()
+            }
+            if "learning_samples" not in tables:
+                return True
+            columns = {
+                str(row[1]) for row in db.execute("PRAGMA table_info(learning_samples)")
+            }
+        return {
+            "origin",
+            "evidence_stage",
+            "settlement_eligible",
+            "training_eligible",
+            "registration_id",
+            "quarantine_reason",
+        }.issubset(columns)
 
     def _init_schema(self):
         with self.connect() as db:
@@ -37,6 +63,12 @@ class LearningRepository:
                     realized_return_pct REAL,
                     evaluated_at TEXT,
                     context_json TEXT NOT NULL DEFAULT '{}',
+                    origin TEXT NOT NULL DEFAULT 'legacy_unclassified',
+                    evidence_stage TEXT NOT NULL DEFAULT 'legacy_quarantined',
+                    settlement_eligible INTEGER NOT NULL DEFAULT 0,
+                    training_eligible INTEGER NOT NULL DEFAULT 0,
+                    registration_id TEXT,
+                    quarantine_reason TEXT,
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP
                 );
                 CREATE INDEX IF NOT EXISTS idx_learning_complete
@@ -98,15 +130,6 @@ class LearningRepository:
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP
                 );
             """)
-            self._ensure_column(
-                db, "learning_samples", "asset_scope", "TEXT NOT NULL DEFAULT 'unknown'"
-            )
-            self._ensure_column(
-                db, "model_registry", "asset_scope", "TEXT NOT NULL DEFAULT 'unknown'"
-            )
-            self._ensure_column(db, "market_events", "event_key", "TEXT")
-            self._ensure_column(db, "model_registry", "deactivation_reason", "TEXT")
-            self._ensure_column(db, "model_registry", "deactivated_at", "TEXT")
             db.execute(
                 "CREATE UNIQUE INDEX IF NOT EXISTS idx_market_event_key ON market_events(event_key)"
             )
@@ -115,12 +138,6 @@ class LearningRepository:
                 "WHERE asset_scope='unknown' AND source='historical_factor'"
             )
             db.execute("UPDATE model_registry SET active=0 WHERE asset_scope='unknown'")
-
-    @staticmethod
-    def _ensure_column(db: sqlite3.Connection, table: str, column: str, declaration: str):
-        columns = {row[1] for row in db.execute(f"PRAGMA table_info({table})")}
-        if column not in columns:
-            db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {declaration}")
 
     def upsert_sample(
         self,
@@ -138,6 +155,12 @@ class LearningRepository:
         realized_return_pct: float | None = None,
         evaluated_at: date | str | None = None,
         context: dict | None = None,
+        origin: str = "legacy_unclassified",
+        evidence_stage: str = "research_only",
+        settlement_eligible: bool = False,
+        training_eligible: bool = False,
+        registration_id: str | None = None,
+        quarantine_reason: str | None = None,
     ) -> None:
         as_of_text = as_of.isoformat() if isinstance(as_of, date) else as_of
         evaluated_text = (
@@ -148,8 +171,10 @@ class LearningRepository:
                 """
                 INSERT INTO learning_samples(
                     sample_key,run_id,source,asset_scope,symbol,as_of,horizon_days,features_json,
-                    expected_return_pct,outcome,realized_return_pct,evaluated_at,context_json
-                ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    expected_return_pct,outcome,realized_return_pct,evaluated_at,context_json,
+                    origin,evidence_stage,settlement_eligible,training_eligible,
+                    registration_id,quarantine_reason
+                ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(sample_key) DO UPDATE SET
                     features_json=excluded.features_json,
                     expected_return_pct=COALESCE(excluded.expected_return_pct,expected_return_pct),
@@ -157,6 +182,12 @@ class LearningRepository:
                     realized_return_pct=COALESCE(excluded.realized_return_pct,realized_return_pct),
                     evaluated_at=COALESCE(excluded.evaluated_at,evaluated_at),
                     context_json=excluded.context_json
+                    ,origin=excluded.origin
+                    ,evidence_stage=excluded.evidence_stage
+                    ,settlement_eligible=excluded.settlement_eligible
+                    ,training_eligible=excluded.training_eligible
+                    ,registration_id=excluded.registration_id
+                    ,quarantine_reason=excluded.quarantine_reason
                 """,
                 (
                     sample_key,
@@ -172,6 +203,12 @@ class LearningRepository:
                     realized_return_pct,
                     evaluated_text,
                     json.dumps(context or {}, ensure_ascii=False),
+                    origin,
+                    evidence_stage,
+                    int(settlement_eligible),
+                    int(training_eligible),
+                    registration_id,
+                    quarantine_reason,
                 ),
             )
 
@@ -186,7 +223,9 @@ class LearningRepository:
         evaluated = evaluated_at.isoformat() if isinstance(evaluated_at, date) else evaluated_at
         with self.connect() as db:
             row = db.execute(
-                "SELECT sample_key FROM learning_samples WHERE run_id=? AND horizon_days=?",
+                """SELECT sample_key FROM learning_samples
+                   WHERE run_id=? AND horizon_days=?
+                     AND settlement_eligible=1 AND training_eligible=1""",
                 (run_id, horizon_days),
             ).fetchone()
             if row is None:
@@ -205,7 +244,8 @@ class LearningRepository:
             rows = db.execute(
                 """
                 SELECT sample_key,symbol,as_of,evaluated_at,features_json,context_json,outcome,
-                       realized_return_pct,source
+                       realized_return_pct,source,origin,evidence_stage,settlement_eligible,
+                       training_eligible,registration_id,quarantine_reason
                 FROM learning_samples
                 WHERE horizon_days=? AND asset_scope=? AND outcome IS NOT NULL
                 ORDER BY as_of,sample_key
@@ -227,7 +267,9 @@ class LearningRepository:
             rows = db.execute(
                 """
                 SELECT * FROM learning_samples
-                WHERE horizon_days=? AND asset_scope=? AND source='live_decision'
+                WHERE horizon_days=? AND asset_scope=?
+                  AND settlement_eligible=1 AND training_eligible=1
+                  AND origin IN ('registered_forward_research','system_production_research')
                   AND outcome IS NOT NULL ORDER BY evaluated_at,sample_key
                 """,
                 (horizon_days, asset_scope),
@@ -323,6 +365,18 @@ class LearningRepository:
                 ORDER BY version DESC LIMIT 1
                 """,
                 (horizon_days, asset_scope),
+            ).fetchone()
+        if row is None:
+            return None
+        output = dict(row)
+        output["metrics"] = json.loads(output.pop("metrics_json"))
+        return output
+
+    def registered_model(self, model_id: str) -> dict | None:
+        with self.connect() as db:
+            row = db.execute(
+                "SELECT * FROM model_registry WHERE model_id=?",
+                (model_id,),
             ).fetchone()
         if row is None:
             return None
@@ -616,9 +670,7 @@ class LearningRepository:
 
     def dataset_manifest(self, horizon_days: int, asset_scope: str) -> dict:
         samples = self.completed_samples(horizon_days, asset_scope)
-        eligible = [
-            item for item in samples if item.get("context", {}).get("training_eligible", True)
-        ]
+        eligible = [item for item in samples if bool(item.get("training_eligible"))]
         labels = Counter(item["outcome"] for item in eligible)
         sources = Counter(item["source"] for item in eligible)
         feature_names = sorted(

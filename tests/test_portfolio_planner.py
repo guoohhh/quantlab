@@ -277,6 +277,8 @@ def test_previous_business_day_market_data_remains_tradeable():
         {
             "market_data_freshness_required": True,
             "market_data_as_of": "2026-07-10",
+            # Formal flows inject this value from TradingCalendarService.
+            "market_data_business_day_age": 1,
             "maximum_market_data_age_business_days": 1,
         },
         date(2026, 7, 13),

@@ -23,9 +23,7 @@ def train_registered_model(
     force: bool = False,
 ) -> dict:
     all_samples = repository.completed_samples(horizon_days, asset_scope)
-    samples = [
-        item for item in all_samples if item.get("context", {}).get("training_eligible", True)
-    ]
+    samples = [item for item in all_samples if bool(item.get("training_eligible"))]
     excluded_samples = len(all_samples) - len(samples)
     if len(samples) < minimum_samples:
         return {
@@ -205,6 +203,24 @@ def predict_active_model(
     record = repository.active_model(horizon_days, asset_scope)
     if record is None:
         return None
+    return _predict_registered_record(record, features)
+
+
+def predict_registered_model(
+    repository: LearningRepository,
+    model_id: str,
+    features: dict[str, float],
+) -> dict | None:
+    record = repository.registered_model(model_id)
+    if record is None:
+        return None
+    return _predict_registered_record(record, features)
+
+
+def _predict_registered_record(
+    record: dict,
+    features: dict[str, float],
+) -> dict:
     model = OnlineSoftmaxModel.loads(record["parameters_json"])
     probabilities = model.predict_proba(feature_vector(features, model.feature_names))[0]
     metrics = record["metrics"]
@@ -219,8 +235,8 @@ def predict_active_model(
     return {
         "model_id": record["model_id"],
         "version": record["version"],
-        "horizon_days": horizon_days,
-        "asset_scope": asset_scope,
+        "horizon_days": int(record["horizon_days"]),
+        "asset_scope": str(record["asset_scope"]),
         "up_probability": float(probabilities[0]),
         "flat_probability": float(probabilities[1]),
         "down_probability": float(probabilities[2]),
@@ -268,7 +284,7 @@ def build_point_in_time_predictor(
         samples = [
             item
             for item in repository.completed_samples(horizon_days, asset_scope)
-            if item.get("context", {}).get("training_eligible", True)
+            if bool(item.get("training_eligible"))
             and item["as_of"] < cutoff_text
             and item.get("evaluated_at")
             and item["evaluated_at"] < cutoff_text

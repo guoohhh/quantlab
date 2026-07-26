@@ -44,6 +44,9 @@ class TerminalRepository:
                     condition_type TEXT NOT NULL,
                     threshold REAL NOT NULL,
                     active INTEGER NOT NULL DEFAULT 1,
+                    account_id TEXT,
+                    triggered_at TEXT,
+                    triggered_value REAL,
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP
                 );
                 CREATE TABLE IF NOT EXISTS portfolio_settings (
@@ -113,6 +116,16 @@ class TerminalRepository:
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP
                 );
             """)
+            alert_columns = {
+                row[1] for row in db.execute("PRAGMA table_info(alerts)").fetchall()
+            }
+            for column, definition in (
+                ("account_id", "TEXT"),
+                ("triggered_at", "TEXT"),
+                ("triggered_value", "REAL"),
+            ):
+                if column not in alert_columns:
+                    db.execute(f"ALTER TABLE alerts ADD COLUMN {column} {definition}")
 
     def list_watchlist(self) -> list[dict]:
         with self.connect() as db:
@@ -175,21 +188,54 @@ class TerminalRepository:
             output.append(item)
         return output
 
-    def add_alert(self, symbol: str, condition_type: str, threshold: float) -> int:
+    def add_alert(
+        self,
+        symbol: str,
+        condition_type: str,
+        threshold: float,
+        account_id: str | None = None,
+    ) -> int:
         with self.connect() as db:
             cursor = db.execute(
-                "INSERT INTO alerts(symbol,condition_type,threshold) VALUES(?,?,?)",
-                (symbol, condition_type, threshold),
+                """
+                INSERT INTO alerts(symbol,condition_type,threshold,account_id)
+                VALUES(?,?,?,?)
+                """,
+                (symbol, condition_type, threshold, account_id),
             )
             return int(cursor.lastrowid)
 
-    def list_alerts(self) -> list[dict]:
+    def list_alerts(self, account_id: str | None = None) -> list[dict]:
+        query = (
+            "SELECT id,symbol,condition_type,threshold,active,account_id,"
+            "triggered_at,triggered_value,created_at FROM alerts"
+        )
+        params: tuple = ()
+        if account_id is not None:
+            query += " WHERE account_id IS NULL OR account_id=?"
+            params = (account_id,)
+        query += " ORDER BY id DESC"
         with self.connect() as db:
-            rows = db.execute(
-                "SELECT id,symbol,condition_type,threshold,active,created_at "
-                "FROM alerts ORDER BY id DESC"
-            ).fetchall()
+            rows = db.execute(query, params).fetchall()
         return [{**dict(row), "active": bool(row["active"])} for row in rows]
+
+    def mark_alert_triggered(
+        self,
+        alert_id: int,
+        *,
+        value: float,
+        triggered_at: str,
+    ) -> bool:
+        with self.connect() as db:
+            result = db.execute(
+                """
+                UPDATE alerts
+                SET active=0,triggered_at=?,triggered_value=?
+                WHERE id=? AND active=1
+                """,
+                (triggered_at, value, alert_id),
+            )
+        return result.rowcount > 0
 
     def remove_alert(self, alert_id: int) -> bool:
         with self.connect() as db:
@@ -303,6 +349,9 @@ class TerminalRepository:
             item["weight"] = item["market_value"] / equity if equity > 0 else 0.0
         return {
             **settings,
+            "account_type": "manual_real_ledger",
+            "evidence_eligible": False,
+            "training_eligible": False,
             "cash": cash,
             "market_value": market_value,
             "equity": equity,

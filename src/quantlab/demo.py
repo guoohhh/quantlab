@@ -10,6 +10,7 @@ from quantlab.backtest import BacktestEngine
 from quantlab.config import Settings
 from quantlab.data import DemoDataProvider
 from quantlab.domain.models import AssetType, OrderRequest, Side
+from quantlab.domain import ResearchProvenance
 from quantlab.execution import CostModel
 from quantlab.llm import await_with_provider_close, build_provider
 from quantlab.persistence import DecisionRepository
@@ -131,7 +132,13 @@ def run_live_demo(settings: Settings, include_sectors: bool = False) -> dict:
         include_events=False,
     )
     DecisionRepository(settings.resolve(settings.get("system.database_path"))).save(
-        research["decision_run"], research_persistence_context(research)
+        research["decision_run"],
+        research_persistence_context(research),
+        provenance=ResearchProvenance(
+            origin="demo_research",
+            requested_as_of=radar["as_of"],
+            evidence_stage="demo",
+        ),
     )
     return {
         "mode": "real_market_data",

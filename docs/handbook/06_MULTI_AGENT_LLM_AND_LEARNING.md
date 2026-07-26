@@ -1,5 +1,7 @@
 # 多 Agent、LLM 与学习闭环
 
+> **阅读边界**：角色与学习概念可参考，当前 Provider、模型、Agent 数量、工具权限和上线权重以代码、设置和最新消融证据为准。
+
 ## 1. 多 Agent 是不是每个 Agent 一个职责
 
 是，而且这正是 QuantLab 的设计原则。
@@ -404,3 +406,15 @@ ETF 5 日和 20 日各已有 3,322 条历史机械样本。
 5. 用户保留最终手工执行权。
 
 这个定位比“让最强模型直接决定买卖”更符合当前证据。
+
+## 21. 第八轮：论文、Reflection 与受控记忆
+
+用户采纳建议后，系统会把当时的核心假设、支持/反对证据、红线和 ContextPack 指纹冻结成 Investment Thesis。后续检查必须引用新 ContextPack 的具体证据；缺证据只能标记 `needs_review`。红线高于价格上涨。
+
+只有已完成的 `production` 或 `forward_shadow` run 在 5/20 交易日真实到期后才能形成 Reflection。Reflection 只能生成 candidate lesson；达到预设成熟样本数后仍需人工 challenge，不能自动调整正式策略、角色权重、模型阈值或风控规则。
+
+## 22. 第九轮：LLM Checkpoint 和证据引用边界
+
+委员会、Reviewer 和最终决策在调用模型前先原子 claim checkpoint。完全相同的源码、Prompt、Context、模型路由、reasoning effort、角色集合和治理配置命中 completed checkpoint 时，LLM 调用数为 0；任何关键签名变化都会产生新步骤版本。
+
+checkpoint 保存完整结构化输出，能够重建领域对象，不只是动作摘要。失败步骤可以恢复，已完成步骤不会重跑。历史经验只作为低权重辅助假设进入 Prompt，并明确告诉模型“不是当前事实或收益保证”。实际使用的 memory_id 会记录在 Decision Run 中，便于做有记忆/无记忆消融。
