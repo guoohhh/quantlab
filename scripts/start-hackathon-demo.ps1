@@ -3,10 +3,12 @@
 Starts the local QuantLab product UI in an isolated hackathon configuration.
 
 .DESCRIPTION
-Runs only Streamlit on 127.0.0.1. The launcher uses an isolated database,
+Runs Streamlit on 127.0.0.1 together with a local background job worker, so
+the AI assistant and expert roundtable (both background jobs) actually execute
+instead of staying stuck at "queued". The launcher uses an isolated database,
 skips the project .env file, disables external LLM providers and automatic
-trusted-data refresh, and never starts the scheduler, worker, API, formal
-experiments, or any broker integration.
+trusted-data refresh, and never starts the scheduler, API, formal experiments,
+or any broker integration.
 
 .PARAMETER Port
 Preferred local port. If it is occupied, the launcher selects the next free
@@ -37,6 +39,7 @@ param(
     [int]$PortSearchRange = 20,
 
     [switch]$NoBrowser,
+    [switch]$NoWorker,
     [switch]$CheckOnly
 )
 
@@ -173,7 +176,12 @@ print(dataset['dataset_fingerprint'])
     Write-Host "Frozen dataset SHA-256: $DatasetProbe"
     Write-Host "Local URL: $Url"
     Write-Host "Isolated UI database: $IsolatedDatabase"
-    Write-Host "Safety boundary: local Streamlit only; no .env secrets, scheduler, worker, API, formal experiment, or broker execution."
+    if ($NoWorker) {
+        Write-Host "Safety boundary: local Streamlit only (worker disabled; AI assistant and roundtable will stay queued)."
+    }
+    else {
+        Write-Host "Safety boundary: local Streamlit + background job worker; no .env secrets, scheduler, API, formal experiment, or broker execution."
+    }
 
     if ($CheckOnly) {
         Write-Host "CheckOnly completed; no server was started and no database was created."
@@ -193,10 +201,41 @@ print(dataset['dataset_fingerprint'])
         "--client.showErrorDetails", "none"
     )
 
-    Write-Host "Starting the product UI. Press Ctrl+C in this window to stop it." -ForegroundColor Cyan
-    & $Python @Arguments
-    if ($LASTEXITCODE -ne 0) {
-        throw "Streamlit exited with code $LASTEXITCODE."
+    # The AI assistant (chat_request) and expert roundtable (roundtable_request)
+    # are submitted as background jobs. Without a worker consuming the queue they
+    # stay at "queued" forever. Start a local worker loop alongside Streamlit and
+    # stop it automatically when this launcher exits.
+    $WorkerProcess = $null
+    if (-not $NoWorker) {
+        Write-Host "Starting the background job worker." -ForegroundColor Cyan
+        $WorkerScript = @"
+import time
+
+from quantlab.config import Settings
+from quantlab.runtime.worker import JobWorker
+
+worker = JobWorker(Settings.load(), worker_id="hackathon-demo-worker")
+while True:
+    try:
+        worker.run_until_empty(20)
+    except Exception as exc:
+        print(f"[worker] error: {exc}", flush=True)
+    time.sleep(1.0)
+"@
+        $WorkerProcess = Start-Process -FilePath $Python -ArgumentList @("-c", $WorkerScript) -PassThru -NoNewWindow
+    }
+
+    try {
+        Write-Host "Starting the product UI. Press Ctrl+C in this window to stop it." -ForegroundColor Cyan
+        & $Python @Arguments
+        if ($LASTEXITCODE -ne 0) {
+            throw "Streamlit exited with code $LASTEXITCODE."
+        }
+    }
+    finally {
+        if ($WorkerProcess -and -not $WorkerProcess.HasExited) {
+            Stop-Process -Id $WorkerProcess.Id -Force -ErrorAction SilentlyContinue
+        }
     }
 }
 finally {
