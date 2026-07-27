@@ -2396,53 +2396,22 @@ def render_roundtable(settings: Settings) -> None:
     if selected_session_id not in known_session_ids:
         selected_session_id = known_session_ids[0] if known_session_ids else None
         st.session_state["product_roundtable_session_id"] = selected_session_id
-    if sessions:
-        selected_session_id = st.selectbox(
-            "本报告的圆桌记录",
-            known_session_ids,
-            index=known_session_ids.index(selected_session_id) if selected_session_id else 0,
-            format_func=lambda value: next(
-                f"{_roundtable_status_copy(item['status'])} · {str(item['created_at'])[:16]} · {item['topic'][:24]}"
-                for item in sessions
-                if item["session_id"] == value
-            ),
-            key="product_roundtable_session_id",
-        )
     active_session = repository.get(str(selected_session_id)) if selected_session_id else None
     defaults = list(active_session.get("participants") or []) if active_session else ["bull", "bear", "risk"]
     defaults = [item for item in defaults if item in catalog]
 
-    # 发起入口前置：醒目的朱砂 CTA 放在页面顶部，不再藏到折叠区里
-    form_open_key = f"roundtable_form_open_{identity.run_id}"
-    with st.container(key="roundtable_new_cta"):
-        if st.button(
-            "发起新的圆桌讨论",
-            type="primary",
-            icon=":material/groups:",
-            key=f"open_roundtable_form_{identity.run_id}",
-            width="stretch",
-        ):
-            st.session_state[form_open_key] = True
-            st.rerun()
+    # 两个视图分开：session = 历史记录与圆桌舞台；create = 发起新圆桌。
+    # 点顶部 CTA 直接进入发起视图，表单就在眼前，不需要下滑寻找。
+    view_key = f"roundtable_view_{identity.run_id}"
+    if view_key not in st.session_state:
+        st.session_state[view_key] = "session" if active_session else "create"
 
-    # 舞台合一：有选中会话时，实时舞台占页面主位（逐轮发言、进度都在这里），
-    # 发起表单收起在下方；不再出现"上面静态预览 + 下面真实结果"两个舞台。
-    session_id = st.session_state.get("product_roundtable_session_id")
-    if session_id:
-        current = repository.get(str(session_id))
-        if current and str(current.get("status")) in {"queued", "running"}:
-            @st.fragment(run_every=2)
-            def live_roundtable() -> None:
-                _render_roundtable_session(settings, str(session_id))
-
-            live_roundtable()
-        else:
-            _render_roundtable_session(settings, str(session_id))
-
-    with st.expander(
-        "发起新的圆桌讨论",
-        expanded=bool(st.session_state.get(form_open_key, active_session is None)),
-    ):
+    if st.session_state[view_key] == "create":
+        st.markdown(
+            '<div class="ql-section-title"><span>NEW ROUNDTABLE</span>'
+            "<strong>发起新的圆桌讨论</strong></div>",
+            unsafe_allow_html=True,
+        )
         participants = st.multiselect(
             "邀请专家",
             options=list(catalog),
@@ -2463,22 +2432,15 @@ def render_roundtable(settings: Settings) -> None:
             key=f"roundtable_rounds_{identity.run_id}",
             help="每位专家每轮发言一次；轮数越多讨论越充分，耗时与用量也越高。",
         )
-        if active_session is None:
-            st.markdown(
-                _roundtable_stage_html(
-                    participants=participants,
-                    catalog=catalog,
-                    turns=[],
-                    status="queued",
-                ),
-                unsafe_allow_html=True,
-            )
         st.caption("圆桌只围绕当前冻结报告讨论，不会改写研究结论、仓位或模拟订单。")
-        if st.button(
+        start_col, cancel_col = st.columns([1, 1])
+        if start_col.button(
             "开始专家圆桌",
             type="primary",
+            icon=":material/groups:",
             key=f"submit_roundtable_{identity.run_id}",
             disabled=len(participants) < 2 or not str(topic).strip(),
+            width="stretch",
         ):
             try:
                 _validated_roundtable_source(path, identity)
@@ -2494,17 +2456,60 @@ def render_roundtable(settings: Settings) -> None:
                 st.session_state["product_roundtable_session_id_pending"] = submitted[
                     "session"
                 ]["session_id"]
-                st.session_state[form_open_key] = False
+                st.session_state[view_key] = "session"
                 _queue_product_feedback("圆桌已提交：新讨论已置顶显示，逐轮发言会实时出现。")
                 st.rerun()
             except Exception as exc:
                 st.error(_friendly_error(exc, "圆桌暂时无法启动；当前研究报告没有被修改。"))
-    if not session_id:
-        render_page_state(
-            "empty",
-            "还没有圆桌讨论",
-            "选择两位或更多专家后开始；每一轮发言都会保存，可随时回来查看。",
-        )
+        if active_session and cancel_col.button(
+            "取消，返回讨论",
+            icon=":material/arrow_back:",
+            key=f"cancel_create_roundtable_{identity.run_id}",
+            width="stretch",
+        ):
+            st.session_state[view_key] = "session"
+            st.rerun()
+    else:
+        with st.container(key="roundtable_new_cta"):
+            if st.button(
+                "发起新的圆桌讨论",
+                type="primary",
+                icon=":material/groups:",
+                key=f"open_roundtable_form_{identity.run_id}",
+                width="stretch",
+            ):
+                st.session_state[view_key] = "create"
+                st.rerun()
+        if sessions:
+            selected_session_id = st.selectbox(
+                "本报告的圆桌记录",
+                known_session_ids,
+                index=known_session_ids.index(selected_session_id) if selected_session_id else 0,
+                format_func=lambda value: next(
+                    f"{_roundtable_status_copy(item['status'])} · {str(item['created_at'])[:16]} · {item['topic'][:24]}"
+                    for item in sessions
+                    if item["session_id"] == value
+                ),
+                key="product_roundtable_session_id",
+            )
+        # 舞台：有选中会话时实时舞台占页面主位（逐轮发言、进度都在这里）。
+        session_id = st.session_state.get("product_roundtable_session_id")
+        if session_id:
+            current = repository.get(str(session_id))
+            if current and str(current.get("status")) in {"queued", "running"}:
+                @st.fragment(run_every=2)
+                def live_roundtable() -> None:
+                    _render_roundtable_session(settings, str(session_id))
+
+                live_roundtable()
+            else:
+                _render_roundtable_session(settings, str(session_id))
+        else:
+            render_page_state(
+                "empty",
+                "还没有圆桌讨论",
+                "选择两位或更多专家后开始；每一轮发言都会保存，可随时回来查看。",
+            )
     if st.button("返回研究详情", icon=":material/arrow_back:", key="roundtable_back_research"):
         _go_to(
             "研究详情",

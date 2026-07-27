@@ -400,7 +400,8 @@ def test_research_hub_roundtable_review_routes_to_standalone_workspace(tmp_path,
     assert not app.exception
     assert app.session_state[PRODUCT_PAGE_KEY] == "专家圆桌"
     assert any(item.value == "route:专家圆桌" for item in app.caption)
-    assert any(expander.label == "发起新的圆桌讨论" for expander in app.expander)
+    # 发起入口是视图（非 expander）：无历史会话时默认进入发起视图
+    assert any(str(button.key).startswith("submit_roundtable_") for button in app.button)
     assert not any(event.startswith("analysis|") for event in _probe_events(probe))
     assert "detail-get|seed-9" in _probe_events(probe)
 
