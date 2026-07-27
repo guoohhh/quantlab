@@ -92,6 +92,7 @@ def calculate_market_radar(
             **metadata,
             "as_of": group.iloc[-1]["date"].date().isoformat(),
             "price": _round(raw_close.iloc[-1], 4),
+            "closes_20": [round(float(v), 4) for v in close.tail(20).tolist()],
             "return_20_pct": _return_pct(close, 20),
             "return_60_pct": _return_pct(close, 60),
             "return_120_pct": _return_pct(close, 120),

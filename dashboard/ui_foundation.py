@@ -1046,7 +1046,27 @@ def apply_product_theme() -> None:
         .ql-chibi-2 b,.ql-chibi-5 b { background:var(--ql-ai); }
         .ql-chibi-3 i { background:#2d3134; }
         .ql-chibi-3 b { background:var(--ql-warm); }
-        @keyframes qlSeatEnter { from { opacity:0; } to { opacity:1; } }
+        @keyframes qlSeatEnter { from { opacity:0; transform:translateY(12px) scale(.96); } to { opacity:1; transform:none; } }
+        /* 直播感：座位逐个弹入（staggered delay） */
+        .ql-roundtable-seat-0 { animation-delay:0s; }
+        .ql-roundtable-seat-1 { animation-delay:.07s; }
+        .ql-roundtable-seat-2 { animation-delay:.14s; }
+        .ql-roundtable-seat-3 { animation-delay:.21s; }
+        .ql-roundtable-seat-4 { animation-delay:.28s; }
+        .ql-roundtable-seat-5 { animation-delay:.35s; }
+        .ql-roundtable-seat-6 { animation-delay:.42s; }
+        .ql-roundtable-seat-7 { animation-delay:.49s; }
+        /* 直播感：最新发言者座位暖色光环呼吸 */
+        .ql-roundtable-seat.ql-seat-live {
+            border-color: rgba(180,92,64,.75);
+            box-shadow: 0 0 0 3px rgba(180,92,64,.22), 0 12px 28px rgba(163,58,44,.20);
+            animation: qlSeatEnter .34s ease both, qlLivePulse 2.2s ease-in-out .5s infinite;
+        }
+        @keyframes qlLivePulse {
+            0%,100% { box-shadow: 0 0 0 3px rgba(180,92,64,.22), 0 12px 28px rgba(163,58,44,.20); }
+            50% { box-shadow: 0 0 0 7px rgba(180,92,64,.10), 0 14px 32px rgba(163,58,44,.26); }
+        }
+        .ql-seat-thinking { display:block; margin:0; color:var(--ql-muted); font-size:.67rem; }
         /* 发言气泡可点开看全文（details/summary 原生折叠，无 JS 无 rerun）
            展开态为居中浮层：任何座位都不会被舞台边缘或其他专家遮挡 */
         .ql-seat-detail summary { cursor:pointer; list-style:none; }
