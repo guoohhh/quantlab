@@ -2363,6 +2363,13 @@ def render_roundtable(settings: Settings) -> None:
     catalog_items = roundtable_participant_catalog()
     catalog = {item["key"]: item for item in catalog_items}
     sessions = repository.sessions_for_source(identity.run_id, limit=20)
+    # 新提交的圆桌通过 pending 键在 selectbox 实例化之前写入——直接改
+    # widget 的 key 会触发 StreamlitAPIException（只能在实例化前赋值）。
+    pending_session_id = st.session_state.pop(
+        "product_roundtable_session_id_pending", None
+    )
+    if pending_session_id:
+        st.session_state["product_roundtable_session_id"] = pending_session_id
     selected_session_id = st.session_state.get("product_roundtable_session_id")
     known_session_ids = [str(item["session_id"]) for item in sessions]
     if selected_session_id not in known_session_ids:
@@ -2430,7 +2437,9 @@ def render_roundtable(settings: Settings) -> None:
                     topic=str(topic).strip(),
                     rounds=int(rounds),
                 )
-                st.session_state["product_roundtable_session_id"] = submitted["session"]["session_id"]
+                st.session_state["product_roundtable_session_id_pending"] = submitted[
+                    "session"
+                ]["session_id"]
                 _queue_product_feedback("圆桌已提交到后台，页面会持续显示逐轮发言。")
                 st.rerun()
             except Exception as exc:
