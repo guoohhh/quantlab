@@ -37,8 +37,8 @@ def submit_roundtable_job(
     clean_topic = str(topic or "").strip()
     if not clean_topic:
         raise ValueError("roundtable topic is required")
-    if not 1 <= int(rounds) <= 3:
-        raise ValueError("rounds must be between 1 and 3")
+    if not 1 <= int(rounds) <= 6:
+        raise ValueError("rounds must be between 1 and 6")
 
     labels = {item["key"]: item["label"] for item in roundtable_participant_catalog()}
     sessions = RoundtableRepository(database_path)

@@ -707,11 +707,36 @@ def handle_chat_message(
     resolved_account = account_id or conversation.get("account_id")
     resolved_symbol = _resolve_symbol(settings, bound_symbol, content)
     trade_intent = _trade_intent(content)
+
+    def _guidance_reply(reason: str) -> dict[str, Any]:
+        """Fail-soft: answer with guidance instead of killing the background job."""
+
+        assistant = repository.add_message(
+            conversation_id=conversation_id,
+            role="assistant",
+            content=reason,
+            payload={"status": "guidance"},
+            latency_ms=(time.perf_counter() - started) * 1000,
+        )
+        return {"message": assistant, "citations": [], "actions": []}
+
+    account_words = ("持仓", "账户", "现金", "盈亏", "净值", "委托", "成交", "订单", "通知")
+    if not resolved_account and any(word in content for word in account_words):
+        return _guidance_reply(
+            "这个问题需要绑定模拟账户才能回答。请到「我的账户」创建一个模拟账户，"
+            "或从账户相关页面打开 AI 助手再试；研究类问题不受影响。"
+        )
     if trade_intent:
         if not resolved_account:
-            raise ValueError("trade draft requires a conversation-bound simulator account")
+            return _guidance_reply(
+                "创建订单草稿需要先绑定模拟账户。请到「我的账户」创建账户后，"
+                "从账户或研究页面重新发起。"
+            )
         if not resolved_symbol:
-            raise ValueError("trade draft requires an unambiguous security symbol")
+            return _guidance_reply(
+                "我没有听出你要操作哪只标的。请带上明确的股票/ETF 代码再问，"
+                "例如「买入 1000 股 sh510300」。"
+            )
         simulator = user_simulator_repository(settings)
         if trade_intent == "sell" and ("清仓" in content or "全部卖" in content):
             position = next(
@@ -1202,7 +1227,10 @@ def handle_chat_message(
         data_as_of = None
     elif any(word in content for word in ("研究", "分析", "怎么看")):
         if not resolved_symbol:
-            raise ValueError("research query requires a security symbol")
+            return _guidance_reply(
+                "这个问题需要关联一只明确的标的。请先打开一份研究，"
+                "或在问题里带上股票/ETF 代码。"
+            )
         result = _execute_tool(
             repository,
             registry,

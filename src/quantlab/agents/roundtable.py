@@ -200,8 +200,8 @@ class ExpertRoundtable:
         progress_callback: RoundtableProgressCallback | None = None,
     ) -> RoundtableResult:
         participant_keys = normalize_roundtable_participants(participants)
-        if not 1 <= rounds <= 3:
-            raise ValueError("rounds must be between 1 and 3")
+        if not 1 <= rounds <= 6:
+            raise ValueError("rounds must be between 1 and 6")
         topic = str(topic or "").strip()
         if not topic:
             raise ValueError("roundtable topic is required")

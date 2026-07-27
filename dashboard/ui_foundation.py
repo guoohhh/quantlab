@@ -1021,14 +1021,16 @@ def apply_product_theme() -> None:
         .ql-roundtable-table b { position:relative; color:#fff6e8; font-size:.83rem; letter-spacing:.12em; }
         .ql-roundtable-table small { position:relative; margin-top:.25rem; color:rgba(255,246,232,.82); font-size:.64rem; letter-spacing:.04em; }
         .ql-roundtable-seat { position:absolute; display:flex; align-items:flex-start; gap:.48rem; width:min(22%,212px); min-width:142px; padding:.48rem; border:1px solid rgba(201,193,179,.9); border-radius:12px; background:rgba(251,250,246,.93); box-shadow:0 8px 20px rgba(56,48,37,.065); animation:qlSeatEnter .34s ease both; }
+        /* 座位不用 transform 定位（transform 祖先会把 position:fixed 的后代
+           锚回自身，气泡展开的全屏浮层就失效了）；等效偏移用 calc 写进 left/right */
         .ql-roundtable-seat-0 { left:4%; top:13%; }
-        .ql-roundtable-seat-1 { left:38%; top:8%; transform:translateX(-50%); }
+        .ql-roundtable-seat-1 { left:calc(38% - 106px); top:8%; }
         .ql-roundtable-seat-2 { right:4%; top:13%; }
         .ql-roundtable-seat-3 { left:4%; bottom:10%; }
-        .ql-roundtable-seat-4 { left:38%; bottom:4%; transform:translateX(-50%); }
+        .ql-roundtable-seat-4 { left:calc(38% - 106px); bottom:4%; }
         .ql-roundtable-seat-5 { right:4%; bottom:10%; }
-        .ql-roundtable-seat-6 { left:22%; top:38%; transform:translateX(-50%); }
-        .ql-roundtable-seat-7 { right:22%; top:38%; transform:translateX(50%); }
+        .ql-roundtable-seat-6 { left:calc(22% - 106px); top:38%; }
+        .ql-roundtable-seat-7 { right:calc(22% - 106px); top:38%; }
         .ql-seat-copy { min-width:0; }
         .ql-seat-copy strong { display:block; color:var(--ql-ink); font-size:.77rem; line-height:1.25; }
         .ql-seat-copy small { display:block; margin:.1rem 0 .22rem; color:var(--ql-warm); font-size:.61rem; line-height:1.25; }
@@ -1045,6 +1047,33 @@ def apply_product_theme() -> None:
         .ql-chibi-3 i { background:#2d3134; }
         .ql-chibi-3 b { background:var(--ql-warm); }
         @keyframes qlSeatEnter { from { opacity:0; } to { opacity:1; } }
+        /* 发言气泡可点开看全文（details/summary 原生折叠，无 JS 无 rerun）
+           展开态为居中浮层：任何座位都不会被舞台边缘或其他专家遮挡 */
+        .ql-seat-detail summary { cursor:pointer; list-style:none; }
+        .ql-seat-detail summary::-webkit-details-marker { display:none; }
+        .ql-seat-detail summary p { display:-webkit-box; overflow:hidden; margin:0; color:var(--ql-ink-soft); font-size:.67rem; line-height:1.42; -webkit-line-clamp:3; -webkit-box-orient:vertical; }
+        .ql-seat-detail .ql-seat-toggle { display:inline-block; margin-top:.18rem; color:var(--ql-warm); font-size:.58rem; font-weight:800; font-style:normal; letter-spacing:.05em; }
+        .ql-seat-detail .ql-seat-toggle-close { display:none; }
+        .ql-seat-detail[open] .ql-seat-toggle-open { display:none; }
+        .ql-seat-detail[open] .ql-seat-toggle-close { display:inline-block; }
+        .ql-seat-detail .ql-seat-full { display:none; }
+        /* 展开态 = 视口居中浮层：fixed 脱离舞台/座位祖先，任何座位都不会
+           被舞台边缘裁切，也不会被其他专家遮住（z-index 高于侧栏抽屉） */
+        .ql-seat-detail[open] {
+            position:fixed; z-index:100000;
+            left:50%; top:50%; transform:translate(-50%,-50%);
+            width:min(520px, 88vw); max-height:80vh;
+            overflow:auto; padding:1rem 1.1rem .9rem;
+            border:1px solid var(--ql-line-strong); border-radius:16px;
+            background:#fffdf8; box-shadow:0 34px 80px rgba(24,36,32,.38);
+        }
+        .ql-seat-detail[open] summary p { display:none; }
+        .ql-seat-detail[open] .ql-seat-full {
+            display:block; position:static; width:auto; max-height:none; overflow:visible;
+            margin-top:.5rem; padding:.6rem 0 0; border:0; border-top:1px dashed var(--ql-line);
+            color:var(--ql-ink-soft); font-size:.78rem; line-height:1.66; white-space:pre-wrap;
+        }
+        .ql-roundtable-seat:has(.ql-seat-detail[open]) { z-index:110; }
         @keyframes qlListening { 0%,100% { opacity:.7; } 50% { opacity:1; } }
         /* A context-aware assistant remains available everywhere without forcing a page-level chat load. */
         .st-key-global_ai_assistant { position:fixed; z-index:999; top:78px; right:22px; width:min(355px,calc(100vw - 42px)); max-height:calc(100vh - 100px); overflow:auto; padding:.7rem; border:1px solid var(--ql-line); border-radius:14px; background:rgba(251,250,246,.98); box-shadow:0 18px 42px rgba(56,48,37,.15); }
@@ -1821,6 +1850,44 @@ def apply_product_theme() -> None:
             font-weight: 700;
             letter-spacing: .01em;
         }
+
+        /* ---- 行情图表卡（K线+成交量，chart_svg.py 生成） ---- */
+        .ql-chart-card { margin:.4rem 0 1.1rem; padding:1rem 1.1rem .75rem; border:1px solid var(--ql-line); border-radius:var(--ql-radius-lg); background:var(--ql-surface); box-shadow:var(--ql-shadow); }
+        .ql-chart-head { display:flex; align-items:baseline; justify-content:space-between; gap:.8rem; margin-bottom:.45rem; flex-wrap:wrap; }
+        .ql-chart-head strong { font-family:var(--ql-display); font-size:1.05rem; font-weight:700; color:var(--ql-ink); letter-spacing:.02em; }
+        .ql-chart-head span { color:var(--ql-muted); font-size:.74rem; }
+        .ql-chart-head b.ql-chart-up { color:#c03a2b; }
+        .ql-chart-head b.ql-chart-down { color:#3e7c5f; }
+        .ql-chart-svg { display:block; width:100%; height:auto; }
+        .ql-chart-foot { margin-top:.35rem; color:var(--ql-muted); font-size:.68rem; letter-spacing:.02em; }
+
+        /* ---- 圆桌发起 CTA：前置且鲜艳的朱砂主按钮 ---- */
+        .st-key-roundtable_new_cta { margin:.15rem 0 .9rem; }
+        .st-key-roundtable_new_cta .stButton > button {
+            background: linear-gradient(180deg, #c1654a, var(--ql-warm-strong)) !important;
+            color: #fdf6ea !important;
+            border: 0 !important;
+            font-size: .98rem !important;
+            font-weight: 800 !important;
+            letter-spacing: .04em;
+            padding: .78rem 1.1rem !important;
+            border-radius: 13px !important;
+            box-shadow: 0 12px 30px rgba(163,58,44,.34) !important;
+            transition: transform .15s ease, box-shadow .15s ease !important;
+        }
+        .st-key-roundtable_new_cta .stButton > button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 36px rgba(163,58,44,.42) !important;
+            color: #fff !important;
+        }
+
+        /* ---- AI 助手"正在思考"气泡 ---- */
+        .ql-assistant-thinking { border-style:dashed; }
+        .ql-thinking-dots { display:inline-flex; gap:3px; margin-left:5px; vertical-align:baseline; }
+        .ql-thinking-dots i { width:5px; height:5px; border-radius:50%; background:var(--ql-warm); animation:qlThink 1.15s ease-in-out infinite; }
+        .ql-thinking-dots i:nth-child(2) { animation-delay:.18s; }
+        .ql-thinking-dots i:nth-child(3) { animation-delay:.36s; }
+        @keyframes qlThink { 0%,60%,100% { transform:translateY(0); opacity:.45; } 30% { transform:translateY(-4px); opacity:1; } }
 
         @media (max-width: 1050px) {
             html { font-size:16px; }

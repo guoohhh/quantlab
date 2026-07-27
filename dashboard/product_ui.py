@@ -10,6 +10,7 @@ import re
 import pandas as pd
 import streamlit as st
 
+from dashboard.chart_svg import render_symbol_market_chart
 from dashboard.local_settings import (
     LLM_PROVIDER_OPTIONS,
     llm_provider_key_configured,
@@ -2139,6 +2140,10 @@ def render_research_detail(settings: Settings) -> None:
     metrics[1].metric("置信度", f"{float(decision.get('confidence', 0)):.0%}")
     metrics[2].metric("建议仓位上限", f"{float(decision.get('target_weight', 0)):.0%}")
     metrics[3].metric("证据质量", f"{float(context.get('quality_score', 0)):.0%}")
+    try:
+        render_symbol_market_chart(settings, identity.symbol)
+    except Exception:
+        st.caption("行情图暂时无法加载；研究内容与证据不受影响。")
     evidence = decision.get("evidence", {})
     support, oppose = st.columns(2)
     with support:
@@ -2229,6 +2234,7 @@ def _roundtable_stage_html(
     catalog: dict[str, dict[str, str]],
     turns: list[dict[str, Any]],
     status: str,
+    header_note: str = "",
 ) -> str:
     latest_by_participant: dict[str, dict[str, Any]] = {}
     for turn in turns:
@@ -2239,8 +2245,21 @@ def _roundtable_stage_html(
     for index, key in enumerate(participants[:8]):
         item = catalog.get(key, {"label": key, "perspective": "研究视角"})
         turn = latest_by_participant.get(key, {})
-        latest = _research_user_copy(turn.get("statement") or "正在等待发言…")
-        latest = latest[:92] + ("…" if len(latest) > 92 else "")
+        full_statement = _research_user_copy(str(turn.get("statement") or ""))
+        if full_statement:
+            short = full_statement[:92] + ("…" if len(full_statement) > 92 else "")
+            # 发言气泡可点开看全文，再点收起（details/summary 原生折叠，无 JS）
+            statement_html = (
+                '<details class="ql-seat-detail"><summary>'
+                f"<p>{escape(short)}</p>"
+                '<em class="ql-seat-toggle ql-seat-toggle-open">展开全文</em>'
+                '<em class="ql-seat-toggle ql-seat-toggle-close">收起</em>'
+                "</summary>"
+                f'<div class="ql-seat-full">{escape(full_statement)}</div>'
+                "</details>"
+            )
+        else:
+            statement_html = "<p>正在等待发言…</p>"
         seats.append(
             "<article class=\"ql-roundtable-seat ql-roundtable-seat-"
             f"{index}\" aria-label=\"{escape(str(item['label']))} 的席位\">"
@@ -2248,13 +2267,14 @@ def _roundtable_stage_html(
             "<div class=\"ql-seat-copy\">"
             f"<strong>{escape(str(item['label']))}</strong>"
             f"<small>{escape(str(item.get('perspective') or '研究视角'))}</small>"
-            f"<p>{escape(latest)}</p>"
+            f"{statement_html}"
             "</div></article>"
         )
     status_copy = _roundtable_status_copy(status)
+    note = f" · {escape(header_note)}" if header_note and header_note != status_copy else ""
     return (
         "<section class=\"ql-roundtable-stage\">"
-        f"<div class=\"ql-roundtable-status\"><span></span>{escape(status_copy)}</div>"
+        f"<div class=\"ql-roundtable-status\"><span></span>{escape(status_copy)}{note}</div>"
         "<div class=\"ql-roundtable-table\"><i></i><b>ROUND TABLE</b><small>冻结研究 · 多视角复核</small></div>"
         f"{''.join(seats)}"
         "</section>"
@@ -2328,6 +2348,7 @@ def _render_roundtable_session(settings: Settings, session_id: str) -> None:
             catalog=catalog,
             turns=list(session.get("turns") or []),
             status=str(session.get("status") or "queued"),
+            header_note=str(session.get("progress_message") or ""),
         ),
         unsafe_allow_html=True,
     )
@@ -2390,7 +2411,38 @@ def render_roundtable(settings: Settings) -> None:
     active_session = repository.get(str(selected_session_id)) if selected_session_id else None
     defaults = list(active_session.get("participants") or []) if active_session else ["bull", "bear", "risk"]
     defaults = [item for item in defaults if item in catalog]
-    with st.expander("发起新的圆桌讨论", expanded=active_session is None):
+
+    # 发起入口前置：醒目的朱砂 CTA 放在页面顶部，不再藏到折叠区里
+    form_open_key = f"roundtable_form_open_{identity.run_id}"
+    with st.container(key="roundtable_new_cta"):
+        if st.button(
+            "发起新的圆桌讨论",
+            type="primary",
+            icon=":material/groups:",
+            key=f"open_roundtable_form_{identity.run_id}",
+            width="stretch",
+        ):
+            st.session_state[form_open_key] = True
+            st.rerun()
+
+    # 舞台合一：有选中会话时，实时舞台占页面主位（逐轮发言、进度都在这里），
+    # 发起表单收起在下方；不再出现"上面静态预览 + 下面真实结果"两个舞台。
+    session_id = st.session_state.get("product_roundtable_session_id")
+    if session_id:
+        current = repository.get(str(session_id))
+        if current and str(current.get("status")) in {"queued", "running"}:
+            @st.fragment(run_every=2)
+            def live_roundtable() -> None:
+                _render_roundtable_session(settings, str(session_id))
+
+            live_roundtable()
+        else:
+            _render_roundtable_session(settings, str(session_id))
+
+    with st.expander(
+        "发起新的圆桌讨论",
+        expanded=bool(st.session_state.get(form_open_key, active_session is None)),
+    ):
         participants = st.multiselect(
             "邀请专家",
             options=list(catalog),
@@ -2406,19 +2458,21 @@ def render_roundtable(settings: Settings) -> None:
         )
         rounds = st.select_slider(
             "讨论轮数",
-            options=[1, 2, 3],
+            options=[1, 2, 3, 4, 5, 6],
             value=2,
             key=f"roundtable_rounds_{identity.run_id}",
+            help="每位专家每轮发言一次；轮数越多讨论越充分，耗时与用量也越高。",
         )
-        st.markdown(
-            _roundtable_stage_html(
-                participants=participants,
-                catalog=catalog,
-                turns=[],
-                status="queued",
-            ),
-            unsafe_allow_html=True,
-        )
+        if active_session is None:
+            st.markdown(
+                _roundtable_stage_html(
+                    participants=participants,
+                    catalog=catalog,
+                    turns=[],
+                    status="queued",
+                ),
+                unsafe_allow_html=True,
+            )
         st.caption("圆桌只围绕当前冻结报告讨论，不会改写研究结论、仓位或模拟订单。")
         if st.button(
             "开始专家圆桌",
@@ -2440,22 +2494,12 @@ def render_roundtable(settings: Settings) -> None:
                 st.session_state["product_roundtable_session_id_pending"] = submitted[
                     "session"
                 ]["session_id"]
-                _queue_product_feedback("圆桌已提交到后台，页面会持续显示逐轮发言。")
+                st.session_state[form_open_key] = False
+                _queue_product_feedback("圆桌已提交：新讨论已置顶显示，逐轮发言会实时出现。")
                 st.rerun()
             except Exception as exc:
                 st.error(_friendly_error(exc, "圆桌暂时无法启动；当前研究报告没有被修改。"))
-    session_id = st.session_state.get("product_roundtable_session_id")
-    if session_id:
-        current = repository.get(str(session_id))
-        if current and str(current.get("status")) in {"queued", "running"}:
-            @st.fragment(run_every=2)
-            def live_roundtable() -> None:
-                _render_roundtable_session(settings, str(session_id))
-
-            live_roundtable()
-        else:
-            _render_roundtable_session(settings, str(session_id))
-    else:
+    if not session_id:
         render_page_state(
             "empty",
             "还没有圆桌讨论",
@@ -4527,6 +4571,14 @@ def _render_global_chat_job_live(jobs: JobRepository, job_id: str) -> None:
         return
     status = str(job.get("status") or "queued")
     if status in {"queued", "running"}:
+        # 先给一个"正在思考"的 AI 气泡，而不是干巴巴的任务状态行
+        st.markdown(
+            '<div class="ql-assistant-message ql-assistant-thinking">'
+            "<b>AI</b><p>正在思考"
+            '<span class="ql-thinking-dots"><i></i><i></i><i></i></span>'
+            "</p></div>",
+            unsafe_allow_html=True,
+        )
         st.caption(
             f"后台任务：{_status_label(status)} · "
             f"进度 {float(job.get('progress') or 0):.0%}"
