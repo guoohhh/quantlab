@@ -4503,6 +4503,36 @@ def _global_chat_context_label(
     )
 
 
+@st.fragment(run_every=2)
+def _render_global_chat_job_live(jobs: JobRepository, job_id: str) -> None:
+    """Poll one queued/running chat job so the rail updates itself.
+
+    While the job is active the fragment re-renders every 2s; once it leaves
+    the active state we trigger a full rerun so the assistant reply appears
+    without the user having to click a manual refresh button.
+    """
+
+    job = jobs.job(job_id)
+    if job is None:
+        st.rerun()
+        return
+    status = str(job.get("status") or "queued")
+    if status in {"queued", "running"}:
+        st.caption(
+            f"后台任务：{_status_label(status)} · "
+            f"进度 {float(job.get('progress') or 0):.0%}"
+        )
+        if st.button(
+            "取消",
+            key=f"cancel_global_chat_job_{job_id}",
+        ):
+            jobs.cancel(job_id, "cancelled_from_global_assistant")
+            _queue_product_feedback("AI 助手任务已取消。")
+            st.rerun()
+        return
+    st.rerun()
+
+
 def _render_global_ai_assistant(settings: Settings, *, page: str) -> None:
     """A lazy right rail: closed means no conversation or database work."""
 
@@ -4583,42 +4613,32 @@ def _render_global_ai_assistant(settings: Settings, *, page: str) -> None:
                     job = jobs.job(message["job_id"])
                     if job:
                         status = str(job.get("status") or "queued")
-                        st.caption(
-                            f"后台任务：{_status_label(status)} · "
-                            f"进度 {float(job.get('progress') or 0):.0%}"
-                        )
-                        task_actions = st.columns(2)
                         if status in {"queued", "running"}:
-                            if task_actions[0].button(
-                                "刷新进度",
-                                icon=":material/refresh:",
-                                key=f"refresh_global_chat_job_{job['job_id']}",
-                            ):
-                                st.rerun()
-                            if task_actions[1].button(
-                                "取消",
-                                key=f"cancel_global_chat_job_{job['job_id']}",
-                            ):
-                                jobs.cancel(job["job_id"], "cancelled_from_global_assistant")
-                                _queue_product_feedback("AI 助手任务已取消。")
-                                st.rerun()
-                        elif status == "failed" and task_actions[0].button(
-                            "安全重试",
-                            key=f"retry_global_chat_job_{job['job_id']}",
-                        ):
-                            payload = dict(job.get("payload") or {})
-                            submit_chat_job(
-                                settings,
-                                conversation_id=conversation_id,
-                                content=str(payload.get("content") or message.get("content") or ""),
-                                idempotency_key=f"global-chat-retry:{job['job_id']}:{uuid.uuid4()}",
-                                account_id=account_id,
-                                symbol=symbol,
-                                research_run_id=research_run_id,
-                                allow_research=False,
+                            # 轮询中的任务：fragment 每 2 秒自刷新，完成后整页重渲染出回复，
+                            # 不再依赖用户手动点"刷新进度"。
+                            _render_global_chat_job_live(jobs, str(job["job_id"]))
+                        else:
+                            st.caption(
+                                f"后台任务：{_status_label(status)} · "
+                                f"进度 {float(job.get('progress') or 0):.0%}"
                             )
-                            _queue_product_feedback("AI 助手任务已重新排队。")
-                            st.rerun()
+                            if status == "failed" and st.button(
+                                "安全重试",
+                                key=f"retry_global_chat_job_{job['job_id']}",
+                            ):
+                                payload = dict(job.get("payload") or {})
+                                submit_chat_job(
+                                    settings,
+                                    conversation_id=conversation_id,
+                                    content=str(payload.get("content") or message.get("content") or ""),
+                                    idempotency_key=f"global-chat-retry:{job['job_id']}:{uuid.uuid4()}",
+                                    account_id=account_id,
+                                    symbol=symbol,
+                                    research_run_id=research_run_id,
+                                    allow_research=False,
+                                )
+                                _queue_product_feedback("AI 助手任务已重新排队。")
+                                st.rerun()
             pending_actions = [
                 item
                 for item in repository.actions(conversation_id, limit=20)
@@ -4647,6 +4667,28 @@ def _render_global_ai_assistant(settings: Settings, *, page: str) -> None:
                     _go_to("专业空间")
         else:
             st.caption("提出第一个问题后，系统才会创建一条与当前页面关联的会话。")
+            other_conversations = []
+            try:
+                other_conversations = [
+                    item
+                    for item in repository.conversations(limit=30)
+                    if str(item.get("conversation_id")) not in set(conversation_ids)
+                ]
+            except Exception:
+                other_conversations = []
+            if other_conversations:
+                st.caption(
+                    f"你在其他页面有过 {len(other_conversations)} 段对话；"
+                    "对话按页面隔离保存，不会混到这里。"
+                )
+                if st.button(
+                    "查看全部对话",
+                    icon=":material/forum:",
+                    key=f"open_all_chats_from_global_{context_key}",
+                    width="stretch",
+                ):
+                    st.session_state["product_mine_view_target"] = "AI 对话"
+                    _go_to("专业空间")
         # A form clears its widget only after submission.  This avoids writing
         # to a live Streamlit widget key, which previously made the assistant
         # fail after a successful send on some Streamlit versions.

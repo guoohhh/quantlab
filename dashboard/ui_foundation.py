@@ -36,6 +36,8 @@ PRODUCT_ROUTE_PARENTS = {
 PRODUCT_PAGE_KEY = "product_active_page"
 PRODUCT_NAVIGATION_KEY = "product_navigation_choice"
 PRODUCT_PAGE_TARGET_KEY = "product_navigation_target"
+PRODUCT_LAST_PRIMARY_KEY = "product_last_primary_page"
+PRODUCT_NAV_CONSUMED_KEY = "product_navigation_consumed"
 PRODUCT_NAVIGATION_COMPACT_KEY = "product_navigation_compact"
 PRODUCT_MOBILE_NAVIGATION_OPEN_KEY = "product_mobile_navigation_open"
 PRODUCT_CONTEXT_REVISION_KEY = "product_context_revision"
@@ -448,14 +450,19 @@ def render_product_navigation() -> str:
         target_navigation_page = product_navigation_page(target)
         if target_navigation_page in PRODUCT_PAGES:
             st.session_state[PRODUCT_NAVIGATION_KEY] = target_navigation_page
+            st.session_state[PRODUCT_NAV_CONSUMED_KEY] = target_navigation_page
     active = current_product_page(st.session_state)
+    if active in PRODUCT_PAGES:
+        st.session_state[PRODUCT_LAST_PRIMARY_KEY] = active
     active_navigation_page = product_navigation_page(active)
     if active_navigation_page not in PRODUCT_PAGES:
-        selected_navigation_page = st.session_state.get(PRODUCT_NAVIGATION_KEY)
+        # 工具页/详情页（专业空间、设置、帮助中心）不在一级导航里。
+        # 参照项必须是"最后一个一级页面"——不能用 PRODUCT_NAVIGATION_KEY，
+        # 那是 radio 自己的值：用户一点击它就变成所选值，比较永假，
+        # 页面会被锁死在工具页出不来。
+        last_primary = st.session_state.get(PRODUCT_LAST_PRIMARY_KEY)
         active_navigation_page = (
-            selected_navigation_page
-            if selected_navigation_page in PRODUCT_PAGES
-            else PRODUCT_PAGES[0]
+            last_primary if last_primary in PRODUCT_PAGES else PRODUCT_PAGES[0]
         )
     compact = product_navigation_is_compact(st.session_state)
     mobile_navigation_open = bool(
@@ -652,8 +659,15 @@ def render_product_navigation() -> str:
     # A hidden route stays open until the user explicitly chooses another
     # primary destination.  The radio itself is still rendered for keyboard
     # access, but its parent item remains highlighted.
-    navigation_changed = selected in PRODUCT_PAGES and selected != active_navigation_page
+    #
+    # 判断"用户刚刚点了导航"不能拿 selected 和当前参照页比较——在工具页上
+    # radio 的值一点击就等于所选项，比较永假，页面会被锁死（真实 bug：
+    # 进入专业空间后无法跳出）。改为与"上次消费过的导航值"比较：
+    # widget 值变了 = 用户点了 = 导航；没变 = 保持当前隐藏路由。
+    consumed_navigation = st.session_state.get(PRODUCT_NAV_CONSUMED_KEY)
+    navigation_changed = selected in PRODUCT_PAGES and selected != consumed_navigation
     if navigation_changed:
+        st.session_state[PRODUCT_NAV_CONSUMED_KEY] = selected
         st.session_state[PRODUCT_MOBILE_NAVIGATION_OPEN_KEY] = False
     page = (
         selected
@@ -1310,15 +1324,15 @@ def apply_product_theme() -> None:
 
         /* ---- Radio / Checkbox：默认番茄红 #ff4b4b → 陶土红；未选态去纯白 ---- */
         /* react-aria 结构：label > div(外壳) > div(指示器壳) > div(指示器本体，着色层) */
-        [data-testid="stRadioOption"] > div > div:first-child > div {
+        [data-testid="stRadioOption"] > div > div:first-child > div:first-child:not([data-testid]) {
             background: var(--ql-surface) !important;
             border-color: var(--ql-line-strong) !important;
         }
-        [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child > div {
+        [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child > div:first-child:not([data-testid]) {
             background: var(--ql-warm) !important;
             border-color: var(--ql-warm) !important;
         }
-        [data-testid="stRadioOption"]:hover > div > div:first-child > div {
+        [data-testid="stRadioOption"]:hover > div > div:first-child > div:first-child:not([data-testid]) {
             border-color: var(--ql-warm) !important;
         }
         [data-testid="stCheckbox"] label > div:not([data-testid]) {
@@ -1591,47 +1605,60 @@ def apply_product_theme() -> None:
         [data-testid="stSidebar"] .ql-brand-mark:after { background:rgba(244,239,228,.35); }
         [data-testid="stSidebar"] .ql-nav-label { color:rgba(200,162,94,.78); }
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p { color:#c6cec1; }
-        /* 侧栏按钮：深色幽灵款，hover 才点亮 */
-        [data-testid="stSidebar"] .stButton > button {
-            background: rgba(244,239,228,.045) !important;
-            border: 1px solid rgba(244,239,228,.13) !important;
-            color: #d8ded2 !important;
+        /* 侧栏按钮：深色幽灵款，hover 才点亮
+           （选择器必须带 .st-key-product_expanded/compact_navigation 才能
+           追平并压过第一遍的暖白底规则，否则白底+浅字看不清） */
+        [data-testid="stSidebar"] .stButton > button,
+        [data-testid="stSidebar"] .st-key-product_expanded_navigation .stButton > button,
+        [data-testid="stSidebar"] .st-key-product_compact_navigation .stButton > button {
+            background: rgba(244,239,228,.055) !important;
+            border: 1px solid rgba(244,239,228,.16) !important;
+            color: #dde3d7 !important;
             box-shadow: none !important;
         }
-        [data-testid="stSidebar"] .stButton > button:hover {
-            background: rgba(244,239,228,.10) !important;
-            border-color: rgba(244,239,228,.26) !important;
+        [data-testid="stSidebar"] .stButton > button:hover,
+        [data-testid="stSidebar"] .st-key-product_expanded_navigation .stButton > button:hover,
+        [data-testid="stSidebar"] .st-key-product_compact_navigation .stButton > button:hover {
+            background: rgba(244,239,228,.11) !important;
+            border-color: rgba(244,239,228,.30) !important;
             color: #f6f1e4 !important;
         }
         [data-testid="stSidebar"] .stButton > button[kind="primary"],
-        [data-testid="stSidebar"] .stButton > button[data-testid="stBaseButton-primary"] {
+        [data-testid="stSidebar"] .stButton > button[data-testid="stBaseButton-primary"],
+        [data-testid="stSidebar"] .st-key-product_compact_navigation .stButton > button[kind="primary"],
+        [data-testid="stSidebar"] .st-key-product_compact_navigation .stButton > button[data-testid="stBaseButton-primary"] {
             background: linear-gradient(180deg, var(--ql-warm-strong), var(--ql-warm-dark)) !important;
             border-color: transparent !important;
             color: #fdf6ea !important;
         }
-        /* 侧栏导航 radio：选中不再是粉色块，改左侧朱砂竖条 + 微光底 */
+        /* 侧栏导航 radio：选中无底色块——左侧朱砂竖条 + 文字提亮加粗
+           （react-aria 的 data-selected/data-focused 会自带一层主色 tint，
+           必须显式 transparent 掉，否则是一块饱和橙底） */
         [data-testid="stSidebar"] [role="radiogroup"] label {
             border: 1px solid transparent !important;
             border-radius: 10px;
             color: #c9d2c6;
         }
         [data-testid="stSidebar"] [role="radiogroup"] label:hover {
-            background: rgba(244,239,228,.055) !important;
+            background: rgba(244,239,228,.05) !important;
             color: #f2eee2;
         }
-        [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
-            background: rgba(244,239,228,.085) !important;
+        [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked),
+        [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"],
+        [data-testid="stSidebar"] [data-testid="stRadioOption"][data-focused="true"],
+        [data-testid="stSidebar"] [data-testid="stRadioOption"][data-focus-visible="true"] {
+            background: transparent !important;
             border-color: transparent !important;
             box-shadow: inset 3px 0 0 var(--ql-warm-strong);
             color: #f6f1e4;
             font-weight: 700;
         }
         /* 深色上的 radio 指示器：空心环 → 选中实心朱砂 */
-        [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child > div {
+        [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child > div:first-child:not([data-testid]) {
             background: transparent !important;
             border-color: rgba(244,239,228,.38) !important;
         }
-        [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child > div {
+        [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child > div:first-child:not([data-testid]) {
             background: var(--ql-warm-strong) !important;
             border-color: var(--ql-warm-strong) !important;
         }
@@ -1774,6 +1801,13 @@ def apply_product_theme() -> None:
         .ql-home-stage-title { margin-top: 1.25rem; }
         [data-testid="stMetricValue"] { font-family: var(--ql-display) !important; }
         .ql-council-head strong { font-family: var(--ql-display); }
+        /* 副标题衬线化：h2/h3 与一级标题同一套展示字，避免"只有几处字体变了" */
+        .stMain [data-testid="stMarkdownContainer"] h2,
+        .stMain [data-testid="stMarkdownContainer"] h3 {
+            font-family: var(--ql-display);
+            font-weight: 700;
+            letter-spacing: .01em;
+        }
 
         @media (max-width: 1050px) {
             html { font-size:16px; }
