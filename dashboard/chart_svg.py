@@ -55,7 +55,7 @@ def _fmt_volume(value: float) -> str:
 
 def _candles_svg(bars: list[Any], *, symbol: str) -> str:
     width, height = 760, 330
-    pad_left, pad_right, pad_top, pad_bottom = 10, 68, 16, 28
+    pad_left, pad_right, pad_top, _pad_bottom = 10, 68, 16, 28
     price_h, vol_h, gap = 200, 54, 12
     plot_w = width - pad_left - pad_right
 
@@ -98,10 +98,10 @@ def _candles_svg(bars: list[Any], *, symbol: str) -> str:
 
     for i, bar in enumerate(bars):
         x = pad_left + i * slot + slot / 2
-        o, h, l, c = float(bar.open), float(bar.high), float(bar.low), float(bar.close)
+        o, h, lo, c = float(bar.open), float(bar.high), float(bar.low), float(bar.close)
         color = _UP if c >= o else _DOWN
         parts.append(
-            f'<line x1="{x:.1f}" y1="{py(h):.1f}" x2="{x:.1f}" y2="{py(l):.1f}" stroke="{color}" stroke-width="1.1"/>'
+            f'<line x1="{x:.1f}" y1="{py(h):.1f}" x2="{x:.1f}" y2="{py(lo):.1f}" stroke="{color}" stroke-width="1.1"/>'
         )
         top, bottom = py(max(o, c)), py(min(o, c))
         body_h = max(1.2, bottom - top)
