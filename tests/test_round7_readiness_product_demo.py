@@ -723,6 +723,7 @@ def test_five_entry_simulator_shows_partial_fill_and_can_cancel_from_ui(
         quantity=200,
         idempotency_key="round7-ui-order",
         requested_at=datetime(2026, 7, 20, 2, 1, tzinfo=UTC),
+        expires_at=datetime(2099, 1, 1, tzinfo=UTC),
         user_confirmation={
             "confirmed": True,
             "check_id": check["check_id"],

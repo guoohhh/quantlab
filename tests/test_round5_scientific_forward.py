@@ -182,6 +182,8 @@ class _QuoteProvider:
             license_status="fixture",
             endpoint="fixture/quote",
             session_status=self.session,
+            quote_kind="realtime",
+            actionable=(self.session == "open"),
             industry="trusted-industry",
             risk_metadata={"risk_check_complete": True, "financial_check_complete": True},
         )
