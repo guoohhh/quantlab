@@ -1556,6 +1556,225 @@ def apply_product_theme() -> None:
             border-color: var(--ql-line) !important;
         }
 
+        /* ============================================================
+           墨案 INK DESK · 视觉重设计（2026-07-27）
+           深色墨绿侧栏 + 宣纸画布 + 宋体衬线展示字 + 朱砂印。
+           目标：从"AI 生成的米色模板"跳到"东方气质的专业投研案头"。
+           ============================================================ */
+
+        /* ---- 展示字体换衬线：标题与数字有"器物感"，正文仍是无衬线 ---- */
+        :root {
+            --ql-display: "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+            --ql-ink-deep: #1a2620;
+            --ql-ink-deep-2: #223228;
+            --ql-gold: #c8a25e;
+            --ql-cinnabar: #a33a2c;
+        }
+
+        /* ---- 深色墨绿侧栏：与宣纸主画布形成纸墨对比 ---- */
+        [data-testid="stSidebar"] > div:first-child {
+            background: linear-gradient(180deg, #1c2822 0%, #141e19 100%) !important;
+            border-right: 1px solid rgba(244,239,228,.08) !important;
+        }
+        [data-testid="stSidebar"] ::-webkit-scrollbar-thumb {
+            background: rgba(244,239,228,.18);
+            border-color: transparent;
+        }
+        [data-testid="stSidebar"] .ql-brand strong { color:#f2eee2; letter-spacing:.03em; }
+        [data-testid="stSidebar"] .ql-brand small { color:rgba(242,238,226,.45); }
+        [data-testid="stSidebar"] .ql-brand-mark {
+            background: rgba(244,239,228,.05);
+            border-color: rgba(244,239,228,.30);
+            box-shadow: none;
+        }
+        [data-testid="stSidebar"] .ql-brand-mark:before,
+        [data-testid="stSidebar"] .ql-brand-mark:after { background:rgba(244,239,228,.35); }
+        [data-testid="stSidebar"] .ql-nav-label { color:rgba(200,162,94,.78); }
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p { color:#c6cec1; }
+        /* 侧栏按钮：深色幽灵款，hover 才点亮 */
+        [data-testid="stSidebar"] .stButton > button {
+            background: rgba(244,239,228,.045) !important;
+            border: 1px solid rgba(244,239,228,.13) !important;
+            color: #d8ded2 !important;
+            box-shadow: none !important;
+        }
+        [data-testid="stSidebar"] .stButton > button:hover {
+            background: rgba(244,239,228,.10) !important;
+            border-color: rgba(244,239,228,.26) !important;
+            color: #f6f1e4 !important;
+        }
+        [data-testid="stSidebar"] .stButton > button[kind="primary"],
+        [data-testid="stSidebar"] .stButton > button[data-testid="stBaseButton-primary"] {
+            background: linear-gradient(180deg, var(--ql-warm-strong), var(--ql-warm-dark)) !important;
+            border-color: transparent !important;
+            color: #fdf6ea !important;
+        }
+        /* 侧栏导航 radio：选中不再是粉色块，改左侧朱砂竖条 + 微光底 */
+        [data-testid="stSidebar"] [role="radiogroup"] label {
+            border: 1px solid transparent !important;
+            border-radius: 10px;
+            color: #c9d2c6;
+        }
+        [data-testid="stSidebar"] [role="radiogroup"] label:hover {
+            background: rgba(244,239,228,.055) !important;
+            color: #f2eee2;
+        }
+        [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
+            background: rgba(244,239,228,.085) !important;
+            border-color: transparent !important;
+            box-shadow: inset 3px 0 0 var(--ql-warm-strong);
+            color: #f6f1e4;
+            font-weight: 700;
+        }
+        /* 深色上的 radio 指示器：空心环 → 选中实心朱砂 */
+        [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child > div {
+            background: transparent !important;
+            border-color: rgba(244,239,228,.38) !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child > div {
+            background: var(--ql-warm-strong) !important;
+            border-color: var(--ql-warm-strong) !important;
+        }
+        /* 侧栏提醒 / 边界文案在深色上的可读性 */
+        [data-testid="stSidebar"] .ql-sidebar-attention { color:#e8a58c; }
+        [data-testid="stSidebar"] .ql-sidebar-boundary {
+            border-top-color: rgba(244,239,228,.12);
+            color: rgba(242,238,226,.55);
+        }
+        [data-testid="stSidebar"] .ql-sidebar-boundary span { color:var(--ql-gold); }
+        [data-testid="stSidebar"] .ql-sidebar-boundary p { color:rgba(242,238,226,.5) !important; }
+
+        /* ---- 页眉瘦身：去掉大空白，衬线标题 ---- */
+        .ql-workspace-head {
+            display: block;
+            margin: 0 0 1rem;
+            padding: .3rem 0 .8rem;
+            border-bottom: 1px solid var(--ql-line);
+        }
+        .ql-workspace-head .ql-eyebrow { margin-bottom:.34rem; }
+        .ql-workspace-head h1 {
+            font-size: 1.92rem !important;
+            font-family: var(--ql-display) !important;
+            font-weight: 700;
+            letter-spacing: .015em;
+        }
+        .ql-workspace-head p { margin:.38rem 0 0; font-size:.93rem; line-height:1.6; }
+
+        /* ---- Hero 2.0：宣纸底 + 朱砂印章 + 衬线大标题 ---- */
+        .ql-hero {
+            position: relative;
+            overflow: hidden;
+            margin: .2rem 0 1.1rem;
+            padding: 2.05rem 2.2rem 1.95rem;
+            border: 1px solid var(--ql-line);
+            border-radius: var(--ql-radius-lg);
+            background:
+                radial-gradient(720px 260px at 88% -40px, rgba(163,58,44,.10), transparent 62%),
+                radial-gradient(560px 240px at 72% 122%, rgba(72,100,123,.09), transparent 62%),
+                linear-gradient(150deg, #f8f4ea, #f0e9da);
+            box-shadow: var(--ql-shadow);
+        }
+        .ql-hero:before {
+            content: "";
+            position: absolute;
+            width: 360px; height: 360px; right: -120px; top: -190px;
+            border: 1px solid rgba(163,58,44,.13);
+            border-radius: 50%;
+        }
+        .ql-hero:after {
+            content: "";
+            position: absolute;
+            width: 220px; height: 220px; right: -40px; top: -80px;
+            border: 1px solid rgba(72,100,123,.12);
+            border-radius: 50%;
+        }
+        .ql-hero span {
+            position: relative; z-index: 1;
+            color: var(--ql-cinnabar);
+            font-size: .8rem; font-weight: 850; letter-spacing: .17em;
+        }
+        .ql-hero h1 {
+            position: relative; z-index: 1;
+            margin: .55rem 0 .62rem;
+            max-width: 26ch;
+            font-size: 2.42rem !important;
+            font-family: var(--ql-display) !important;
+            font-weight: 700;
+            letter-spacing: .015em;
+            line-height: 1.30;
+        }
+        .ql-hero h1 em { font-style: normal; color: var(--ql-cinnabar); }
+        .ql-hero p {
+            position: relative; z-index: 1;
+            margin: 0; max-width: 62ch;
+            color: var(--ql-ink-soft);
+            font-size: .97rem; line-height: 1.82;
+        }
+        /* 朱砂方印"代码说了算"——品牌承诺的印章化 */
+        .ql-hero-seal {
+            position: absolute; z-index: 2;
+            right: 2.1rem; top: 1.7rem;
+            transform: rotate(-5deg);
+        }
+        .ql-hero-seal i {
+            display: grid; place-content: center;
+            width: 76px; height: 76px;
+            border: 2.5px solid rgba(163,58,44,.82);
+            border-radius: 10px;
+            background: rgba(163,58,44,.055);
+            box-shadow: inset 0 0 0 1px rgba(163,58,44,.18);
+            color: rgba(163,58,44,.88);
+            font-family: var(--ql-display);
+            font-size: 1.04rem; font-weight: 700;
+            font-style: normal;
+            line-height: 1.34;
+            text-align: center;
+            letter-spacing: .07em;
+        }
+
+        /* ---- 红线笼子·深色镇纸：浅色页面中的重色锚点 ---- */
+        .ql-cage {
+            margin: 1.15rem 0 1rem;
+            padding: 1.45rem 1.55rem 1.5rem;
+            border: 1px solid #2b3b31;
+            border-left: 4px solid var(--ql-cinnabar);
+            border-radius: var(--ql-radius-lg);
+            background: linear-gradient(155deg, #1e2b24 0%, #151f1a 100%);
+            box-shadow: 0 24px 50px rgba(24,36,32,.26);
+        }
+        .ql-cage-head span { color: rgba(200,162,94,.92); }
+        .ql-cage-head strong {
+            color: #f2eee2;
+            font-family: var(--ql-display);
+            font-size: 1.32rem;
+            font-weight: 700;
+            letter-spacing: .02em;
+        }
+        .ql-cage-head small { color: rgba(242,238,226,.42); }
+        .ql-guard {
+            border: 1px solid rgba(244,239,228,.13);
+            border-radius: 12px;
+            background: rgba(244,239,228,.045);
+        }
+        .ql-guard i { color: rgba(242,238,226,.55); }
+        .ql-guard b {
+            color: #e5c07f;
+            font-family: var(--ql-display);
+            font-weight: 700;
+        }
+        .ql-guard b.ql-guard-flag { color: #e07b62; }
+        .ql-guard em { color: rgba(242,238,226,.48); }
+
+        /* ---- 衬线标题与数字的全站渗透 ---- */
+        .ql-section-title strong {
+            font-family: var(--ql-display);
+            font-weight: 700;
+            letter-spacing: .02em;
+        }
+        .ql-home-stage-title { margin-top: 1.25rem; }
+        [data-testid="stMetricValue"] { font-family: var(--ql-display) !important; }
+        .ql-council-head strong { font-family: var(--ql-display); }
+
         @media (max-width: 1050px) {
             html { font-size:16px; }
             .main .block-container { padding-left:1.25rem; padding-right:1.25rem; }
@@ -1578,6 +1797,9 @@ def apply_product_theme() -> None:
         }
         @media (max-width: 700px) {
             html { font-size:16px; }
+            .ql-hero-seal { display:none; }
+            .ql-hero h1 { font-size:1.72rem !important; }
+            .ql-cage-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
             [data-testid="stSidebar"]:has(.ql-navigation-mode):not(:has(.ql-mobile-navigation-open)) {
                 display:none !important;
             }

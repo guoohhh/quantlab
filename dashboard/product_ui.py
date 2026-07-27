@@ -352,8 +352,7 @@ def render_product_app(settings: Settings) -> None:
         "设置": render_settings,
     }
     renderers[page](settings)
-    if not st.session_state.get(HISTORICAL_DEMO_OPEN_KEY):
-        _render_global_ai_assistant(settings, page=page)
+    _render_global_ai_assistant(settings, page=page)
 
 
 def _render_workspace_header(page: str) -> None:
@@ -370,9 +369,6 @@ def _render_workspace_header(page: str) -> None:
             <p class="ql-eyebrow">{eyebrow}</p>
             <h1>{title}</h1>
             <p>{description}</p>
-          </div>
-          <div class="ql-trace" aria-label="QuantLab Evidence Trace 品牌图形">
-            <i></i><b></b><span>QUIET SIGNAL / LIVE CONTEXT</span>
           </div>
         </section>
         """,
@@ -1061,17 +1057,33 @@ def _render_evidence_context(context: dict[str, Any]) -> None:
         st.caption("报告已保存上下文指纹；当前摘要没有可展开的证据块。")
 
 
+def _go_latest_roundtable(settings: Settings) -> None:
+    """跳到最新一份研究的专家圆桌；没有研究档案时退回研究台。"""
+
+    try:
+        path = settings.resolve(settings.get("system.database_path"))
+        index = DecisionRepository(path).research_page(page=1, page_size=1)
+        items = list(index.get("items") or [])
+    except Exception:
+        items = []
+    if items:
+        _open_research_roundtable(items[0])
+    else:
+        _go_to("研究台")
+
+
 def _render_home_hero(settings: Settings) -> None:
     """首屏英雄区：把简介承诺（AI 关进笼子、代码说了算）前置为可见的第一屏。
 
-    纯呈现层：阈值只读自 settings 的 [risk] 配置，主 CTA 复用既有历史 demo
-    入口（HISTORICAL_DEMO_OPEN_KEY），圆桌预览点击走既有 _go_to，不新增逻辑。
+    纯呈现层：阈值只读自 settings 的 [risk] 配置；主 CTA 复用既有历史 demo
+    入口；圆桌 CTA 复用 _open_research_roundtable 直跳最新研究的圆桌页。
     """
     st.markdown(
         """
         <section class="ql-hero">
+          <div class="ql-hero-seal" aria-hidden="true"><i>代码<br>说了算</i></div>
           <span>QUANTLAB · 把 AI 关进笼子</span>
-          <h1>研究由 AI 圆桌完成，<em>红线由代码强制执行</em>——AI 说了不算，代码说了算。</h1>
+          <h1>研究由 AI 圆桌完成，<em>红线由代码强制执行。</em></h1>
           <p>技术面、动量、价值否决、风险否决、宏观五个角色组成多 Agent 圆桌，负责研究、比较与反证，形成操作草稿；而仓位、集中度、回撤、ST、T+1、涨跌停和交易成本这些红线，全部由确定性代码引擎强制拦截。</p>
         </section>
         """,
@@ -1091,14 +1103,43 @@ def _render_home_hero(settings: Settings) -> None:
             st.rerun()
     with cta_council:
         if st.button(
-            "查看五角色圆桌",
+            "发起一场圆桌讨论",
             key="hero_go_research",
+            icon=":material/groups:",
             width="stretch",
-            help="进入研究台，发起一次多 Agent 圆桌，看五个角色如何研究、质疑与反证。",
+            help="带着最新一份研究档案，直接进入专家圆桌看五个角色交锋；还没有档案时先去研究台生成。",
         ):
-            _go_to("研究台")
+            _go_latest_roundtable(settings)
 
-    # 红线笼子（置顶主角）——阈值读真实 [risk] 配置，市场规则为引擎内联逻辑
+    # 圆桌（首屏 C 位）——真实的圆桌舞台预览，点击直达专家圆桌
+    catalog = {item["key"]: item for item in roundtable_participant_catalog()}
+    stage_participants = ["technical", "bull", "risk", "bear", "macro"]
+    st.markdown(
+        '<div class="ql-section-title ql-home-stage-title"><span>MULTI-AGENT COUNCIL · 圆桌研究</span>'
+        "<strong>五个角色围一张桌子：研究、比较、反证</strong></div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        _roundtable_stage_html(
+            participants=stage_participants,
+            catalog=catalog,
+            turns=[],
+            status="queued",
+        ),
+        unsafe_allow_html=True,
+    )
+    stage_cta, stage_hint = st.columns([1, 3])
+    if stage_cta.button(
+        "进入专家圆桌",
+        key="hero_enter_roundtable",
+        icon=":material/meeting_room:",
+        width="stretch",
+        help="带着最新一份研究档案进入圆桌页，选择专家、发起讨论、看逐轮发言。",
+    ):
+        _go_latest_roundtable(settings)
+    stage_hint.caption("圆桌围绕冻结研究展开：逐轮发言、交叉质疑、主持人总结，全部留痕可回放。")
+
+    # 红线笼子——阈值读真实 [risk] 配置，市场规则为引擎内联逻辑
     risk = settings.get("risk") or {}
 
     def _pct(key: str, fallback: float) -> str:
@@ -1137,30 +1178,6 @@ def _render_home_hero(settings: Settings) -> None:
             <small>阈值读自风控配置</small>
           </div>
           <div class="ql-cage-grid">{cells}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # 五角色圆桌预览（第二块）——把简介里的五个角色可视化
-    roles = [
-        ("技术面", "📈", "价格结构与形态", "support"),
-        ("动量", "🚀", "趋势强弱与资金", "support"),
-        ("价值否决", "⚖️", "估值过热则否决", "veto"),
-        ("风险否决", "🛑", "风险不可控则否决", "veto"),
-        ("宏观", "🌐", "环境与政策约束", "macro"),
-    ]
-    role_cells = "".join(
-        f'<div class="ql-role ql-role-{kind}"><i>{icon}</i>'
-        f"<b>{escape(name)}</b><em>{escape(desc)}</em></div>"
-        for name, icon, desc, kind in roles
-    )
-    st.markdown(
-        f"""
-        <div class="ql-council">
-          <div class="ql-council-head"><span>MULTI-AGENT COUNCIL · 圆桌研究</span>
-          <strong>五个角色负责研究、比较与反证，形成操作草稿</strong></div>
-          <div class="ql-council-grid">{role_cells}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1231,9 +1248,9 @@ def _render_historical_demo_workspace(settings: Settings) -> None:
     st.markdown(
         """
         <section class="ql-demo-boundary">
-          <span>ISOLATED HISTORICAL DEMO</span>
-          <strong>冻结历史研究 · 独立账本 · 用户确认</strong>
-          <p>所有行情、研究、订单和结果都保留历史演示身份。工程链路真实运行，但不构成实时建议或收益证明。</p>
+          <span>ISOLATED HISTORICAL DEMO · 冻结历史演示</span>
+          <strong>证据基准日 2026-01-05 · 独立账本 · 用户确认</strong>
+          <p>演示使用的行情、研究、订单与结果全部冻结在历史基准日（2026-01-05），与今日真实行情无关。工程链路真实运行，但不构成实时建议或收益证明。</p>
         </section>
         """,
         unsafe_allow_html=True,
