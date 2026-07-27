@@ -4537,6 +4537,7 @@ def _render_global_ai_assistant(settings: Settings, *, page: str) -> None:
     """A lazy right rail: closed means no conversation or database work."""
 
     is_open = bool(st.session_state.get("global_ai_assistant_open", False))
+    is_fullscreen = bool(st.session_state.get("global_ai_assistant_fullscreen", False))
     with st.container(key="global_ai_assistant", border=False):
         if not is_open:
             if st.button(
@@ -4548,8 +4549,18 @@ def _render_global_ai_assistant(settings: Settings, *, page: str) -> None:
                 st.session_state["global_ai_assistant_open"] = True
                 st.rerun()
             return
-        heading, collapse = st.columns([4, 1])
+        if is_fullscreen:
+            st.markdown('<span class="ql-ai-fullscreen" aria-hidden="true"></span>', unsafe_allow_html=True)
+        heading, expand, collapse = st.columns([3, 1, 1])
         heading.markdown("**AI 助手**")
+        if expand.button(
+            "退出全屏" if is_fullscreen else "全屏",
+            icon=":material/close_fullscreen:" if is_fullscreen else ":material/open_in_full:",
+            key="toggle_global_ai_assistant_fullscreen",
+            help="在全屏与悬浮之间切换",
+        ):
+            st.session_state["global_ai_assistant_fullscreen"] = not is_fullscreen
+            st.rerun()
         if collapse.button(
             "收起",
             icon=":material/chevron_right:",

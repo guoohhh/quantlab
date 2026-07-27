@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import Any, Callable
 
+from pydantic import BaseModel
+
 from quantlab.config import Settings
 from quantlab.domain import (
     AnalysisContextPack,
@@ -1220,9 +1222,10 @@ def handle_chat_message(
         data_as_of = result.get("as_of")
     else:
         result = {"tools": registry.catalog()}
-        reply = (
-            "我可以查询模拟账户、持仓、委托、成交、盈亏、行情、研究、Reviewer、"
-            "组合约束和通知；也可以运行交易前检查并创建需要二次确认的模拟订单草稿。"
+        reply = _answer_general_question(
+            settings,
+            conversation=effective_conversation,
+            content=content,
         )
         data_as_of = None
 
@@ -1557,6 +1560,62 @@ def _is_context_question(content: str) -> bool:
             "分析",
         )
     )
+
+
+_GENERAL_CAPABILITY_REPLY = (
+    "我可以查询模拟账户、持仓、委托、成交、盈亏、行情、研究、Reviewer、"
+    "组合约束和通知；也可以运行交易前检查并创建需要二次确认的模拟订单草稿。"
+)
+
+
+class _ChatGeneralReply(BaseModel):
+    reply: str = ""
+
+
+def _answer_general_question(
+    settings: Settings,
+    *,
+    conversation: dict[str, Any],
+    content: str,
+) -> str:
+    """Answer non-keyword questions with the configured LLM.
+
+    The deterministic keyword router owns account/order/alert flows.  Anything
+    it does not recognise (greetings, "what should I do now", general market
+    chat) used to fall through to a fixed capability card for every message,
+    which reads as broken even when a real API key is configured.  Give those
+    messages to the LLM instead, and degrade to the capability card when the
+    provider is mock, unconfigured, or the call fails (fail-closed).
+    """
+
+    if str(settings.get("llm.provider", "mock")).strip().lower() == "mock":
+        return _GENERAL_CAPABILITY_REPLY
+    provider = build_provider(settings.section("llm"))
+    system = (
+        "你是 QuantLab 的 AI 投研助手，用简洁、直接的中文回答。"
+        "你可以查询模拟账户、持仓、委托、成交、盈亏、行情与研究，"
+        "也能运行交易前检查、创建需要用户二次确认的模拟订单草稿。"
+        "规则：不承诺收益、不编造实时行情或不存在的数据；"
+        "用户问买卖相关的问题时，提醒订单草稿需要本人二次确认；"
+        "答不上来就直接说，并引导用户问与研究、持仓、风险相关的问题。"
+        "回答控制在 120 字以内。"
+    )
+    context_bits: list[str] = []
+    if conversation.get("page_scope"):
+        context_bits.append(f"用户当前所在页面：{conversation['page_scope']}")
+    if conversation.get("symbol"):
+        context_bits.append(f"当前关联标的：{conversation['symbol']}")
+    prompt = "\n".join([*context_bits, f"用户的问题：{content}"])
+
+    async def call() -> _ChatGeneralReply:
+        return await provider.structured(system, prompt, _ChatGeneralReply)
+
+    try:
+        answer = asyncio.run(await_with_provider_close(provider, call()))
+    except Exception:
+        return _GENERAL_CAPABILITY_REPLY
+    reply = str(getattr(answer, "reply", "") or "").strip()
+    return reply or _GENERAL_CAPABILITY_REPLY
 
 
 def _answer_context_question(

@@ -1066,6 +1066,19 @@ def apply_product_theme() -> None:
         .st-key-global_ai_assistant [data-testid="stVerticalBlock"] { gap:.55rem; }
         .st-key-global_ai_assistant .stForm { margin:0; border:0; padding:0; background:transparent; }
         .st-key-global_ai_assistant textarea { min-height:76px !important; background:#fffdf8; }
+        /* 全屏态：从右侧悬浮栏切到居中大窗；悬浮态保持原样 */
+        .st-key-global_ai_assistant:has(.ql-ai-fullscreen) {
+            top: 50%;
+            right: auto;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(880px, calc(100vw - 64px));
+            max-height: min(82vh, 860px);
+            padding: 1rem 1.1rem;
+            border-radius: 18px;
+            box-shadow: 0 34px 80px rgba(24,36,32,.34);
+        }
+        .st-key-global_ai_assistant:has(.ql-ai-fullscreen) textarea { min-height:110px !important; }
         .ql-assistant-message { margin:.25rem 0; padding:.58rem .68rem; border:1px solid var(--ql-line); border-radius:10px; background:#fffdf8; }
         .ql-assistant-message b { display:block; margin-bottom:.22rem; color:var(--ql-ai); font-size:.68rem; }
         .ql-assistant-message p { margin:0; color:var(--ql-ink-soft); font-size:.78rem; line-height:1.5; }
