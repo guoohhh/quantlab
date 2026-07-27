@@ -732,10 +732,18 @@ def apply_product_theme() -> None:
             --ql-up-soft: #f6e2df;
             --ql-down: #2f7d54;
             --ql-down-soft: #ddeee2;
+            --ql-field: #f4efe4;
+            --ql-field-soft: #efe8da;
+            --ql-field-line: #c6bda9;
+            --ql-field-focus: rgba(165,83,57,.42);
+            --ql-warm-strong: #b45c40;
             --ql-radius-sm: 10px;
             --ql-radius: 16px;
             --ql-radius-lg: 24px;
             --ql-shadow: 0 1px 0 rgba(56,48,37,.03), 0 18px 50px rgba(56,48,37,.055);
+            --ql-shadow-sm: 0 1px 2px rgba(56,48,37,.05), 0 6px 16px rgba(56,48,37,.05);
+            --ql-shadow-btn: 0 1px 0 rgba(255,255,255,.4) inset, 0 8px 18px rgba(165,83,57,.20);
+            --ql-inset: inset 0 2px 4px rgba(56,48,37,.07);
             --ql-font: "Noto Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI Variable Text", "Segoe UI", sans-serif;
             --ql-display: "Noto Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", "DengXian", sans-serif;
         }
@@ -1061,6 +1069,493 @@ def apply_product_theme() -> None:
         .ql-research-loading strong { display:block; font-size:.9rem; }
         .ql-research-loading p { margin:.18rem 0 0; color:var(--ql-muted); font-size:.78rem; line-height:1.5; }
         @keyframes qlResearchLoading { 0%,100% { transform:scaleY(.62); opacity:.55; } 50% { transform:scaleY(1); opacity:1; } }
+        /* ============================================================
+           原生控件精修：消灭"纯白毛坯感"，让 Streamlit 组件继承设计系统
+           （纯呈现层，不改任何业务逻辑）
+           ============================================================ */
+        /* ---- 文本 / 数字 / 文本域输入：去纯白、加暖底与内阴影、focus 陶土红 ---- */
+        [data-testid="stTextInput"] input,
+        [data-testid="stNumberInput"] input,
+        [data-testid="stTextArea"] textarea,
+        [data-testid="stDateInput"] input,
+        [data-testid="stTimeInput"] input,
+        .stTextInput input, .stNumberInput input, .stTextArea textarea {
+            background: var(--ql-field) !important;
+            border: 1px solid var(--ql-field-line) !important;
+            border-radius: 11px !important;
+            box-shadow: var(--ql-inset) !important;
+            color: var(--ql-ink) !important;
+            transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+        }
+        [data-testid="stTextArea"] textarea { border-radius: 13px !important; }
+        [data-testid="stTextInput"] input::placeholder,
+        [data-testid="stNumberInput"] input::placeholder,
+        [data-testid="stTextArea"] textarea::placeholder { color: var(--ql-muted); opacity:.85; }
+        [data-testid="stTextInput"] input:hover,
+        [data-testid="stNumberInput"] input:hover,
+        [data-testid="stTextArea"] textarea:hover { border-color: var(--ql-line-strong) !important; }
+        [data-testid="stTextInput"] input:focus,
+        [data-testid="stNumberInput"] input:focus,
+        [data-testid="stTextArea"] textarea:focus {
+            border-color: var(--ql-warm) !important;
+            box-shadow: var(--ql-inset), 0 0 0 3px var(--ql-field-focus) !important;
+            background: #fff !important;
+        }
+        /* Streamlit 用外层 baseweb 容器包住 input，focus 环要挂到容器上才干净 */
+        [data-testid="stTextInput"] > div > div,
+        [data-testid="stNumberInput"] > div > div,
+        [data-baseweb="input"], [data-baseweb="textarea"] {
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+        /* number input 的 −/+ 步进器：从毛坯灰改成暖调分段按钮 */
+        [data-testid="stNumberInput"] button {
+            background: var(--ql-field-soft) !important;
+            border: 1px solid var(--ql-field-line) !important;
+            color: var(--ql-ink-soft) !important;
+            transition: background .14s ease, color .14s ease;
+        }
+        [data-testid="stNumberInput"] button:hover {
+            background: var(--ql-warm-soft) !important;
+            color: var(--ql-warm-dark) !important;
+            border-color: rgba(165,83,57,.35) !important;
+        }
+        /* ---- 下拉选择 / 多选：去纯白，暖底 + 圆角 + focus 环 ---- */
+        [data-baseweb="select"] > div {
+            background: var(--ql-field) !important;
+            border: 1px solid var(--ql-field-line) !important;
+            border-radius: 11px !important;
+            box-shadow: var(--ql-inset) !important;
+            transition: border-color .16s ease, box-shadow .16s ease;
+            min-height: 43px;
+        }
+        [data-baseweb="select"] > div:hover { border-color: var(--ql-line-strong) !important; }
+        [data-baseweb="select"] > div:focus-within {
+            border-color: var(--ql-warm) !important;
+            box-shadow: var(--ql-inset), 0 0 0 3px var(--ql-field-focus) !important;
+        }
+        [data-baseweb="popover"] [role="listbox"],
+        [data-baseweb="menu"] {
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 13px !important;
+            box-shadow: 0 18px 42px rgba(56,48,37,.14) !important;
+            background: var(--ql-surface) !important;
+            overflow: hidden;
+        }
+        [data-baseweb="menu"] li:hover,
+        [role="option"]:hover { background: var(--ql-warm-soft) !important; }
+        [role="option"][aria-selected="true"] { background: var(--ql-warm-soft) !important; color: var(--ql-warm-dark) !important; }
+        /* 多选 tag / pill */
+        [data-baseweb="tag"] {
+            background: var(--ql-warm-soft) !important;
+            border: 1px solid rgba(165,83,57,.24) !important;
+            color: var(--ql-warm-dark) !important;
+            border-radius: 8px !important;
+        }
+        /* ---- 次级按钮：从"纯白飘"改成暖白底、有归属感的实体 ---- */
+        .stButton > button, .stDownloadButton > button, .stFormSubmitButton > button,
+        [data-testid="stBaseButton-secondary"], [data-testid="stBaseButton-secondaryFormSubmit"] {
+            background: linear-gradient(180deg, var(--ql-surface), var(--ql-surface-soft)) !important;
+            border: 1px solid var(--ql-line-strong) !important;
+            color: var(--ql-ink) !important;
+            box-shadow: var(--ql-shadow-sm);
+        }
+        .stButton > button:hover, .stDownloadButton > button:hover, .stFormSubmitButton > button:hover,
+        [data-testid="stBaseButton-secondary"]:hover, [data-testid="stBaseButton-secondaryFormSubmit"]:hover {
+            background: linear-gradient(180deg, #fff, var(--ql-warm-soft)) !important;
+            border-color: var(--ql-warm) !important;
+            color: var(--ql-warm-dark) !important;
+            box-shadow: 0 10px 24px rgba(69,55,40,.12);
+        }
+        .stButton > button:active, .stDownloadButton > button:active { transform: translateY(0) !important; box-shadow: var(--ql-inset); }
+        /* ---- 主按钮：去过饱和、加纵向渐变与柔光阴影，做出"高级实体键"质感 ---- */
+        .stButton > button[kind="primary"], .stFormSubmitButton > button[kind="primary"],
+        [data-testid="stBaseButton-primary"], [data-testid="stBaseButton-primaryFormSubmit"] {
+            background: linear-gradient(180deg, var(--ql-warm-strong), var(--ql-warm)) !important;
+            border: 1px solid var(--ql-warm-dark) !important;
+            color: #fff8f2 !important;
+            box-shadow: var(--ql-shadow-btn) !important;
+            letter-spacing: .01em;
+        }
+        .stButton > button[kind="primary"]:hover, .stFormSubmitButton > button[kind="primary"]:hover,
+        [data-testid="stBaseButton-primary"]:hover, [data-testid="stBaseButton-primaryFormSubmit"]:hover {
+            background: linear-gradient(180deg, #c1654a, var(--ql-warm-strong)) !important;
+            border-color: var(--ql-warm-dark) !important;
+            color: #fff !important;
+            box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 12px 26px rgba(165,83,57,.30) !important;
+            transform: translateY(-1px);
+        }
+        /* tertiary（如收起态导航）保持克制，仅悬浮时点亮 */
+        .stButton > button[kind="tertiary"] {
+            background: transparent !important;
+            border: 1px solid transparent !important;
+            box-shadow: none !important;
+        }
+        .stButton > button[kind="tertiary"]:hover {
+            background: var(--ql-surface-soft) !important;
+            border-color: var(--ql-line) !important;
+        }
+        .stButton > button[kind="tertiary"][class*="primary"],
+        [data-testid="stSidebar"] .st-key-product_compact_navigation .stButton > button[kind="primary"] {
+            background: var(--ql-warm-soft) !important;
+            color: var(--ql-warm-dark) !important;
+            border-color: rgba(165,83,57,.22) !important;
+        }
+        /* ---- 侧栏"我的与工具"按钮：从纯白毛坯改成暖白扁平项 ---- */
+        [data-testid="stSidebar"] .st-key-product_expanded_navigation .stButton > button {
+            background: var(--ql-surface-soft) !important;
+            border: 1px solid var(--ql-line) !important;
+            color: var(--ql-ink-soft) !important;
+            box-shadow: none !important;
+            justify-content: flex-start;
+            text-align: left;
+        }
+        [data-testid="stSidebar"] .st-key-product_expanded_navigation .stButton > button:hover {
+            background: var(--ql-warm-soft) !important;
+            border-color: rgba(165,83,57,.24) !important;
+            color: var(--ql-warm-dark) !important;
+            transform: translateX(2px);
+        }
+        /* 收起态导航按钮保持居中扁平，不被上面的左对齐影响 */
+        [data-testid="stSidebar"] .st-key-product_compact_navigation .stButton > button {
+            background: var(--ql-surface-soft) !important;
+            border: 1px solid var(--ql-line) !important;
+            box-shadow: none !important;
+        }
+        [data-testid="stSidebar"] .st-key-product_compact_navigation .stButton > button:hover {
+            background: var(--ql-warm-soft) !important;
+            border-color: rgba(165,83,57,.24) !important;
+        }
+        /* ---- 卡片容器 / bordered container：去近纯白，给暖调层次与柔阴影 ---- */
+        [data-testid="stExpander"] {
+            background: linear-gradient(180deg, var(--ql-surface), rgba(246,242,234,.72)) !important;
+            box-shadow: var(--ql-shadow-sm);
+        }
+        [data-testid="stExpander"] summary:hover { color: var(--ql-warm-dark); }
+        /* ---- Tabs：默认灰白 → 暖调 pill，选中态陶土红下划线 ---- */
+        [data-baseweb="tab-list"] {
+            gap: .2rem;
+            border-bottom: 1px solid var(--ql-line) !important;
+        }
+        [data-baseweb="tab"] {
+            background: transparent !important;
+            border-radius: 10px 10px 0 0 !important;
+            color: var(--ql-muted) !important;
+            font-weight: 650;
+            transition: background .14s ease, color .14s ease;
+        }
+        [data-baseweb="tab"]:hover { background: var(--ql-surface-soft) !important; color: var(--ql-ink) !important; }
+        [data-baseweb="tab"][aria-selected="true"] { color: var(--ql-warm-dark) !important; }
+        [data-baseweb="tab-highlight"] { background: var(--ql-warm) !important; height: 3px !important; border-radius: 3px; }
+        /* ---- 表格 / DataFrame：表头暖底、行分隔柔化、圆角包裹 ---- */
+        [data-testid="stDataFrame"], [data-testid="stTable"] {
+            box-shadow: var(--ql-shadow-sm);
+            background: var(--ql-surface) !important;
+        }
+        [data-testid="stTable"] table { border-collapse: separate; border-spacing: 0; }
+        [data-testid="stTable"] thead th {
+            background: var(--ql-surface-soft) !important;
+            color: var(--ql-ink-soft) !important;
+            font-weight: 700;
+            border-bottom: 1px solid var(--ql-line-strong) !important;
+        }
+        [data-testid="stTable"] tbody tr:nth-child(even) td { background: rgba(246,242,234,.45); }
+        [data-testid="stTable"] tbody tr:hover td { background: var(--ql-warm-soft); }
+        [data-testid="stTable"] td, [data-testid="stTable"] th { border-color: var(--ql-line) !important; }
+        /* glide-data-grid (stDataFrame) 圆角内收，避免白角外露 */
+        [data-testid="stDataFrame"] > div { border-radius: var(--ql-radius); overflow: hidden; }
+        /* ---- 提示条：alert / info 用暖调而非默认蓝白 ---- */
+        [data-testid="stAlert"] { box-shadow: var(--ql-shadow-sm); }
+        [data-testid="stNotification"] { border-radius: var(--ql-radius) !important; }
+        /* ---- 滑块 / 开关：把 baseweb 主色点成陶土红，去默认蓝红 ---- */
+        [data-testid="stSlider"] [role="slider"] { background: var(--ql-warm) !important; border-color: var(--ql-warm-dark) !important; }
+        [data-testid="stSlider"] [data-baseweb="slider"] div[style*="rgb"] { background: var(--ql-warm) !important; }
+        [data-baseweb="checkbox"] span[aria-checked="true"],
+        [data-baseweb="checkbox"] [data-checked="true"] { background: var(--ql-warm) !important; border-color: var(--ql-warm) !important; }
+        /* ---- 分段控件 segmented_control / radio-as-pills：暖调选中态 ---- */
+        [data-testid="stButtonGroup"] button[aria-pressed="true"],
+        [data-baseweb="button-group"] button[aria-selected="true"] {
+            background: var(--ql-warm-soft) !important;
+            color: var(--ql-warm-dark) !important;
+            border-color: rgba(165,83,57,.22) !important;
+        }
+        /* ---- 全局：细化默认滚动条，收掉突兀的系统灰 ---- */
+        ::-webkit-scrollbar { width: 11px; height: 11px; }
+        ::-webkit-scrollbar-thumb { background: var(--ql-line-strong); border: 3px solid var(--ql-canvas); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--ql-muted); }
+        ::-webkit-scrollbar-track { background: transparent; }
+
+        /* ============================================================
+           原生控件精修·第二遍：Streamlit 1.60 react-aria 化后的断裂点
+           （radio/selectbox 等已无 data-baseweb，钩子改为 testid + data-rac 属性）
+           ============================================================ */
+
+        /* ---- 元素悬浮工具栏（dataframe 右上角的下载/全屏按钮）：去纯白 ---- */
+        [data-testid="stElementToolbarButtonContainer"] {
+            background: var(--ql-surface) !important;
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 10px !important;
+            box-shadow: var(--ql-shadow-sm) !important;
+        }
+        [data-testid="stElementToolbarButton"] {
+            background: transparent !important;
+            color: var(--ql-ink-soft) !important;
+            border-radius: 8px !important;
+        }
+        [data-testid="stElementToolbarButton"]:hover {
+            background: var(--ql-field-soft) !important;
+            color: var(--ql-warm-dark) !important;
+        }
+
+        /* ---- Radio / Checkbox：默认番茄红 #ff4b4b → 陶土红；未选态去纯白 ---- */
+        /* react-aria 结构：label > div(外壳) > div(指示器壳) > div(指示器本体，着色层) */
+        [data-testid="stRadioOption"] > div > div:first-child > div {
+            background: var(--ql-surface) !important;
+            border-color: var(--ql-line-strong) !important;
+        }
+        [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child > div {
+            background: var(--ql-warm) !important;
+            border-color: var(--ql-warm) !important;
+        }
+        [data-testid="stRadioOption"]:hover > div > div:first-child > div {
+            border-color: var(--ql-warm) !important;
+        }
+        [data-testid="stCheckbox"] label > div:not([data-testid]) {
+            background: var(--ql-surface) !important;
+            border-color: var(--ql-line-strong) !important;
+        }
+        [data-testid="stCheckbox"] label[data-selected="true"] > div:not([data-testid]),
+        [data-testid="stCheckbox"] label:has(input:checked) > div:not([data-testid]) {
+            background: var(--ql-warm) !important;
+            border-color: var(--ql-warm) !important;
+        }
+        [data-testid="stCheckbox"] label:hover > div:not([data-testid]) {
+            border-color: var(--ql-warm) !important;
+        }
+        /* 旧版 baseweb 结构兜底（老控件混用时不致回红） */
+        [data-baseweb="checkbox"] input:checked ~ div,
+        [data-baseweb="radio"] input:checked ~ div {
+            background-color: var(--ql-warm) !important;
+            border-color: var(--ql-warm) !important;
+        }
+
+        /* ---- Selectbox / MultiSelect 触发框（react-aria 新结构，补暖底输入槽） ---- */
+        [data-testid="stSelectbox"] > div[data-rac],
+        [data-testid="stMultiSelect"] > div[data-rac] {
+            background: transparent !important;
+            border: 0 !important;
+        }
+        [data-testid="stSelectbox"] div[role="group"],
+        [data-testid="stMultiSelect"] div[role="group"] {
+            background: var(--ql-field) !important;
+            border: 1px solid var(--ql-field-line) !important;
+            border-radius: 11px !important;
+            box-shadow: var(--ql-inset) !important;
+            min-height: 43px;
+            transition: border-color .16s ease, box-shadow .16s ease;
+        }
+        [data-testid="stSelectbox"] div[role="group"]:hover,
+        [data-testid="stMultiSelect"] div[role="group"]:hover {
+            border-color: var(--ql-line-strong) !important;
+        }
+        [data-testid="stSelectbox"] div[role="group"][data-focus-within="true"],
+        [data-testid="stMultiSelect"] div[role="group"][data-focus-within="true"] {
+            border-color: var(--ql-warm) !important;
+            box-shadow: var(--ql-inset), 0 0 0 3px var(--ql-field-focus) !important;
+        }
+        [data-testid="stSelectbox"] div[role="group"] input,
+        [data-testid="stMultiSelect"] div[role="group"] input {
+            background: transparent !important;
+        }
+        [data-testid="stSelectbox"] div[role="group"] button,
+        [data-testid="stMultiSelect"] div[role="group"] button {
+            color: var(--ql-muted) !important;
+        }
+
+        /* ---- 下拉弹层面板：去纯白，暖面 + 圆角 + 柔影 ---- */
+        [data-testid="stSelectboxVirtualDropdown"],
+        [data-testid="stSelectboxVirtualDropdownEmpty"] {
+            background: var(--ql-surface) !important;
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 13px !important;
+            box-shadow: 0 18px 42px rgba(56,48,37,.14) !important;
+        }
+        [role="option"][data-focused="true"],
+        [role="option"]:focus-visible {
+            background: var(--ql-warm-soft) !important;
+            color: var(--ql-warm-dark) !important;
+        }
+
+        /* ---- dataframe 列菜单 / 动作菜单弹层：同下拉面板处理 ---- */
+        [data-testid="stDataFrameColumnMenu"],
+        [data-testid="stDataFrameButtonActionMenu"],
+        [data-testid="stDataFrameColumnVisibilityMenu"],
+        [data-testid="stDataFrameColumnFormattingMenu"],
+        [data-testid="stDataFrameStatisticsMenu"] {
+            background: var(--ql-surface) !important;
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 13px !important;
+            box-shadow: 0 18px 42px rgba(56,48,37,.14) !important;
+        }
+
+        /* ---- 日期选择日历弹层与选中日：去默认蓝红 ---- */
+        div[data-rac][data-trigger]:has([role="grid"]),
+        [data-testid="stDateInput"] div[data-rac][data-trigger] {
+            background: var(--ql-surface) !important;
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 13px !important;
+            box-shadow: 0 18px 42px rgba(56,48,37,.14) !important;
+        }
+        [role="gridcell"] > div {
+            border-radius: 8px;
+            transition: background-color .12s ease;
+        }
+        [role="gridcell"] > div:hover {
+            background: var(--ql-field-soft) !important;
+        }
+        [role="gridcell"] > div[data-selected="true"],
+        [role="gridcell"][aria-selected="true"] > div {
+            background: var(--ql-warm) !important;
+            color: #fffdf8 !important;
+        }
+
+        /* ---- Toast 通知条：去默认冷白 ---- */
+        [data-testid="stToast"] {
+            background: var(--ql-surface) !important;
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 13px !important;
+            box-shadow: 0 14px 34px rgba(56,48,37,.16) !important;
+        }
+        [data-testid="stToastText"],
+        [data-testid="stToast"] p {
+            color: var(--ql-ink) !important;
+        }
+
+        /* ---- Spinner 圆弧：默认番茄红 → 陶土红 ---- */
+        [data-testid="stSpinnerIcon"],
+        [data-testid="stExpanderIconSpinner"],
+        [data-testid="stSpinner"] > div > div {
+            border-top-color: var(--ql-warm) !important;
+        }
+
+        /* ---- 文件上传拖放区：暖底虚线槽 ---- */
+        [data-testid="stFileUploaderDropzone"] {
+            background: var(--ql-field) !important;
+            border: 1.5px dashed var(--ql-field-line) !important;
+            border-radius: var(--ql-radius) !important;
+            transition: border-color .16s ease, background-color .16s ease;
+        }
+        [data-testid="stFileUploaderDropzone"]:hover,
+        [data-testid="stFileUploaderDropzone"]:focus-within {
+            border-color: var(--ql-warm) !important;
+            background: var(--ql-field-soft) !important;
+        }
+        [data-testid="stFileUploaderDropzoneInstructions"],
+        [data-testid="stFileUploaderDropzoneInstructions"] * {
+            color: var(--ql-muted) !important;
+        }
+        [data-testid="stFileUploaderFile"],
+        [data-testid="stFileUploaderFileData"] {
+            border-color: var(--ql-line) !important;
+            border-radius: 12px !important;
+        }
+
+        /* ---- Expander：暖面描边卡片，hover 点亮标题 ---- */
+        [data-testid="stExpander"] {
+            border: 1px solid var(--ql-line) !important;
+            border-radius: var(--ql-radius) !important;
+            background: rgba(251,250,246,.68) !important;
+            box-shadow: var(--ql-shadow-sm) !important;
+            overflow: hidden;
+        }
+        [data-testid="stExpander"] summary {
+            background: transparent !important;
+        }
+        [data-testid="stExpander"] summary:hover p,
+        [data-testid="stExpander"] summary:hover span {
+            color: var(--ql-warm-dark) !important;
+        }
+        [data-testid="stExpanderDetails"] {
+            border-top: 1px solid var(--ql-line) !important;
+        }
+
+        /* ---- 代码块 / JSON 查看器：暖底收边 ---- */
+        [data-testid="stCodeBlock"] pre,
+        [data-testid="stCode"] pre {
+            background: var(--ql-field) !important;
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 12px !important;
+            color: var(--ql-ink) !important;
+        }
+        [data-testid="stCodeBlock"] code,
+        [data-testid="stCode"] code {
+            color: var(--ql-ink-soft) !important;
+        }
+        [data-testid="stJson"] {
+            background: var(--ql-surface) !important;
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 12px !important;
+            padding: .5rem .6rem;
+        }
+        [data-testid="stJson"] [class*="json-view"],
+        [data-testid="stJson"] [class*="json-view"] > div {
+            background: transparent !important;
+        }
+
+        /* ---- 进度条：轨道暖灰、填充陶土 ---- */
+        [data-testid="stProgress"] > div,
+        [data-testid="stProgressBarTrack"] {
+            background: var(--ql-field-soft) !important;
+            border-radius: 999px !important;
+        }
+        [data-testid="stProgress"] [role="progressbar"],
+        [data-testid="stProgress"] > div > div {
+            background: linear-gradient(180deg, var(--ql-warm-strong), var(--ql-warm-dark)) !important;
+            border-radius: 999px !important;
+        }
+
+        /* ---- 静态表格（st.table）：与 dataframe 同一套暖表 ---- */
+        [data-testid="stTable"] table,
+        [data-testid="stTableStyledTable"] {
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+        }
+        [data-testid="stTable"] thead th,
+        [data-testid="stTableStyledTable"] thead th {
+            background: var(--ql-field-soft) !important;
+            color: var(--ql-ink-soft) !important;
+            border-bottom: 1px solid var(--ql-line) !important;
+        }
+        [data-testid="stTable"] tbody tr:nth-child(even) td,
+        [data-testid="stTableStyledTable"] tbody tr:nth-child(even) td {
+            background: rgba(244,239,228,.45) !important;
+        }
+        [data-testid="stTable"] td,
+        [data-testid="stTableStyledTable"] td {
+            border-bottom: 1px solid rgba(221,215,202,.6) !important;
+        }
+
+        /* ---- 链接按钮：与次按钮同一套暖白实体 ---- */
+        [data-testid="stLinkButton"] a {
+            background: linear-gradient(180deg, #fdfcf8, #f6f1e7) !important;
+            border: 1px solid var(--ql-line) !important;
+            border-radius: 11px !important;
+            color: var(--ql-ink) !important;
+            box-shadow: var(--ql-shadow-sm) !important;
+            text-decoration: none !important;
+        }
+        [data-testid="stLinkButton"] a:hover {
+            border-color: var(--ql-warm) !important;
+            color: var(--ql-warm-dark) !important;
+        }
+
+        /* ---- 分割线：融入暖调 ---- */
+        hr {
+            border-color: var(--ql-line) !important;
+        }
+
         @media (max-width: 1050px) {
             html { font-size:16px; }
             .main .block-container { padding-left:1.25rem; padding-right:1.25rem; }
