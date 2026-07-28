@@ -1057,36 +1057,36 @@ def apply_product_theme() -> None:
         .ql-seat-detail[open] .ql-seat-toggle-open { display:none; }
         .ql-seat-detail[open] .ql-seat-toggle-close { display:inline-block; }
         .ql-seat-detail .ql-seat-full { display:none; }
-        /* 阅读模式：任何一个气泡展开，舞台从"圆桌视图"切换为"卡片平铺视图"——
-           全部回到文档流，多人同时展开也不会有任何遮挡/裁切
-           （fixed/absolute 在 Streamlit 的 transform/contain 容器里不可靠） */
-        .ql-roundtable-stage:has(.ql-seat-detail[open]) {
-            display:grid;
-            grid-template-columns:repeat(2, minmax(0, 1fr));
-            gap:10px;
-            padding:54px 12px 12px;
-            min-height:0;
-            overflow:visible;
+        /* 展开态 = 座位原位毛玻璃浮层：统一尺寸、半透明、最顶层、内部滚轮滚动。
+           舞台 overflow 放开 + 展开时舞台整体抬层，卡片可溢出舞台边缘覆盖
+           周边内容，任何座位都不会被裁切（用户明确指定的交互形态） */
+        .ql-roundtable-stage { overflow:visible; }
+        .ql-roundtable-stage:has(.ql-seat-detail[open]) { z-index:30; }
+        .ql-seat-detail[open] {
+            position:absolute; z-index:90;
+            left:50%; top:calc(100% + 10px); transform:translateX(-50%);
+            width:min(400px, 46vw); height:252px;
+            display:flex; flex-direction:column;
+            padding:.78rem .9rem .7rem;
+            border:1px solid rgba(169,158,141,.75); border-radius:16px;
+            background:rgba(255,253,248,.86);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+            box-shadow:0 26px 60px rgba(24,36,32,.30);
         }
-        .ql-roundtable-stage:has(.ql-seat-detail[open]) .ql-roundtable-table { display:none; }
-        /* 平铺阅读时的模式提示：只在有气泡展开时出现 */
-        .ql-reading-mode-hint { display:none; margin-left:.5rem; padding:.1rem .45rem; border:1px dashed var(--ql-line-strong); border-radius:999px; color:var(--ql-warm); font-size:.62rem; font-weight:750; }
-        .ql-roundtable-stage:has(.ql-seat-detail[open]) .ql-reading-mode-hint { display:inline-block; }
-        .ql-roundtable-stage:has(.ql-seat-detail[open]) .ql-roundtable-seat {
-            position:static;
-            width:auto;
-            min-width:0;
-            animation:none;
-        }
-        .ql-roundtable-stage:has(.ql-seat-detail[open]) .ql-roundtable-seat:has(.ql-seat-detail[open]) {
-            grid-column:1 / -1;
-        }
+        /* 下排座位（3/4/5）向上展开 */
+        .ql-roundtable-seat-3 .ql-seat-detail[open],
+        .ql-roundtable-seat-4 .ql-seat-detail[open],
+        .ql-roundtable-seat-5 .ql-seat-detail[open] { top:auto; bottom:calc(100% + 10px); }
+        .ql-seat-detail[open] summary { flex:none; }
         .ql-seat-detail[open] summary p { display:none; }
         .ql-seat-detail[open] .ql-seat-full {
-            display:block; position:static; width:auto; max-height:none; overflow:visible;
-            margin-top:.5rem; padding:.6rem 0 0; border:0; border-top:1px dashed var(--ql-line);
+            display:block; flex:1 1 auto; min-height:0; overflow-y:auto;
+            margin-top:.45rem; padding:.55rem .15rem 0; border:0; border-top:1px dashed var(--ql-line);
             color:var(--ql-ink-soft); font-size:.78rem; line-height:1.66; white-space:pre-wrap;
+            scrollbar-width:thin; scrollbar-color:var(--ql-line-strong) transparent;
         }
+        .ql-roundtable-seat:has(.ql-seat-detail[open]) { z-index:95; }
         @keyframes qlListening { 0%,100% { opacity:.7; } 50% { opacity:1; } }
         /* A context-aware assistant remains available everywhere without forcing a page-level chat load. */
         .st-key-global_ai_assistant { position:fixed; z-index:999; top:78px; right:22px; width:min(355px,calc(100vw - 42px)); max-height:calc(100vh - 100px); overflow:auto; padding:.7rem; border:1px solid var(--ql-line); border-radius:14px; background:rgba(251,250,246,.98); box-shadow:0 18px 42px rgba(56,48,37,.15); }
