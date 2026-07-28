@@ -874,15 +874,17 @@ def apply_product_theme() -> None:
         h1 [data-testid="stHeaderActionElements"],
         h2 [data-testid="stHeaderActionElements"],
         h3 [data-testid="stHeaderActionElements"] { display:none !important; }
+        /* 主区顶部留白收敛：默认 ~5rem 的空隙压到 2rem，首屏内容上移 */
+        .stMain [data-testid="stMainBlockContainer"] { padding-top:2rem !important; }
         h1 { font-size:2.15rem !important; line-height:1.18 !important; font-weight:720 !important; }
         h2 { font-size:1.45rem !important; line-height:1.3 !important; font-weight:700 !important; }
         h3 { font-size:1.08rem !important; line-height:1.35 !important; }
         p, li, label, input, textarea, button { font-size:1rem; }
         [data-testid="stCaptionContainer"] { color:var(--ql-muted); font-size:.86rem; }
-        .ql-workspace-head { display:grid; grid-template-columns:minmax(0,1fr) 230px; align-items:center; gap:2rem; margin:.25rem 0 1.35rem; padding:1.15rem 0 1.2rem; border-bottom:1px solid var(--ql-line); }
-        .ql-workspace-head .ql-eyebrow { margin:0 0 .5rem; color:var(--ql-warm); font-size:.69rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+        .ql-workspace-head { display:grid; grid-template-columns:minmax(0,1fr) 230px; align-items:center; gap:2rem; margin:.1rem 0 1.05rem; padding:.55rem 0 .95rem; border-bottom:1px solid var(--ql-line); }
+        .ql-workspace-head .ql-eyebrow { margin:0 0 .38rem; color:var(--ql-warm); font-size:.69rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
         .ql-workspace-head h1 { margin:0; font-size:2.3rem !important; }
-        .ql-workspace-head p { max-width:780px; margin:.62rem 0 0; color:var(--ql-ink-soft); font-size:1rem; line-height:1.7; }
+        .ql-workspace-head p { max-width:780px; margin:.45rem 0 0; color:var(--ql-ink-soft); font-size:1rem; line-height:1.7; }
         .ql-trace { position:relative; height:92px; overflow:hidden; border:1px solid var(--ql-line); border-radius:18px; background:linear-gradient(145deg,var(--ql-surface),var(--ql-surface-soft)); }
         .ql-trace:before,.ql-trace:after { content:""; position:absolute; inset:18px 20px; border:1px solid rgba(72,100,123,.22); border-radius:50%; transform:rotate(-8deg); }
         .ql-trace:after { inset:30px 44px 16px 28px; border-color:rgba(56,104,88,.24); transform:rotate(13deg); }
@@ -979,13 +981,13 @@ def apply_product_theme() -> None:
         .ql-demo-step-done { border-color:var(--ql-pine); color:var(--ql-pine); }
         .ql-demo-step-done b { border-color:var(--ql-pine); background:var(--ql-pine-soft); }
         /* ---- 首屏英雄区（简介承诺的兑现现场） ---- */
-        .ql-hero { position:relative; overflow:hidden; margin:.1rem 0 1.1rem; padding:1.6rem 1.7rem; border:1px solid var(--ql-line); border-radius:var(--ql-radius-lg); background:linear-gradient(135deg,rgba(251,250,246,.96),rgba(244,239,229,.92)); box-shadow:var(--ql-shadow); }
+        .ql-hero { position:relative; overflow:hidden; margin:0 0 1rem; padding:1.2rem 1.5rem; border:1px solid var(--ql-line); border-radius:var(--ql-radius-lg); background:linear-gradient(135deg,rgba(251,250,246,.96),rgba(244,239,229,.92)); box-shadow:var(--ql-shadow); }
         .ql-hero:before { content:""; position:absolute; width:330px; height:330px; right:-90px; top:-160px; border:1px solid rgba(165,83,57,.16); border-radius:50%; }
         .ql-hero:after { content:""; position:absolute; width:210px; height:210px; right:-30px; top:-70px; border:1px solid rgba(72,100,123,.14); border-radius:50%; }
         .ql-hero span { position:relative; z-index:1; color:var(--ql-warm); font-size:.82rem; font-weight:850; letter-spacing:.14em; }
-        .ql-hero h1 { position:relative; z-index:1; margin:.5rem 0 .6rem; font-size:2.2rem !important; font-weight:800; line-height:1.22; max-width:34ch; }
+        .ql-hero h1 { position:relative; z-index:1; margin:.35rem 0 .45rem; font-size:2.2rem !important; font-weight:800; line-height:1.22; max-width:34ch; }
         .ql-hero h1 em { font-style:normal; color:var(--ql-warm); }
-        .ql-hero p { position:relative; z-index:1; margin:0; max-width:58ch; color:var(--ql-ink-soft); font-size:1.08rem; line-height:1.62; }
+        .ql-hero p { position:relative; z-index:1; margin:0; max-width:58ch; color:var(--ql-ink-soft); font-size:1.02rem; line-height:1.58; }
         /* ---- 红线笼子（置顶主角） ---- */
         .ql-cage { margin:0 0 1rem; padding:1.25rem 1.35rem 1.3rem; border:1px solid var(--ql-line); border-left:4px solid var(--ql-warm); border-radius:var(--ql-radius); background:var(--ql-surface); box-shadow:var(--ql-shadow); }
         .ql-cage-head { display:flex; align-items:baseline; justify-content:space-between; gap:.8rem; margin-bottom:1rem; }
@@ -1921,6 +1923,15 @@ def apply_product_theme() -> None:
         .ql-thinking-dots i:nth-child(2) { animation-delay:.18s; }
         .ql-thinking-dots i:nth-child(3) { animation-delay:.36s; }
         @keyframes qlThink { 0%,60%,100% { transform:translateY(0); opacity:.45; } 30% { transform:translateY(-4px); opacity:1; } }
+
+        /* ---- AI 晨报卡（今日页） ---- */
+        .ql-brief-card { margin:0 0 .9rem; padding:.95rem 1.15rem .85rem; border:1px solid var(--ql-line); border-left:3px solid var(--ql-pine); border-radius:var(--ql-radius-lg); background:linear-gradient(135deg,rgba(56,104,88,.06),rgba(251,250,246,.96)); box-shadow:var(--ql-shadow); }
+        .ql-brief-eyebrow { color:var(--ql-pine); font-size:.68rem; font-weight:800; letter-spacing:.12em; margin-bottom:.3rem; }
+        .ql-brief-card p { margin:0; color:var(--ql-ink); font-size:.95rem; line-height:1.65; }
+
+        /* ---- 圆桌"已收敛"徽章 ---- */
+        .ql-converged-badge { margin:.1rem 0 .7rem; padding:.5rem .8rem; border:1px solid rgba(56,104,88,.4); border-radius:999px; background:rgba(56,104,88,.08); color:var(--ql-pine); font-size:.78rem; line-height:1.5; }
+        .ql-converged-badge b { font-weight:800; letter-spacing:.04em; }
 
         @media (max-width: 1050px) {
             html { font-size:16px; }

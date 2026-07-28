@@ -132,7 +132,7 @@ ROUNDTABLE_PARTICIPANTS: dict[str, RoundtableParticipantSpec] = {
 class RoundtableTurn(BaseModel):
     participant: str
     participant_label: str
-    round_number: int = Field(ge=1, le=3)
+    round_number: int = Field(ge=1, le=6)
     stance: Literal["bullish", "neutral", "bearish", "mixed"]
     confidence: float = Field(ge=0, le=1)
     statement: str
@@ -163,6 +163,13 @@ class RoundtableSynthesis(BaseModel):
     formal_decision_changed: Literal[False] = False
 
 
+class RoundtableConsensusVerdict(BaseModel):
+    """Moderator verdict for one round: stop early only on real consensus."""
+
+    converged: bool = False
+    reason: str = ""
+
+
 class RoundtableResult(BaseModel):
     session_id: str
     source_run_id: str
@@ -176,6 +183,9 @@ class RoundtableResult(BaseModel):
     source_snapshot: dict[str, Any]
     turns: list[RoundtableTurn]
     synthesis: RoundtableSynthesis
+    converged: bool = False
+    converged_at_round: int | None = None
+    convergence_reason: str = ""
     audit_log: list[dict[str, Any]] = Field(default_factory=list)
     llm_audit: dict[str, Any] = Field(default_factory=dict)
     execution_boundary: str = (
@@ -214,6 +224,8 @@ class ExpertRoundtable:
         degraded = False
         total_turns = len(participant_keys) * rounds
         completed_turns = 0
+        converged_at_round: int | None = None
+        convergence_reason = ""
 
         await self._notify(
             progress_callback,
@@ -279,6 +291,44 @@ class ExpertRoundtable:
                     },
                 )
 
+            # 收敛模式（用户口径）：一轮达成一致即提前结束；轮数仍是硬上限，不追加。
+            if round_number < rounds:
+                round_turns = [t for t in turns if t.round_number == round_number]
+                verdict, check_status, check_error = await self._assess_consensus(
+                    topic,
+                    source_snapshot,
+                    round_number,
+                    round_turns,
+                )
+                audit_log.append(
+                    {
+                        "timestamp": datetime.now(UTC).isoformat(),
+                        "step": "roundtable_consensus_check",
+                        "round": round_number,
+                        "converged": verdict.converged,
+                        "status": check_status,
+                        "error_type": check_error,
+                    }
+                )
+                await self._notify(
+                    progress_callback,
+                    {
+                        "kind": "consensus_checked",
+                        "round": round_number,
+                        "converged": verdict.converged,
+                        "progress": min(0.90, 0.05 + 0.80 * completed_turns / total_turns),
+                        "message": (
+                            f"第 {round_number} 轮已达成一致，讨论提前结束"
+                            if verdict.converged
+                            else f"第 {round_number} 轮仍有分歧，继续下一轮"
+                        ),
+                    },
+                )
+                if verdict.converged:
+                    converged_at_round = round_number
+                    convergence_reason = verdict.reason
+                    break
+
         await self._notify(
             progress_callback,
             {
@@ -315,6 +365,9 @@ class ExpertRoundtable:
             source_snapshot=source_snapshot,
             turns=turns,
             synthesis=synthesis,
+            converged=converged_at_round is not None,
+            converged_at_round=converged_at_round,
+            convergence_reason=convergence_reason,
             audit_log=audit_log,
             llm_audit=_llm_audit_snapshot(self.llm),
         )
@@ -400,6 +453,54 @@ class ExpertRoundtable:
                     statement=f"{spec.label}本轮输出不可用，不能据此提高结论置信度。",
                     evidence_gaps=[f"llm_call_failed:{type(exc).__name__}"],
                     questions=["是否需要更换模型或重试该角色？"],
+                ),
+                "degraded",
+                type(exc).__name__,
+            )
+
+    async def _assess_consensus(
+        self,
+        topic: str,
+        source_snapshot: dict[str, Any],
+        round_number: int,
+        round_turns: list[RoundtableTurn],
+    ) -> tuple[RoundtableConsensusVerdict, str, str | None]:
+        """Judge whether one round reached substantive consensus (fail-closed: no)."""
+
+        system = (
+            "You are the moderator of an expert investment roundtable. Judge ONLY whether this round's "
+            "statements show substantive consensus on the topic: participants' core conclusions align "
+            "directionally and no material disagreement remains unresolved. Ignore stylistic differences. "
+            "Be strict: surface-level politeness or partial overlap is not consensus. Answer with the "
+            "structured verdict and a one-sentence Chinese reason."
+        )
+        prompt = json.dumps(
+            {
+                "topic": topic,
+                "round_number": round_number,
+                "round_statements": [
+                    {
+                        "participant": turn.participant_label,
+                        "stance": turn.stance,
+                        "statement": turn.statement,
+                        "agreements": turn.agreements,
+                        "challenges": turn.challenges,
+                    }
+                    for turn in round_turns
+                ],
+                "source_action": source_snapshot.get("action"),
+            },
+            ensure_ascii=False,
+            default=str,
+        )
+        try:
+            verdict = await self.llm.structured(system, prompt, RoundtableConsensusVerdict)
+            return verdict, "ok", None
+        except Exception as exc:
+            return (
+                RoundtableConsensusVerdict(
+                    converged=False,
+                    reason=f"一致性评估不可用：{type(exc).__name__}",
                 ),
                 "degraded",
                 type(exc).__name__,

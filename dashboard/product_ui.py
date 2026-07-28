@@ -1411,6 +1411,9 @@ def render_home(settings: Settings) -> None:
     if st.session_state.get(HISTORICAL_DEMO_OPEN_KEY):
         _render_historical_demo_workspace(settings)
         return
+    from dashboard.morning_brief import render_morning_brief
+
+    render_morning_brief(settings)
     _render_home_hero(settings)
     path = settings.resolve(settings.get("system.database_path"))
     try:
@@ -2340,6 +2343,75 @@ def _render_roundtable_transcript(session: dict[str, Any], catalog: dict[str, di
                         st.write(f"证据缺口：{_research_user_copy(item)}")
 
 
+def _roundtable_minutes_markdown(
+    session: dict[str, Any], catalog: dict[str, dict[str, str]]
+) -> str:
+    """Build a portable Markdown record of one roundtable session."""
+
+    symbol = str(session.get("symbol") or "?")
+    status = _roundtable_status_copy(str(session.get("status") or "queued"))
+    created = str(session.get("created_at") or "")[:16].replace("T", " ")
+    convergence_note = (
+        f" · 第 {int(session.get('converged_at_round') or 1)} 轮达成一致，提前结束"
+        if session.get("converged")
+        else ""
+    )
+    lines = [
+        f"# 圆桌纪要 · {symbol}",
+        "",
+        f"- 议题：{session.get('topic') or '—'}",
+        f"- 状态：{status} · 发起于 {created} · 轮数 {session.get('rounds') or '—'}{convergence_note}",
+        f"- 冻结研究：{session.get('source_run_id') or '—'}",
+        "",
+        "## 逐轮发言",
+    ]
+    turns = list(session.get("turns") or [])
+    if not turns:
+        lines.append("\n（暂无发言记录）")
+    stance_labels = {
+        "bullish": "偏支持",
+        "bearish": "偏谨慎",
+        "neutral": "中性",
+        "mixed": "存在分歧",
+    }
+    for turn in turns:
+        participant = str(turn.get("participant") or "")
+        label = str(
+            turn.get("participant_label")
+            or catalog.get(participant, {}).get("label")
+            or participant
+        )
+        stance = stance_labels.get(str(turn.get("stance") or ""), "等待复核")
+        confidence = float(turn.get("confidence") or 0)
+        lines.append(
+            f"\n### 第 {int(turn.get('round_number') or 1)} 轮 · {label}"
+            f"（{stance}，把握 {confidence:.0%}）\n"
+        )
+        lines.append(_research_user_copy(turn.get("statement") or "（无可展示发言）"))
+        for item in _research_items(turn.get("challenges")):
+            lines.append(f"- 质疑：{_research_user_copy(item)}")
+        for item in _research_items(turn.get("evidence_gaps")):
+            lines.append(f"- 证据缺口：{_research_user_copy(item)}")
+    synthesis = session.get("synthesis") if isinstance(session.get("synthesis"), dict) else {}
+    lines.append("\n## 主持人总结\n")
+    if synthesis:
+        lines.append(_research_user_copy(synthesis.get("summary") or "—"))
+        for label, key in (
+            ("仍未解决的分歧", "unresolved_disagreements"),
+            ("待补证据", "evidence_gaps"),
+            ("下一步", "recommended_next_steps"),
+        ):
+            items = _research_items(synthesis.get(key))
+            if items:
+                lines.append(f"\n**{label}**")
+                for item in items:
+                    lines.append(f"- {_research_user_copy(item)}")
+    else:
+        lines.append("（主持人总结尚未生成）")
+    lines.append("\n---\n圆桌只围绕冻结研究讨论，不构成投资建议；研究与订单以系统记录为准。")
+    return "\n".join(lines)
+
+
 def _render_roundtable_summary(session: dict[str, Any]) -> None:
     synthesis = session.get("synthesis") if isinstance(session.get("synthesis"), dict) else {}
     if not synthesis:
@@ -2374,6 +2446,23 @@ def _render_roundtable_session(settings: Settings, session_id: str) -> None:
         unsafe_allow_html=True,
     )
     st.progress(float(session.get("progress") or 0.0), text=str(session.get("progress_message") or "正在准备讨论"))
+    if session.get("converged"):
+        reason = _research_user_copy(str(session.get("convergence_reason") or ""))
+        st.markdown(
+            '<div class="ql-converged-badge"><b>已收敛</b> · 第 '
+            f"{int(session.get('converged_at_round') or 1)} 轮达成一致，讨论提前结束"
+            f"{(' — ' + escape(reason)) if reason else ''}</div>",
+            unsafe_allow_html=True,
+        )
+    if list(session.get("turns") or []):
+        st.download_button(
+            "导出圆桌纪要（Markdown）",
+            data=_roundtable_minutes_markdown(session, catalog),
+            file_name=f"roundtable-{session.get('symbol')}-{str(session_id)[:8]}.md",
+            mime="text/markdown",
+            icon=":material/download:",
+            key=f"download_roundtable_{session_id}",
+        )
     job_id = session.get("job_id")
     job = JobRepository(path).job(str(job_id)) if job_id else None
     if job and job.get("status") in {"queued", "running"}:

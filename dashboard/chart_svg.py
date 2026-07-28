@@ -151,9 +151,15 @@ def _moving_average(closes: list[float], window: int) -> list[float | None]:
     return out
 
 
-def _echarts_html(bars: list[Any], *, symbol: str) -> str:
+def _echarts_html(
+    bars: list[Any],
+    *,
+    symbol: str,
+    mark_lines: list[dict[str, Any]] | None = None,
+) -> str:
     """Build the interactive candle/volume page (ECharts in an iframe)."""
 
+    mark_lines = mark_lines or []
     dates = [b.date.strftime("%Y-%m-%d") for b in bars]
     kdata = [
         [round(float(b.open), 4), round(float(b.close), 4), round(float(b.low), 4), round(float(b.high), 4)]
@@ -258,6 +264,12 @@ def _echarts_html(bars: list[Any], *, symbol: str) -> str:
                     "borderColor": _UP,
                     "borderColor0": _DOWN,
                 },
+                "markLine": {
+                    "silent": True,
+                    "symbol": "none",
+                    "data": mark_lines,
+                    "animation": False,
+                },
             },
             {
                 "name": "MA5",
@@ -339,6 +351,82 @@ def _echarts_html(bars: list[Any], *, symbol: str) -> str:
 </body></html>"""
 
 
+_COST_COLOR = "#81513f"
+
+
+def _position_cost_mark(settings: Any, symbol: str) -> dict[str, Any] | None:
+    """Weighted average cost across all user accounts holding ``symbol``."""
+
+    try:
+        from quantlab.workflows.simulator import user_simulator_repository
+
+        repository = user_simulator_repository(settings)
+        total_qty = 0.0
+        total_cost = 0.0
+        for account in repository.accounts(include_closed=False):
+            for position in repository.positions(account["account_id"]):
+                if str(position.get("symbol")) != symbol:
+                    continue
+                quantity = float(position.get("quantity") or 0)
+                cost = float(position.get("average_cost") or 0)
+                if quantity > 0 and cost > 0:
+                    total_qty += quantity
+                    total_cost += quantity * cost
+        if total_qty <= 0:
+            return None
+        avg = round(total_cost / total_qty, 4)
+        return {
+            "yAxis": avg,
+            "lineStyle": {"color": _COST_COLOR, "type": "dashed", "width": 1.4},
+            "label": {
+                "formatter": f"持仓成本 {avg:.3f}",
+                "position": "insideStartTop",
+                "color": _COST_COLOR,
+                "fontSize": 11,
+                "fontWeight": 700,
+            },
+        }
+    except Exception:
+        return None
+
+
+def _alert_marks(settings: Any, symbol: str) -> list[dict[str, Any]]:
+    """Active price alerts for ``symbol`` (trigger lines on the chart)."""
+
+    try:
+        from quantlab.persistence import TerminalRepository
+        from quantlab.workflows.simulator import user_simulator_repository
+
+        simulator = user_simulator_repository(settings)
+        terminal = TerminalRepository(simulator.path)
+        marks: list[dict[str, Any]] = []
+        for alert in terminal.list_alerts():
+            if str(alert.get("symbol")) != symbol or not alert.get("active"):
+                continue
+            threshold = float(alert.get("threshold") or 0)
+            if threshold <= 0:
+                continue
+            condition = str(alert.get("condition_type") or "")
+            color = _UP if condition == "above" else _DOWN
+            direction = "涨到" if condition == "above" else "跌到"
+            marks.append(
+                {
+                    "yAxis": threshold,
+                    "lineStyle": {"color": color, "type": "dotted", "width": 1.4},
+                    "label": {
+                        "formatter": f"预警 {direction} {threshold:g}",
+                        "position": "insideEndTop",
+                        "color": color,
+                        "fontSize": 10,
+                        "fontWeight": 700,
+                    },
+                }
+            )
+        return marks
+    except Exception:
+        return []
+
+
 def render_symbol_market_chart(
     settings: Any, symbol: str, *, end: date | None = None
 ) -> None:
@@ -353,21 +441,35 @@ def render_symbol_market_chart(
         st.caption("行情图暂时没有足够的数据可画；研究内容与证据不受影响。")
         return
 
+    mark_lines = _alert_marks(settings, symbol)
+    cost_mark = _position_cost_mark(settings, symbol)
+    if cost_mark:
+        mark_lines.insert(0, cost_mark)
+
     first, last = bars[0].date, bars[-1].date
     change = (float(bars[-1].close) / float(bars[0].close) - 1) * 100
     trend_class = "ql-chart-up" if change >= 0 else "ql-chart-down"
+    marks_note = ""
+    if cost_mark:
+        marks_note += " · 含持仓成本线"
+    if len(mark_lines) > (1 if cost_mark else 0):
+        marks_note += " · 含预警线"
     st.markdown(
         '<div class="ql-chart-card">'
         '<div class="ql-chart-head">'
         f"<strong>{escape(symbol)} · 日线与成交量</strong>"
         f"<span>{first.isoformat()} ~ {last.isoformat()} · {len(bars)} 个交易日 · "
-        f'区间 <b class="{trend_class}">{change:+.1f}%</b> · 来源 {escape(provider_name)}</span>'
+        f'区间 <b class="{trend_class}">{change:+.1f}%</b> · 来源 {escape(provider_name)}{escape(marks_note)}</span>'
         "</div>"
         "</div>",
         unsafe_allow_html=True,
     )
     try:
-        components.html(_echarts_html(bars, symbol=symbol), height=392, scrolling=False)
+        components.html(
+            _echarts_html(bars, symbol=symbol, mark_lines=mark_lines),
+            height=392,
+            scrolling=False,
+        )
     except Exception:
         st.markdown(_candles_svg(bars[-60:], symbol=symbol), unsafe_allow_html=True)
     st.markdown(
