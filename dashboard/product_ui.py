@@ -2272,9 +2272,15 @@ def _roundtable_stage_html(
         )
     status_copy = _roundtable_status_copy(status)
     note = f" · {escape(header_note)}" if header_note and header_note != status_copy else ""
+    # 阅读模式下（有气泡展开时）在状态行给出提示，全部收起即自动回到圆桌视图
+    mode_hint = (
+        '<span class="ql-reading-mode-hint">平铺阅读中 · 全部收起回到圆桌</span>'
+        if turns
+        else ""
+    )
     return (
         "<section class=\"ql-roundtable-stage\">"
-        f"<div class=\"ql-roundtable-status\"><span></span>{escape(status_copy)}{note}</div>"
+        f"<div class=\"ql-roundtable-status\"><span></span>{escape(status_copy)}{note}{mode_hint}</div>"
         "<div class=\"ql-roundtable-table\"><i></i><b>ROUND TABLE</b><small>冻结研究 · 多视角复核</small></div>"
         f"{''.join(seats)}"
         "</section>"
