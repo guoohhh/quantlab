@@ -11,6 +11,7 @@ import pandas as pd
 import streamlit as st
 
 from dashboard.chart_svg import render_symbol_market_chart
+from dashboard.equity_curve import render_account_equity_curve
 from dashboard.local_settings import (
     LLM_PROVIDER_OPTIONS,
     llm_provider_key_configured,
@@ -1763,7 +1764,19 @@ def render_market_and_discovery(settings: Settings) -> None:
         columns[3].metric(
             "数据覆盖", f"{radar['coverage']['available']}/{radar['coverage']['requested']}"
         )
-        st.dataframe(pd.DataFrame(radar["instruments"]), hide_index=True, width="stretch")
+        instruments_frame = pd.DataFrame(radar["instruments"])
+        column_config: dict[str, Any] = {}
+        if "closes_20" in instruments_frame.columns:
+            column_config["closes_20"] = st.column_config.LineChartColumn(
+                "近 20 日走势",
+                help="最近 20 个交易日的收盘价连线（可信数据源缓存）。",
+            )
+        st.dataframe(
+            instruments_frame,
+            hide_index=True,
+            width="stretch",
+            column_config=column_config or None,
+        )
         if radar.get("sectors"):
             st.subheader("行业趋势")
             st.dataframe(pd.DataFrame(radar["sectors"]), hide_index=True, width="stretch")
@@ -2241,6 +2254,8 @@ def _roundtable_stage_html(
         participant = str(turn.get("participant") or "")
         if participant:
             latest_by_participant[participant] = turn
+    is_live = status in {"queued", "running"}
+    live_speaker = str(turns[-1].get("participant") or "") if is_live and turns else ""
     seats = []
     for index, key in enumerate(participants[:8]):
         item = catalog.get(key, {"label": key, "perspective": "研究视角"})
@@ -2258,11 +2273,17 @@ def _roundtable_stage_html(
                 f'<div class="ql-seat-full">{escape(full_statement)}</div>'
                 "</details>"
             )
+        elif is_live:
+            statement_html = (
+                '<p class="ql-seat-thinking">正在思考'
+                '<span class="ql-thinking-dots"><i></i><i></i><i></i></span></p>'
+            )
         else:
             statement_html = "<p>正在等待发言…</p>"
+        live_class = " ql-seat-live" if key == live_speaker else ""
         seats.append(
             "<article class=\"ql-roundtable-seat ql-roundtable-seat-"
-            f"{index}\" aria-label=\"{escape(str(item['label']))} 的席位\">"
+            f"{index}{live_class}\" aria-label=\"{escape(str(item['label']))} 的席位\">"
             f"<div class=\"ql-chibi ql-chibi-{index % 6}\"><i></i><b></b><span></span></div>"
             "<div class=\"ql-seat-copy\">"
             f"<strong>{escape(str(item['label']))}</strong>"
@@ -2593,6 +2614,7 @@ def render_simulator(settings: Settings) -> None:
             ("累计费用", f"¥{overview['cumulative_fees']:,.2f}"),
         ]
     )
+    render_account_equity_curve(settings, repository, account_id)
     if st.button("用服务器最新行情更新账户", key="product_mark_account"):
         try:
             mark_user_paper_account(settings, account_id=account_id)
