@@ -803,6 +803,8 @@ def _friendly_error(exc: Exception, fallback: str) -> str:
     message = str(exc).lower()
     known = (
         ("quote changed", "行情已变化，请重新运行交易前检查。"),
+        ("all data providers failed", "行情源暂时连接不上，请稍后重试；页面上的历史结果保持不变。"),
+        ("westock script not found", "行情源暂时连接不上，请稍后重试；页面上的历史结果保持不变。"),
         ("market quote", "当前没有可用于交易的服务器行情。"),
         ("insufficient", "现金或可卖持仓不足。"),
         ("not eligible", "当前委托尚未到可成交时间。"),
@@ -1086,7 +1088,6 @@ def _render_home_hero(settings: Settings) -> None:
           <div class="ql-hero-seal" aria-hidden="true"><i>代码<br>说了算</i></div>
           <span>QUANTLAB · 把 AI 关进笼子</span>
           <h1>研究由 AI 圆桌完成，<em>红线由代码强制执行。</em></h1>
-          <p>技术面、动量、价值否决、风险否决、宏观五个角色组成多 Agent 圆桌，负责研究、比较与反证，形成操作草稿；而仓位、集中度、回撤、ST、T+1、涨跌停和交易成本这些红线，全部由确定性代码引擎强制拦截。</p>
         </section>
         """,
         unsafe_allow_html=True,
@@ -1113,35 +1114,7 @@ def _render_home_hero(settings: Settings) -> None:
         ):
             _go_latest_roundtable(settings)
 
-    # 圆桌（首屏 C 位）——真实的圆桌舞台预览，点击直达专家圆桌
-    catalog = {item["key"]: item for item in roundtable_participant_catalog()}
-    stage_participants = ["technical", "bull", "risk", "bear", "macro"]
-    st.markdown(
-        '<div class="ql-section-title ql-home-stage-title"><span>MULTI-AGENT COUNCIL · 圆桌研究</span>'
-        "<strong>五个角色围一张桌子：研究、比较、反证</strong></div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        _roundtable_stage_html(
-            participants=stage_participants,
-            catalog=catalog,
-            turns=[],
-            status="queued",
-        ),
-        unsafe_allow_html=True,
-    )
-    stage_cta, stage_hint = st.columns([1, 3])
-    if stage_cta.button(
-        "进入专家圆桌",
-        key="hero_enter_roundtable",
-        icon=":material/meeting_room:",
-        width="stretch",
-        help="带着最新一份研究档案进入圆桌页，选择专家、发起讨论、看逐轮发言。",
-    ):
-        _go_latest_roundtable(settings)
-    stage_hint.caption("圆桌围绕冻结研究展开：逐轮发言、交叉质疑、主持人总结，全部留痕可回放。")
-
-    # 红线笼子——阈值读真实 [risk] 配置，市场规则为引擎内联逻辑
+    # 红线笼子前置：产品最专业的一面放在首屏（阈值读真实 [risk] 配置）
     risk = settings.get("risk") or {}
 
     def _pct(key: str, fallback: float) -> str:
@@ -1184,6 +1157,34 @@ def _render_home_hero(settings: Settings) -> None:
         """,
         unsafe_allow_html=True,
     )
+
+    # 圆桌（首屏 C 位）——真实的圆桌舞台预览，点击直达专家圆桌
+    catalog = {item["key"]: item for item in roundtable_participant_catalog()}
+    stage_participants = ["technical", "bull", "risk", "bear", "macro"]
+    st.markdown(
+        '<div class="ql-section-title ql-home-stage-title"><span>MULTI-AGENT COUNCIL · 圆桌研究</span>'
+        "<strong>五个角色围一张桌子：研究、比较、反证</strong></div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        _roundtable_stage_html(
+            participants=stage_participants,
+            catalog=catalog,
+            turns=[],
+            status="queued",
+        ),
+        unsafe_allow_html=True,
+    )
+    stage_cta, stage_hint = st.columns([1, 3])
+    if stage_cta.button(
+        "进入专家圆桌",
+        key="hero_enter_roundtable",
+        icon=":material/meeting_room:",
+        width="stretch",
+        help="带着最新一份研究档案进入圆桌页，选择专家、发起讨论、看逐轮发言。",
+    ):
+        _go_latest_roundtable(settings)
+    stage_hint.caption("圆桌围绕冻结研究展开：逐轮发言、交叉质疑、主持人总结，全部留痕可回放。")
 
 
 def _render_historical_demo_entry() -> None:
@@ -1785,10 +1786,42 @@ def render_market_and_discovery(settings: Settings) -> None:
             st.dataframe(pd.DataFrame(radar["sectors"]), hide_index=True, width="stretch")
 
     st.subheader("资金活跃度")
+    st.caption("来自数据供应商的成交方向快照，用来感受市场冷热；它是估算口径，不代表主力净流入。")
     evidence = EvidenceRepository(settings.resolve(settings.get("system.database_path")))
     flows = evidence.flows("market", limit=10)
+
+    def _flow_source_label(value: Any) -> str:
+        text = str(value or "").strip()
+        return {
+            "cached:fallback": "缓存（备用源）",
+            "cached": "缓存",
+            "fallback": "备用源",
+            "westock": "腾讯自选股",
+            "akshare": "公开行情源",
+        }.get(text, text or "—")
+
+    def _flow_quality_label(value: Any) -> str:
+        text = str(value or "").strip().lower()
+        return {
+            "fresh": "实时",
+            "stale": "偏旧",
+            "degraded": "降级",
+            "unavailable": "—",
+        }.get(text, text or "—")
+
+    def _flow_methodology_label(methodology: str) -> str:
+        text = str(methodology or "").strip()
+        lowered = text.lower()
+        if "cross-asset" in lowered and "breadth" in lowered:
+            return "跨资产 ETF 宽度与相对强弱估算；非全市场资金流向"
+        if "signed" in lowered:
+            return "成交额方向估算代理；非已确认资金净流入"
+        if "proxy" in lowered:
+            return "估算代理口径；非已确认数据"
+        return text or "供应商原始口径"
+
     if not flows:
-        st.caption("资金快照不可用。系统不会把 signed-turnover 代理显示成主力净流入。")
+        st.caption("资金快照暂不可用；不会把估算口径显示成主力净流入。")
     else:
         flow_rows = []
         for item in flows[:10]:
@@ -1801,17 +1834,20 @@ def render_market_and_discovery(settings: Settings) -> None:
                 else "已确认数据"
             )
             payload = item.get("payload") or {}
-            flow_rows.append(
-                {
-                    "口径": label,
-                    "来源": item.get("source") or "—",
-                    "时间": _time(item.get("available_at")),
-                    "质量": item.get("quality") or "—",
-                    "成交额": _money(payload.get("turnover") or payload.get("amount")),
-                    "市场宽度": _percent(payload.get("breadth")),
-                    "说明": methodology or "供应商原始口径",
-                }
-            )
+            row = {
+                "口径": label,
+                "来源": _flow_source_label(item.get("source")),
+                "时间": _time(item.get("available_at")),
+                "质量": _flow_quality_label(item.get("quality")),
+                "口径说明": _flow_methodology_label(methodology),
+            }
+            turnover = _money(payload.get("turnover") or payload.get("amount"))
+            breadth = _percent(payload.get("breadth"))
+            if turnover != "—":
+                row["成交额"] = turnover
+            if breadth != "—":
+                row["市场宽度"] = breadth
+            flow_rows.append(row)
         st.dataframe(flow_rows, hide_index=True, width="stretch")
         st.caption("“估算代理”只表示成交活跃度方向，不代表已确认机构持仓或主力净流入。")
 
@@ -2251,19 +2287,29 @@ def _roundtable_stage_html(
     turns: list[dict[str, Any]],
     status: str,
     header_note: str = "",
+    display_round: int | None = None,
 ) -> str:
     latest_by_participant: dict[str, dict[str, Any]] = {}
+    by_pair: dict[tuple[str, int], dict[str, Any]] = {}
     for turn in turns:
         participant = str(turn.get("participant") or "")
         if participant:
             latest_by_participant[participant] = turn
+            by_pair[(participant, int(turn.get("round_number") or 1))] = turn
     is_live = status in {"queued", "running"}
     live_speaker = str(turns[-1].get("participant") or "") if is_live and turns else ""
     seats = []
     for index, key in enumerate(participants[:8]):
         item = catalog.get(key, {"label": key, "perspective": "研究视角"})
-        turn = latest_by_participant.get(key, {})
-        full_statement = _research_user_copy(str(turn.get("statement") or ""))
+        if display_round is None:
+            turn = latest_by_participant.get(key, {})
+        else:
+            turn = by_pair.get((key, display_round), {})
+        full_statement = str(turn.get("statement") or "").strip()
+        shown_round = int(turn.get("round_number") or 0) if turn else 0
+        round_badge = (
+            f'<em class="ql-seat-round">第{shown_round}轮</em>' if shown_round else ""
+        )
         if full_statement:
             short = full_statement[:92] + ("…" if len(full_statement) > 92 else "")
             # 发言气泡可点开看全文，再点收起（details/summary 原生折叠，无 JS）
@@ -2289,7 +2335,7 @@ def _roundtable_stage_html(
             f"{index}{live_class}\" aria-label=\"{escape(str(item['label']))} 的席位\">"
             f"<div class=\"ql-chibi ql-chibi-{index % 6}\"><i></i><b></b><span></span></div>"
             "<div class=\"ql-seat-copy\">"
-            f"<strong>{escape(str(item['label']))}</strong>"
+            f"<strong>{escape(str(item['label']))}</strong>{round_badge}"
             f"<small>{escape(str(item.get('perspective') or '研究视角'))}</small>"
             f"{statement_html}"
             "</div></article>"
@@ -2332,15 +2378,15 @@ def _render_roundtable_transcript(session: dict[str, Any], catalog: dict[str, di
             title, confidence = st.columns([3, 1])
             title.markdown(f"**{label}** · {stance}")
             confidence.caption(f"把握 {float(turn.get('confidence') or 0):.0%}")
-            st.write(_research_user_copy(turn.get("statement") or "本轮没有可展示的发言。"))
+            st.write(str(turn.get("statement") or "本轮没有可展示的发言。").strip())
             challenges = _research_items(turn.get("challenges"))
             gaps = _research_items(turn.get("evidence_gaps"))
             if challenges or gaps:
                 with st.expander("本轮质疑与待补证据"):
                     for item in challenges:
-                        st.write(f"质疑：{_research_user_copy(item)}")
+                        st.write(f"质疑：{item}")
                     for item in gaps:
-                        st.write(f"证据缺口：{_research_user_copy(item)}")
+                        st.write(f"证据缺口：{item}")
 
 
 def _roundtable_minutes_markdown(
@@ -2387,15 +2433,15 @@ def _roundtable_minutes_markdown(
             f"\n### 第 {int(turn.get('round_number') or 1)} 轮 · {label}"
             f"（{stance}，把握 {confidence:.0%}）\n"
         )
-        lines.append(_research_user_copy(turn.get("statement") or "（无可展示发言）"))
+        lines.append(str(turn.get("statement") or "（无可展示发言）").strip())
         for item in _research_items(turn.get("challenges")):
-            lines.append(f"- 质疑：{_research_user_copy(item)}")
+            lines.append(f"- 质疑：{item}")
         for item in _research_items(turn.get("evidence_gaps")):
-            lines.append(f"- 证据缺口：{_research_user_copy(item)}")
+            lines.append(f"- 证据缺口：{item}")
     synthesis = session.get("synthesis") if isinstance(session.get("synthesis"), dict) else {}
     lines.append("\n## 主持人总结\n")
     if synthesis:
-        lines.append(_research_user_copy(synthesis.get("summary") or "—"))
+        lines.append(str(synthesis.get("summary") or "—").strip())
         for label, key in (
             ("仍未解决的分歧", "unresolved_disagreements"),
             ("待补证据", "evidence_gaps"),
@@ -2405,7 +2451,7 @@ def _roundtable_minutes_markdown(
             if items:
                 lines.append(f"\n**{label}**")
                 for item in items:
-                    lines.append(f"- {_research_user_copy(item)}")
+                    lines.append(f"- {item}")
     else:
         lines.append("（主持人总结尚未生成）")
     lines.append("\n---\n圆桌只围绕冻结研究讨论，不构成投资建议；研究与订单以系统记录为准。")
@@ -2418,13 +2464,20 @@ def _render_roundtable_summary(session: dict[str, Any]) -> None:
         st.caption("主持人会在所有专家发言结束后生成圆桌总结。")
         return
     st.markdown("#### 圆桌总结")
-    st.write(_research_user_copy(synthesis.get("summary") or "圆桌没有生成可展示的总结。"))
+    # 圆桌内容是实时生成的用户向文本（非冻结审计证据），不走"英文占位"护栏；
+    # 总结开头固定放一段结论式文字，后面才是分歧/缺口/下一步
+    summary_text = str(synthesis.get("summary") or "圆桌没有生成可展示的总结。").strip()
+    st.markdown(
+        '<div class="ql-roundtable-conclusion"><span>结论</span>'
+        f"<p>{escape(summary_text)}</p></div>",
+        unsafe_allow_html=True,
+    )
     for label, key in (("仍未解决的分歧", "unresolved_disagreements"), ("待补证据", "evidence_gaps"), ("下一步", "recommended_next_steps")):
         items = _research_items(synthesis.get(key))
         if items:
             st.markdown(f"**{label}**")
             for item in items:
-                st.write(f"• {_research_user_copy(item)}")
+                st.write(f"• {item}")
 
 
 def _render_roundtable_session(settings: Settings, session_id: str) -> None:
@@ -2435,19 +2488,34 @@ def _render_roundtable_session(settings: Settings, session_id: str) -> None:
         render_page_state("error", "圆桌记录无法读取", "这场讨论可能已被清理，未修改原始研究。")
         return
     catalog = {item["key"]: item for item in roundtable_participant_catalog()}
+    session_turns = list(session.get("turns") or [])
+    # 轮次切换：圆桌上直接回看任意一轮的发言（默认最新一轮）
+    round_numbers = sorted({int(t.get("round_number") or 1) for t in session_turns})
+    display_round: int | None = None
+    if len(round_numbers) > 1:
+        pick = st.pills(
+            "查看轮次",
+            options=["最新", *[f"第{n}轮" for n in round_numbers]],
+            default="最新",
+            key=f"roundtable_round_pick_{session_id}",
+            label_visibility="collapsed",
+        )
+        if pick and pick != "最新":
+            display_round = int(str(pick).replace("第", "").replace("轮", ""))
     st.markdown(
         _roundtable_stage_html(
             participants=list(session.get("participants") or []),
             catalog=catalog,
-            turns=list(session.get("turns") or []),
+            turns=session_turns,
             status=str(session.get("status") or "queued"),
             header_note=str(session.get("progress_message") or ""),
+            display_round=display_round,
         ),
         unsafe_allow_html=True,
     )
     st.progress(float(session.get("progress") or 0.0), text=str(session.get("progress_message") or "正在准备讨论"))
     if session.get("converged"):
-        reason = _research_user_copy(str(session.get("convergence_reason") or ""))
+        reason = str(session.get("convergence_reason") or "").strip()
         st.markdown(
             '<div class="ql-converged-badge"><b>已收敛</b> · 第 '
             f"{int(session.get('converged_at_round') or 1)} 轮达成一致，讨论提前结束"

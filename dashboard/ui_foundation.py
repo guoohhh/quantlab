@@ -1933,6 +1933,14 @@ def apply_product_theme() -> None:
         .ql-converged-badge { margin:.1rem 0 .7rem; padding:.5rem .8rem; border:1px solid rgba(56,104,88,.4); border-radius:999px; background:rgba(56,104,88,.08); color:var(--ql-pine); font-size:.78rem; line-height:1.5; }
         .ql-converged-badge b { font-weight:800; letter-spacing:.04em; }
 
+        /* ---- 圆桌总结·结论卡 ---- */
+        .ql-roundtable-conclusion { margin:.2rem 0 .9rem; padding:.9rem 1.1rem .8rem; border:1px solid var(--ql-line); border-left:3px solid var(--ql-warm); border-radius:var(--ql-radius-lg); background:linear-gradient(135deg,rgba(180,92,64,.06),rgba(251,250,246,.96)); box-shadow:var(--ql-shadow); }
+        .ql-roundtable-conclusion span { color:var(--ql-warm); font-size:.68rem; font-weight:800; letter-spacing:.14em; }
+        .ql-roundtable-conclusion p { margin:.3rem 0 0; color:var(--ql-ink); font-size:1rem; line-height:1.7; font-weight:520; }
+
+        /* ---- 座位上的轮次徽章 ---- */
+        .ql-seat-round { display:inline-block; margin-left:.35rem; padding:.05rem .4rem; border:1px solid rgba(72,100,123,.35); border-radius:999px; color:#48647b; font-size:.58rem; font-weight:750; font-style:normal; vertical-align:.08em; }
+
         @media (max-width: 1050px) {
             html { font-size:16px; }
             .main .block-container { padding-left:1.25rem; padding-right:1.25rem; }

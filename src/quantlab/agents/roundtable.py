@@ -517,7 +517,8 @@ class ExpertRoundtable:
             "Synthesize agreements, disagreements, strongest bull and bear cases, changed views, and missing "
             "evidence without taking a theatrical persona. Use only the frozen source snapshot and transcript. "
             "Do not invent evidence. The output is exploratory research and must never modify the formal "
-            "decision, position, risk limit, or order plan."
+            "decision, position, risk limit, or order plan. "
+            "Write every free-text field in Simplified Chinese (zh-CN); keep tickers and field paths as-is."
         )
         prompt = json.dumps(
             {
