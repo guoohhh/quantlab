@@ -1088,7 +1088,7 @@ def apply_product_theme() -> None:
             position:absolute; z-index:90;
             left:50%; top:calc(100% + 10px); transform:translateX(-50%);
             width:min(400px, 46vw); height:252px;
-            display:flex; flex-direction:column;
+            display:block; overflow:hidden;
             padding:.78rem .9rem .7rem;
             border:1px solid rgba(169,158,141,.75); border-radius:16px;
             background:rgba(255,253,248,.86);
@@ -1100,10 +1100,10 @@ def apply_product_theme() -> None:
         .ql-roundtable-seat-3 .ql-seat-detail[open],
         .ql-roundtable-seat-4 .ql-seat-detail[open],
         .ql-roundtable-seat-5 .ql-seat-detail[open] { top:auto; bottom:calc(100% + 10px); }
-        .ql-seat-detail[open] summary { flex:none; }
         .ql-seat-detail[open] summary p { display:none; }
+        /* 全文区硬性定高 + 滚轮滚动：不用 flex 约束（details 上不可靠，会溢出卡片） */
         .ql-seat-detail[open] .ql-seat-full {
-            display:block; flex:1 1 auto; min-height:0; overflow-y:auto;
+            display:block; height:190px; overflow-y:auto;
             margin-top:.45rem; padding:.55rem .15rem 0; border:0; border-top:1px dashed var(--ql-line);
             color:var(--ql-ink-soft); font-size:.78rem; line-height:1.66; white-space:pre-wrap;
             scrollbar-width:thin; scrollbar-color:var(--ql-line-strong) transparent;
@@ -1940,6 +1940,16 @@ def apply_product_theme() -> None:
 
         /* ---- 座位上的轮次徽章 ---- */
         .ql-seat-round { display:inline-block; margin-left:.35rem; padding:.05rem .4rem; border:1px solid rgba(72,100,123,.35); border-radius:999px; color:#48647b; font-size:.58rem; font-weight:750; font-style:normal; vertical-align:.08em; }
+        /* ---- 座位上的立场徽章（偏多红/偏空绿/中性灰） ---- */
+        .ql-seat-stance { display:inline-block; margin-left:.3rem; padding:.05rem .4rem; border-radius:999px; font-size:.58rem; font-weight:750; font-style:normal; vertical-align:.08em; }
+        .ql-stance-bull { background:rgba(192,58,43,.10); color:#a33a2c; border:1px solid rgba(192,58,43,.3); }
+        .ql-stance-bear { background:rgba(62,124,95,.10); color:#3e7c5f; border:1px solid rgba(62,124,95,.3); }
+        .ql-stance-neu { background:rgba(138,129,117,.10); color:#6f675b; border:1px solid rgba(138,129,117,.3); }
+        /* ---- 圆桌会话元信息条（冻结研究/截至/轮数/留痕） ---- */
+        .ql-meta-chips { display:flex; flex-wrap:wrap; gap:.4rem; margin:.1rem 0 .55rem; }
+        .ql-meta-chip { padding:.14rem .55rem; border:1px solid var(--ql-line); border-radius:999px; color:var(--ql-muted); font-size:.7rem; line-height:1.4; }
+        .ql-meta-chip b { color:var(--ql-ink); font-weight:750; }
+        .ql-meta-chip.ql-meta-warn { border-color:rgba(186,117,23,.45); color:#854f0b; }
 
         @media (max-width: 1050px) {
             html { font-size:16px; }

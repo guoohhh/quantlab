@@ -112,22 +112,22 @@ from quantlab.workflows.decision_tasks import refresh_decision_tasks
 PRIMARY_ENTRYPOINTS = list(PRODUCT_PAGES)
 
 PAGE_DESCRIPTIONS = {
-    "今日": ("DAILY DECISION DESK", "先看变化与待处理事项，再决定是否需要行动。"),
-    "市场与发现": ("MARKET CONTEXT", "从市场状态、资金与候选线索进入可验证的标的研究。"),
+    "今日": ("工作台 · 每日决策", "先看变化与待处理事项，再决定是否需要行动。"),
+    "市场与发现": ("市场状态与候选", "从市场状态、资金与候选线索进入可验证的标的研究。"),
     "研究台": (
-        "EVIDENCE TRACE",
+        "证据链 · 冻结研究",
         "冻结证据、阅读多空分歧、继续追问，并把完整研究身份带到交易前检查。",
     ),
     "组合与交易": (
-        "USER SIMULATION",
+        "模拟账户",
         "查看持仓与盈亏，运行后端交易前检查，并由你最终确认模拟订单。",
     ),
-    "决策复盘": ("DECISION MEMORY", "把订单、研究、论文与结果重新连起来，检查当时的判断是否兑现。"),
-    "专业空间": ("PROFESSIONAL LAYER", "管理只读外部账本、任务、通知、运行状态和正式证据隔离。"),
-    "帮助中心": ("PRODUCT HANDBOOK", "快速开始、报告阅读、模拟交易规则、常见问题与能力边界。"),
-    "研究详情": ("FROZEN RESEARCH", "单独阅读一份冻结报告，查看证据、反证与下一步。"),
-    "专家圆桌": ("EXPERT ROUNDTABLE", "围绕同一份冻结研究展开可恢复、可追溯的多视角讨论。"),
-    "设置": ("PERSONAL SETTINGS", "管理本机的 AI 服务偏好和通知接收信息。"),
+    "决策复盘": ("决策记忆", "把订单、研究、论文与结果重新连起来，检查当时的判断是否兑现。"),
+    "专业空间": ("系统与外部账本", "管理只读外部账本、任务、通知、运行状态和正式证据隔离。"),
+    "帮助中心": ("产品手册", "快速开始、报告阅读、模拟交易规则、常见问题与能力边界。"),
+    "研究详情": ("冻结研究档案", "单独阅读一份冻结报告，查看证据、反证与下一步。"),
+    "专家圆桌": ("多视角讨论", "围绕同一份冻结研究展开可恢复、可追溯的多视角讨论。"),
+    "设置": ("本机设置", "管理本机的 AI 服务偏好和通知接收信息。"),
 }
 
 LLM_PROVIDER_LABELS = {
@@ -772,7 +772,7 @@ def _render_review_outcome(summary: dict[str, Any]) -> None:
         f"""
         <section class="ql-review-outcome" aria-label="决策结果概览">
           <div class="ql-review-outcome-head">
-            <span>OUTCOME TRACE</span>
+            <span>结果追踪</span>
             <strong>{escape(str(summary['headline']))}</strong>
             <p>这里仅汇总当前用户模拟账本；历史演示、正式影子与外部组合不会混入。</p>
           </div>
@@ -1148,7 +1148,7 @@ def _render_home_hero(settings: Settings) -> None:
         f"""
         <div class="ql-cage">
           <div class="ql-cage-head">
-            <div><span>DETERMINISTIC GUARDRAILS · 代码说了算</span>
+            <div><span>确定性红线 · 代码说了算</span>
             <strong>每一个操作草稿，都被这 8 条红线检查过</strong></div>
             <small>阈值读自风控配置</small>
           </div>
@@ -1162,7 +1162,7 @@ def _render_home_hero(settings: Settings) -> None:
     catalog = {item["key"]: item for item in roundtable_participant_catalog()}
     stage_participants = ["technical", "bull", "risk", "bear", "macro"]
     st.markdown(
-        '<div class="ql-section-title ql-home-stage-title"><span>MULTI-AGENT COUNCIL · 圆桌研究</span>'
+        '<div class="ql-section-title ql-home-stage-title"><span>专家圆桌 · 五个视角一份冻结研究</span>'
         "<strong>五个角色围一张桌子：研究、比较、反证</strong></div>",
         unsafe_allow_html=True,
     )
@@ -1477,9 +1477,9 @@ def render_home(settings: Settings) -> None:
     st.markdown(
         f"""
         <section class="ql-decision-field ql-decision-{field_state}">
-          <div><span>DECISION FIELD</span><h2>{escape(headline)}</h2>
+          <div><span>决策场</span><h2>{escape(headline)}</h2>
           <p>账户、任务、研究变化与待处理委托已按当前数据库状态汇总；保持不动也是有效决策。</p></div>
-          <div class="ql-field-signal"><i></i><b></b><em>{action_count:02d}</em><small>OPEN ITEMS</small></div>
+          <div class="ql-field-signal"><i></i><b></b><em>{action_count:02d}</em><small>待处理事项</small></div>
         </section>
         <div class="ql-status-rail">
           <span><b>{len(important_tasks)}</b> 决策任务</span>
@@ -2298,6 +2298,12 @@ def _roundtable_stage_html(
             by_pair[(participant, int(turn.get("round_number") or 1))] = turn
     is_live = status in {"queued", "running"}
     live_speaker = str(turns[-1].get("participant") or "") if is_live and turns else ""
+    stance_meta = {
+        "bullish": ("偏多", "bull"),
+        "bearish": ("偏空", "bear"),
+        "neutral": ("中性", "neu"),
+        "mixed": ("分歧", "neu"),
+    }
     seats = []
     for index, key in enumerate(participants[:8]):
         item = catalog.get(key, {"label": key, "perspective": "研究视角"})
@@ -2310,6 +2316,20 @@ def _roundtable_stage_html(
         round_badge = (
             f'<em class="ql-seat-round">第{shown_round}轮</em>' if shown_round else ""
         )
+        stance_badge = ""
+        if full_statement:
+            stance_label, stance_class = stance_meta.get(
+                str(turn.get("stance") or ""), ("待复核", "neu")
+            )
+            try:
+                confidence_pct = f"{float(turn.get('confidence') or 0) * 100:.0f}%"
+            except (TypeError, ValueError):
+                confidence_pct = ""
+            confidence_text = f" · 把握 {confidence_pct}" if confidence_pct and confidence_pct != "0%" else ""
+            stance_badge = (
+                f'<em class="ql-seat-stance ql-stance-{stance_class}">'
+                f"{stance_label}{confidence_text}</em>"
+            )
         if full_statement:
             short = full_statement[:92] + ("…" if len(full_statement) > 92 else "")
             # 发言气泡可点开看全文，再点收起（details/summary 原生折叠，无 JS）
@@ -2335,7 +2355,7 @@ def _roundtable_stage_html(
             f"{index}{live_class}\" aria-label=\"{escape(str(item['label']))} 的席位\">"
             f"<div class=\"ql-chibi ql-chibi-{index % 6}\"><i></i><b></b><span></span></div>"
             "<div class=\"ql-seat-copy\">"
-            f"<strong>{escape(str(item['label']))}</strong>{round_badge}"
+            f"<strong>{escape(str(item['label']))}</strong>{round_badge}{stance_badge}"
             f"<small>{escape(str(item.get('perspective') or '研究视角'))}</small>"
             f"{statement_html}"
             "</div></article>"
@@ -2489,6 +2509,38 @@ def _render_roundtable_session(settings: Settings, session_id: str) -> None:
         return
     catalog = {item["key"]: item for item in roundtable_participant_catalog()}
     session_turns = list(session.get("turns") or [])
+    with st.expander("这些专家是怎么来的？", expanded=False):
+        st.markdown(
+            "- 他们不是真人，也不是联网的实时专家——是围绕**同一份冻结研究**发言的 AI 席位。"
+            "每个席位有固定视角（技术事实 / 看多论证 / 看空证伪 / 风险红线 / 宏观环境；"
+            "芒格、巴菲特、格雷厄姆等席位则是风格化的分析视角）。\n"
+            "- 讨论输入只有冻结研究快照和你的议题，过程中不取新数据；"
+            "每轮发言都是结构化输出（立场、把握、证据引用）。\n"
+            "- 所有发言、主持人总结与收敛判断全部写入审计留痕，可回放、可导出。\n"
+            "- 圆桌只产出研究参考：不修改研究结论、不触碰仓位、不下订单。"
+        )
+    # 会话元信息条：把"冻结研究/截至/轮数/留痕"这些硬事实摆到台面上
+    session_status = str(session.get("status") or "queued")
+    latest_round = max((int(t.get("round_number") or 1) for t in session_turns), default=0)
+    meta_chips = [
+        f"冻结研究 <b>{escape(str(session.get('symbol') or '?'))}</b>",
+        f"截至 <b>{escape(str(session.get('as_of') or '—'))}</b>",
+    ]
+    if latest_round:
+        meta_chips.append(f"第 <b>{latest_round}</b> / {int(session.get('rounds') or latest_round)} 轮")
+    if session_turns:
+        meta_chips.append(f"发言 <b>{len(session_turns)} 条</b> · 全部留痕")
+    if session_status == "degraded":
+        meta_chips.append('<span class="ql-meta-chip ql-meta-warn">部分输出降级</span>')
+    st.markdown(
+        '<div class="ql-meta-chips">'
+        + "".join(
+            chip if chip.startswith("<span") else f'<span class="ql-meta-chip">{chip}</span>'
+            for chip in meta_chips
+        )
+        + "</div>",
+        unsafe_allow_html=True,
+    )
     # 轮次切换：圆桌上直接回看任意一轮的发言（默认最新一轮）
     round_numbers = sorted({int(t.get("round_number") or 1) for t in session_turns})
     display_round: int | None = None
@@ -2586,7 +2638,7 @@ def render_roundtable(settings: Settings) -> None:
 
     if st.session_state[view_key] == "create":
         st.markdown(
-            '<div class="ql-section-title"><span>NEW ROUNDTABLE</span>'
+            '<div class="ql-section-title"><span>发起新讨论</span>'
             "<strong>发起新的圆桌讨论</strong></div>",
             unsafe_allow_html=True,
         )
